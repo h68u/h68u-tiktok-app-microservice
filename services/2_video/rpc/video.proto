@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package video;
+
+option go_package = "./video";
+
+// 空消息
+message Empty {}
+
+// 视频信息结构体
+message video {
+  int32 Id = 1;
+  int32 AuthorId = 2;
+  string Title = 3;
+  string PlayUrl = 4;
+  string CoverUrl = 5;
+  int32 FavoriteCount = 6;
+  int32 CommentCount = 7;
+}
+
+// 评论信息结构体
+message Comment {
+  int32 Id = 1;
+  int32 AuthorId = 3;
+  int32 CreateTime =4;
+  string Content = 5;
+}
+
+service Video {
+  rpc GetVideoList(GetVideoListRequest) returns (GetVideoListResponse);
+  rpc PublishVideo(PublishVideoRequest) returns (Empty);
+  rpc GetVideoListByAuthor(GetVideoListByAuthorRequest) returns (GetVideoListByAuthorResponse);
+
+  rpc FavoriteVideo(FavoriteVideoRequest) returns (Empty);
+  rpc UnFavoriteVideo(UnFavoriteVideoRequest) returns (Empty);
+  rpc GetFavoriteVideoList(GetFavoriteVideoListRequest) returns (GetFavoriteVideoListResponse);
+  rpc IsFavoriteVideo(IsFavoriteVideoRequest) returns (IsFavoriteVideoResponse);
+
+  rpc CommentVideo(CommentVideoRequest) returns (Empty);
+  rpc GetCommentList(GetCommentListRequest) returns (GetCommentListResponse);
+}
+
+message GetVideoListRequest {
+  int32 Num = 1;
+}
+
+message GetVideoListResponse {
+  repeated video VideoList = 1;
+}
+
+message PublishVideoRequest {
+  video Video = 1;
+}
+
+message GetVideoListByAuthorRequest {
+  int32 AuthorId = 1;
+}
+
+message GetVideoListByAuthorResponse {
+  repeated video VideoList = 1;
+}
+
+message FavoriteVideoRequest {
+  int32 UserId = 1;
+  int32 VideoId = 2;
+}
+
+message UnFavoriteVideoRequest {
+  int32 UserId = 1;
+  int32 VideoId = 2;
+}
+
+message GetFavoriteVideoListRequest {
+  int32 UserId = 1;
+}
+
+message GetFavoriteVideoListResponse {
+  repeated video VideoList = 1;
+}
+
+message IsFavoriteVideoRequest {
+  int32 UserId = 1;
+  int32 VideoId = 2;
+}
+
+message IsFavoriteVideoResponse {
+  bool IsFavorite = 1;
+}
+
+message CommentVideoRequest {
+  int32 UserId = 1;
+  int32 VideoId = 2;
+  string Content = 3;
+}
+
+message GetCommentListRequest {
+  int32 VideoId = 1;
+}
+
+message GetCommentListResponse {
+  repeated Comment CommentList = 1;
+}

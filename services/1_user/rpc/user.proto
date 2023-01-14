@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "./user";
+
+// 空消息
+message Empty {}
+
+// 用户信息结构体
+message UserInfo {
+  int32 Id = 1;
+  string Name = 2;
+  int32 FollowCount = 3;
+  int32 FansCount = 4;
+}
+
+service User {
+  rpc GetUserByName(GetUserByNameRequest) returns (GetUserReply);
+  rpc GetUserById(GetUserByIdRequest) returns (GetUserReply);
+  rpc CreateUser(CreateUserRequest) returns (CreatUserReply);
+
+  rpc FollowUser(FollowUserRequest) returns (Empty);
+  rpc UnFollowUser(UnFollowUserRequest) returns (Empty);
+
+  rpc GetFollowList(GetFollowListRequest) returns (GetFollowListReply);
+  rpc GetFansList(GetFansListRequest) returns (GetFansListReply);
+
+  rpc IsFollow(IsFollowRequest) returns (IsFollowReply);
+}
+
+message GetUserByNameRequest {
+  string Name = 1;
+}
+
+message GetUserByIdRequest {
+  int32 Id = 1;
+}
+
+message GetUserReply {
+  int32 Id = 1;
+  string Name = 2;
+  string Password = 3;
+}
+
+message CreateUserRequest {
+  string Name = 1;
+  string Password = 2;
+}
+
+message CreatUserReply {
+  int32 Id = 1;
+}
+
+message FollowUserRequest {
+  int32 UserId = 1;
+  int32 FollowUserId = 2;
+}
+
+message UnFollowUserRequest {
+  int32 UserId = 1;
+  int32 UnFollowUserId = 2;
+}
+
+message GetFollowListRequest {
+  int32 UserId = 1;
+}
+
+message GetFollowListReply {
+  repeated UserInfo FollowList = 1;
+}
+
+message GetFansListRequest {
+  int32 UserId = 1;
+}
+
+message GetFansListReply {
+  repeated UserInfo FansList = 1;
+}
+
+message IsFollowRequest {
+  int32 UserId = 1;
+  int32 FollowUserId = 2;
+}
+
+message IsFollowReply {
+  bool IsFollow = 1;
+}

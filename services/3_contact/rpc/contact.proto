@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package contact;
+
+option go_package = "./contact";
+
+// 空消息
+message Empty {}
+
+// 消息结构体
+message Message {
+  int32 Id = 1;
+  string Content = 2;
+  int32 CreateTime = 3;
+}
+
+service Contact {
+  rpc GetFriendsId (GetFriendsIdRequest) returns (GetFriendsIdResponse);
+  rpc CreateMessage (CreateMessageRequest) returns (Empty);
+  rpc GetMessageList (GetMessageListRequest) returns (GetMessageListResponse);
+}
+
+message GetFriendsIdRequest {
+  int32 Id = 1;
+}
+
+message GetFriendsIdResponse {
+  repeated string FriendsId = 1;
+}
+
+message CreateMessageRequest {
+  int32 FromId = 1;
+  int32 ToId = 2;
+  string content = 3;
+}
+
+message GetMessageListRequest {
+  int32 FromId = 1;
+  int32 ToId = 2;
+}
+
+message GetMessageListResponse {
+  repeated Message Messages = 1;
+}
