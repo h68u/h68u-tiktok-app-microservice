@@ -2,70 +2,45 @@ package apiErr
 
 const (
 	SuccessCode int = iota
-	ErrUnknownCode
-	ErrPermissionDeniedCode
-	ErrInvalidParamsCode
-	ErrRPCFailedCode
+	PermissionDeniedCode
+	InvalidParamsCode
+	RPCFailedCode
 )
 
 const (
-	ErrUserNotFoundCode int = iota + 1000
-	ErrPasswordIncorrectCode
-	ErrGenerateTokenFailedCode
-	ErrRegisterFailedCode
-)
-
-const (
-	ErrClassAlreadyExistCode int = iota + 2000
-	ErrClassNotFoundCode
-)
-
-const (
-	ErrFileAlreadyExistCode int = iota + 3000
-	ErrDirNotExistCode
+	UserNotFoundCode int = iota + 1000
+	UserAlreadyExistCode
+	PasswordIncorrectCode
+	GenerateTokenFailedCode
 )
 
 var errCodeMap = map[int]string{
-	SuccessCode:             "Success",
-	ErrUnknownCode:          "Unknown Error",
-	ErrPermissionDeniedCode: "Permission Denied",
-	ErrInvalidParamsCode:    "Invalid Params",
-	ErrRPCFailedCode:        "RPC Failed",
+	SuccessCode:          "成功",
+	PermissionDeniedCode: "权限不足",
+	InvalidParamsCode:    "参数错误",
+	RPCFailedCode:        "RPC错误",
 
-	ErrUserNotFoundCode:        "该用户不存在",
-	ErrPasswordIncorrectCode:   "密码错误",
-	ErrGenerateTokenFailedCode: "生成token失败",
-	ErrRegisterFailedCode:      "有用户注册失败：\n",
-
-	ErrClassAlreadyExistCode: "班级已存在",
-	ErrClassNotFoundCode:     "班级不存在",
-
-	ErrFileAlreadyExistCode: "同名文件已存在",
-	ErrDirNotExistCode:      "目录不存在",
+	UserNotFoundCode:        "该用户不存在",
+	UserAlreadyExistCode:    "该用户已存在",
+	PasswordIncorrectCode:   "密码错误",
+	GenerateTokenFailedCode: "生成token失败",
 }
 
 var (
-	Success             = NewApiError(SuccessCode)
-	ErrUnknown          = NewApiError(ErrUnknownCode)
-	ErrPermissionDenied = NewApiError(ErrPermissionDeniedCode)
-	ErrInvalidParams    = NewApiError(ErrInvalidParamsCode)
-	ErrRPCFailed        = NewApiError(ErrRPCFailedCode)
+	Success          = NewApiError(SuccessCode)
+	PermissionDenied = NewApiError(PermissionDeniedCode)
+	InvalidParams    = NewApiError(InvalidParamsCode)
+	RPCFailed        = NewApiError(RPCFailedCode)
 
-	ErrUserNotFound        = NewApiError(ErrUserNotFoundCode)
-	ErrPasswordIncorrect   = NewApiError(ErrPasswordIncorrectCode)
-	ErrGenerateTokenFailed = NewApiError(ErrGenerateTokenFailedCode)
-	ErrRegisterFailed      = NewApiError(ErrRegisterFailedCode)
-
-	ErrClassAlreadyExist = NewApiError(ErrClassAlreadyExistCode)
-	ErrClassNotFound     = NewApiError(ErrClassNotFoundCode)
-
-	ErrFileAlreadyExist = NewApiError(ErrFileAlreadyExistCode)
-	ErrDirNotExist      = NewApiError(ErrDirNotExistCode)
+	UserNotFound        = NewApiError(UserNotFoundCode)
+	UserAlreadyExist    = NewApiError(UserAlreadyExistCode)
+	PasswordIncorrect   = NewApiError(PasswordIncorrectCode)
+	GenerateTokenFailed = NewApiError(GenerateTokenFailedCode)
 )
 
 type ApiError struct {
-	Code int    `json:"code"`
-	Msg  string `json:"msg"`
+	Code int    `json:"status_code"`
+	Msg  string `json:"status_msg"`
 }
 
 func NewApiError(code int) *ApiError {
