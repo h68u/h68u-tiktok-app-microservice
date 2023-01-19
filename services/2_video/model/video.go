@@ -8,7 +8,7 @@ type Video struct {
 	Title         string `gorm:"not null"`
 	PlayUrl       string `gorm:"not null"`
 	CoverUrl      string `gorm:"not null"`
-	FavoriteCount int64
+	FavoriteCount int64  `gorm:"column:favorite_count;"`
 	CommentCount  int64
 
 	// has many
@@ -25,6 +25,9 @@ type Comment struct {
 
 type Favorite struct {
 	gorm.Model
-	UserId  int64
-	VideoId int64
+	UserId  int64 `gorm:"column:user_id;"`
+	VideoId int64 `gorm:"column:video_id;"`
+
+	// belongs to
+	Video Video
 }

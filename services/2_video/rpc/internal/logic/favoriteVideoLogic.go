@@ -2,6 +2,10 @@ package logic
 
 import (
 	"context"
+	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
+	"h68u-tiktok-app-microservice/common/rpcErr"
+	"h68u-tiktok-app-microservice/services/2_video/model"
 
 	"h68u-tiktok-app-microservice/services/2_video/rpc/internal/svc"
 	"h68u-tiktok-app-microservice/services/2_video/rpc/types/video"
@@ -24,7 +28,39 @@ func NewFavoriteVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Fav
 }
 
 func (l *FavoriteVideoLogic) FavoriteVideo(in *video.FavoriteVideoRequest) (*video.Empty, error) {
-	// todo: add your logic here and delete this line
+	err := l.svcCtx.DBList.Mysql.Transaction(func(tx *gorm.DB) error {
+		// 先查询用户是否点赞过该视频
+		f := model.Favorite{}
+		err := tx.Where("user_id = ? And video_id = ?", in.UserId, in.VideoId).First(&f).Error
 
-	return &video.Empty{}, nil
+		// 点赞记录已存在
+		if err == nil {
+			return nil
+		}
+
+		// 数据库查询错误
+		if err != gorm.ErrRecordNotFound {
+			return status.Error(rpcErr.DataBaseError.Code, err.Error())
+		}
+
+		// 未点赞，创建记录
+		f.VideoId = int64(in.VideoId)
+		f.UserId = int64(in.UserId)
+		if err := tx.Create(&f).Error; err != nil {
+			return status.Error(rpcErr.DataBaseError.Code, err.Error())
+		}
+
+		// 视频点赞量加一
+		if err := tx.Model(&model.Video{}).
+			Where("id = ?", in.VideoId).
+			Update("favorite_count", "favorite_count + 1").
+			Error; err != nil {
+
+			return status.Error(rpcErr.DataBaseError.Code, err.Error())
+		}
+
+		return nil
+	})
+
+	return &video.Empty{}, err
 }
