@@ -29,7 +29,7 @@ type (
 	IsFavoriteVideoResponse      = video.IsFavoriteVideoResponse
 	PublishVideoRequest          = video.PublishVideoRequest
 	UnFavoriteVideoRequest       = video.UnFavoriteVideoRequest
-	Video                        = video.Video
+	//Video                        = video.Video
 
 	Video interface {
 		GetVideoList(ctx context.Context, in *GetVideoListRequest, opts ...grpc.CallOption) (*GetVideoListResponse, error)
