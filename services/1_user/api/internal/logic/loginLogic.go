@@ -6,11 +6,9 @@ import (
 	"h68u-tiktok-app-microservice/common/apiErr"
 	"h68u-tiktok-app-microservice/common/rpcErr"
 	"h68u-tiktok-app-microservice/common/utils"
-	"h68u-tiktok-app-microservice/services/1_user/rpc/types/user"
-	"time"
-
 	"h68u-tiktok-app-microservice/services/1_user/api/internal/svc"
 	"h68u-tiktok-app-microservice/services/1_user/api/internal/types"
+	"h68u-tiktok-app-microservice/services/1_user/rpc/types/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -47,15 +45,14 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginReply, err
 	}
 
 	// 生成 token
-	var jwtToken string
-	var payload = make(map[string]interface{})
-	payload["Id"] = GetUserByNameReply.Id
-	payload["Username"] = req.Username
-	payload["exp"] = time.Now().Unix() + l.svcCtx.Config.Auth.AccessExpire
-	payload["iat"] = time.Now().Unix()
+	jwtToken, err := utils.CreateToken(
+		int64(GetUserByNameReply.Id),
+		l.svcCtx.Config.Auth.AccessSecret,
+		l.svcCtx.Config.Auth.AccessExpire,
+	)
 
-	if jwtToken, err = utils.NewJwtToken(payload, l.svcCtx.Config.Auth.AccessSecret); err != nil {
-		return nil, apiErr.GenerateTokenFailed
+	if err != nil {
+		return nil, apiErr.GenerateTokenFailed.WithDetails(err.Error())
 	}
 
 	return &types.LoginReply{

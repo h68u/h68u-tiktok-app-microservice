@@ -1,11 +1,59 @@
 package utils
 
 import (
-	"github.com/golang-jwt/jwt/v4"
+	"github.com/golang-jwt/jwt"
+	"time"
 )
 
-// NewJwtToken 生成一个 jwt token
-func NewJwtToken(payload map[string]interface{}, secret string) (string, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims(payload))
-	return token.SignedString([]byte(secret))
+type Claims struct {
+	UserId int64 `json:"userId"`
+	jwt.StandardClaims
+}
+
+// CreateToken 签发用户Token
+func CreateToken(userId int64, AccessSecret string, AccessExpire int64) (string, error) {
+	claims := Claims{
+		UserId: userId,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Unix() + AccessExpire,
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    "tiktok-app",
+		},
+	}
+	tokenClaims := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token, err := tokenClaims.SignedString([]byte(AccessSecret))
+	return token, err
+}
+
+// ValidToken 验证用户token
+func ValidToken(token string, AccessSecret string) (bool, error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(AccessSecret), nil
+	})
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
+			expiresTime := claims.ExpiresAt
+			now := time.Now().Unix()
+			if now > expiresTime {
+				//token过期了
+				return true, nil
+			} else {
+				return false, nil
+			}
+		}
+	}
+	return true, err
+}
+
+// GetUserIDFormToken 从token中获取用户id
+func GetUserIDFormToken(token string, AccessSecret string) (int64, error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(AccessSecret), nil
+	})
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
+			return claims.UserId, nil
+		}
+	}
+	return -1, err
 }
