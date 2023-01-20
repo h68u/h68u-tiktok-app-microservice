@@ -25,14 +25,7 @@ func NewFollowLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FollowLogi
 }
 
 func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply, err error) {
-	//验证用户token
-	valid, err := utils.ValidToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
-	if err != nil {
-		return nil, apiErr.TokenParseFailed
-	}
-	if valid {
-		return nil, apiErr.InvalidToken
-	}
+
 	// 参数检查
 	var Id int64
 	if req.UserId == 0 {

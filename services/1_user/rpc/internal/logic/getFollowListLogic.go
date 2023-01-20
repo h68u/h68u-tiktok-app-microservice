@@ -31,9 +31,9 @@ func (l *GetFollowListLogic) GetFollowList(in *user.GetFollowListRequest) (*user
 	if err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
 	}
-	var followlist []*user.UserInfo
+	var followList []*user.UserInfo
 	for _, follow := range follows.Follows {
-		followlist = append(followlist, &user.UserInfo{
+		followList = append(followList, &user.UserInfo{
 			Id:          int32(follow.ID),
 			Name:        follow.Username,
 			FollowCount: int32(follow.FollowCount),
@@ -42,6 +42,6 @@ func (l *GetFollowListLogic) GetFollowList(in *user.GetFollowListRequest) (*user
 	}
 
 	return &user.GetFollowListReply{
-		FollowList: followlist,
+		FollowList: followList,
 	}, nil
 }

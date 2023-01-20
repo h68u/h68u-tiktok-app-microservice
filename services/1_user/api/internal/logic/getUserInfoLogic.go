@@ -27,15 +27,6 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 }
 
 func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *types.GetUserInfoReply, err error) {
-	//验证用户token
-	valid, err := utils.ValidToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
-	if err != nil {
-		return nil, apiErr.TokenParseFailed
-	}
-	if valid {
-		return nil, apiErr.InvalidToken
-	}
-
 	//从token获取自己的id
 	id, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
@@ -48,22 +39,15 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *typ
 	})
 	if rpcErr.Is(err, rpcErr.UserNotExist) {
 		return nil, apiErr.UserNotFound
+	} else if err != nil {
+		return nil, apiErr.RPCFailed.WithDetails(err.Error())
 	}
+
 	//判断是否关注了该用户
 	isFollowReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
 		UserId:       int32(id),
 		FollowUserId: getUserByIdReply.Id,
 	})
-	//获取用户的关注与粉丝
-	getFollowListReply, err := l.svcCtx.UserRpc.GetFollowList(l.ctx, &user.GetFollowListRequest{
-		UserId: int32(req.UserId),
-	})
-	getFansListReply, err := l.svcCtx.UserRpc.GetFansList(l.ctx, &user.GetFansListRequest{
-		UserId: int32(req.UserId),
-	})
-	if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
-	}
 
 	return &types.GetUserInfoReply{
 		Code: apiErr.SuccessCode,
@@ -71,8 +55,8 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *typ
 		User: types.User{
 			Id:            int(getUserByIdReply.Id),
 			Name:          getUserByIdReply.Name,
-			FollowCount:   len(getFollowListReply.FollowList),
-			FollowerCount: len(getFansListReply.FansList),
+			FollowCount:   int(getUserByIdReply.FollowCount),
+			FollowerCount: int(getUserByIdReply.FanCount),
 			IsFollow:      isFollowReply.IsFollow,
 		},
 	}, nil
