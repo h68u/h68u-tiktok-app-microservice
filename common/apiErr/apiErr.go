@@ -35,11 +35,12 @@ var errCodeMap = map[int]string{
 	GenerateTokenFailedCode: "生成token失败",
 	UserNotLoginCode:        "用户还未登录",
 
+	TokenParseFailedCode: "解析token失败",
+	InvalidTokenCode:     "无效的token",
+	AlreadyFollowedCode:  "已关注",
+	NotFollowedCode:      "未关注",
+
 	FavouriteActionUnknownCode: "未知的喜欢操作",
-	TokenParseFailedCode:    "解析token失败",
-	InvalidTokenCode:        "无效的token",
-	AlreadyFollowedCode:     "已关注",
-	NotFollowedCode:         "未关注",
 }
 
 var (
@@ -47,11 +48,18 @@ var (
 	PermissionDenied = NewApiError(PermissionDeniedCode)
 	InvalidParams    = NewApiError(InvalidParamsCode)
 	RPCFailed        = NewApiError(RPCFailedCode)
+	UserNotFound     = NewApiError(UserNotFoundCode)
+	UserNotLogin     = NewApiError(UserNotLoginCode)
 
-	UserNotFound        = NewApiError(UserNotFoundCode)
 	UserAlreadyExist    = NewApiError(UserAlreadyExistCode)
 	PasswordIncorrect   = NewApiError(PasswordIncorrectCode)
 	GenerateTokenFailed = NewApiError(GenerateTokenFailedCode)
+	TokenParseFailed    = NewApiError(TokenParseFailedCode)
+	InvalidToken        = NewApiError(InvalidTokenCode)
+	AlreadyFollowed     = NewApiError(AlreadyFollowedCode)
+	NotFollowed         = NewApiError(NotFollowedCode)
+
+	FavouriteActionUnknown = NewApiError(FavouriteActionUnknownCode)
 )
 
 type ApiError struct {
