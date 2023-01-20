@@ -38,7 +38,7 @@ func (l *GetFavoriteVideoListLogic) GetFavoriteVideoList(in *video.GetFavoriteVi
 	}
 
 	// 封装查询结果
-	videoList := make([]*video.Video, 0, len(favorites))
+	videoList := make([]*video.VideoInfo, 0, len(favorites))
 	for _, v := range favorites {
 		// 可能存在脏数据,需要判断视频是否存在
 		if v.Video.ID == 0 {
@@ -46,7 +46,7 @@ func (l *GetFavoriteVideoListLogic) GetFavoriteVideoList(in *video.GetFavoriteVi
 			continue
 		}
 
-		videoInfo := &video.Video{
+		videoInfo := &video.VideoInfo{
 			Id:            int32(v.Video.ID),
 			AuthorId:      int32(v.Video.AuthorId),
 			Title:         v.Video.Title,
