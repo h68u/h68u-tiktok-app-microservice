@@ -33,7 +33,7 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 		return nil, apiErr.UserNotLogin
 	}
 
-	l.Logger.Debugf("用户喜欢视频, 用户id:%d\n", UserId)
+	l.Logger.Infof("用户喜欢视频, 用户id:%d\n", UserId)
 
 	// 根据action决定点赞操作
 	if req.ActionType == 1 {

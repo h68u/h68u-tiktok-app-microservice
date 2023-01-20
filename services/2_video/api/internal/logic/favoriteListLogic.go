@@ -47,12 +47,14 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 		return nil, apiErr.RPCFailed.WithDetails(err.Error())
 	}
 
+	l.Logger.Infof("获取到的点赞视频数量为: %d\n", len(res.VideoList))
+
 	// 封装列表数据
 	wg := sync.WaitGroup{}
 	errChan := make(chan error, 1)
 	finished := make(chan bool, 1)
 
-	videoList := make([]types.Video, 0, len(res.VideoList))
+	videoList := make([]types.Video, len(res.VideoList))
 	for i, v := range res.VideoList {
 		wg.Add(1)
 
@@ -91,16 +93,6 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 				IsFollow:      isFollowRes.IsFollow,
 			}
 
-			// 获取用户是否喜欢改视频
-			isFavoriteRes, err := l.svcCtx.VideoRpc.IsFavoriteVideo(l.ctx, &videoclient.IsFavoriteVideoRequest{
-				UserId:  int32(UserId),
-				VideoId: videoRow.Id,
-			})
-
-			if err != nil {
-				errChan <- apiErr.RPCFailed.WithDetails(err.Error())
-			}
-
 			videoInfo := types.Video{
 				Id:            int(videoRow.Id),
 				Title:         videoRow.Title,
@@ -109,7 +101,8 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 				CoverUrl:      videoRow.CoverUrl,
 				FavoriteCount: int(videoRow.FavoriteCount),
 				CommentCount:  int(videoRow.CommentCount),
-				IsFavorite:    isFavoriteRes.IsFavorite,
+				// 这里查询的是用户喜欢的视频列表,无需获取用户是否喜欢
+				IsFavorite: true,
 			}
 
 			videoList[index] = videoInfo
