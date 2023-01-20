@@ -2,7 +2,9 @@ package logic
 
 import (
 	"context"
-
+	"google.golang.org/grpc/status"
+	"h68u-tiktok-app-microservice/common/rpcErr"
+	"h68u-tiktok-app-microservice/services/1_user/model"
 	"h68u-tiktok-app-microservice/services/1_user/rpc/internal/svc"
 	"h68u-tiktok-app-microservice/services/1_user/rpc/types/user"
 
@@ -24,7 +26,22 @@ func NewGetFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 }
 
 func (l *GetFollowListLogic) GetFollowList(in *user.GetFollowListRequest) (*user.GetFollowListReply, error) {
-	// todo: add your logic here and delete this line
+	var follows model.User
+	err := l.svcCtx.DBList.Mysql.Where("id = ?", in.UserId).Preload("Follows").Find(&follows).Error
+	if err != nil {
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
+	var followlist []*user.UserInfo
+	for _, follow := range follows.Follows {
+		followlist = append(followlist, &user.UserInfo{
+			Id:          int32(follow.ID),
+			Name:        follow.Username,
+			FollowCount: int32(follow.FollowCount),
+			FansCount:   int32(follow.FanCount),
+		})
+	}
 
-	return &user.GetFollowListReply{}, nil
+	return &user.GetFollowListReply{
+		FollowList: followlist,
+	}, nil
 }
