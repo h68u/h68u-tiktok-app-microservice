@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"h68u-tiktok-app-microservice/common/apiErr"
-	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/services/1_user/rpc/types/user"
 
 	"h68u-tiktok-app-microservice/services/1_user/api/internal/svc"
@@ -27,14 +26,7 @@ func NewFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Follow
 }
 
 func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.FollowListReply, err error) {
-	//验证token
-	valid, err := utils.ValidToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
-	if err != nil {
-		return nil, apiErr.TokenParseFailed
-	}
-	if valid {
-		return nil, apiErr.InvalidToken
-	}
+
 	//拿到关注列表的数据
 	GetFollowListReply, err := l.svcCtx.UserRpc.GetFollowList(l.ctx, &user.GetFollowListRequest{
 		UserId: int32(req.UserId),
@@ -43,7 +35,7 @@ func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.
 		return nil, apiErr.RPCFailed.WithDetails(err.Error())
 	}
 
-	var followlist []types.User
+	var followList []types.User
 	for _, follow := range GetFollowListReply.FollowList {
 		//判断关注者是否关注了你
 		isFollowReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
@@ -53,7 +45,7 @@ func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.
 		if err != nil {
 			return nil, apiErr.RPCFailed.WithDetails(err.Error())
 		}
-		followlist = append(followlist, types.User{
+		followList = append(followList, types.User{
 			Id:            int(follow.Id),
 			Name:          follow.Name,
 			FollowCount:   int(follow.FollowCount),
@@ -64,6 +56,6 @@ func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.
 	return &types.FollowListReply{
 		Code:  apiErr.SuccessCode,
 		Msg:   apiErr.Success.Msg,
-		Users: followlist,
+		Users: followList,
 	}, nil
 }

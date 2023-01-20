@@ -33,9 +33,9 @@ func (l *GetFansListLogic) GetFansList(in *user.GetFansListRequest) (*user.GetFa
 	if err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
 	}
-	var fanlist []*user.UserInfo
+	var fanList []*user.UserInfo
 	for _, fan := range fans.Fans {
-		fanlist = append(fanlist, &user.UserInfo{
+		fanList = append(fanList, &user.UserInfo{
 			Id:          int32(fan.ID),
 			Name:        fan.Username,
 			FollowCount: int32(fan.FollowCount),
@@ -43,6 +43,6 @@ func (l *GetFansListLogic) GetFansList(in *user.GetFansListRequest) (*user.GetFa
 		})
 	}
 	return &user.GetFansListReply{
-		FansList: fanlist,
+		FansList: fanList,
 	}, nil
 }

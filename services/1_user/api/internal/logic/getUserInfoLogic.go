@@ -2,8 +2,12 @@ package logic
 
 import (
 	"context"
+	"h68u-tiktok-app-microservice/common/apiErr"
+	"h68u-tiktok-app-microservice/common/rpcErr"
+	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/services/1_user/api/internal/svc"
 	"h68u-tiktok-app-microservice/services/1_user/api/internal/types"
+	"h68u-tiktok-app-microservice/services/1_user/rpc/types/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -23,7 +27,37 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 }
 
 func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *types.GetUserInfoReply, err error) {
-	// todo: add your logic here and delete this line
+	//从token获取自己的id
+	id, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
+	if err != nil {
+		return nil, apiErr.TokenParseFailed
+	}
 
-	return nil, err
+	//获取用户信息(名字与id)
+	getUserByIdReply, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
+		Id: int32(req.UserId),
+	})
+	if rpcErr.Is(err, rpcErr.UserNotExist) {
+		return nil, apiErr.UserNotFound
+	} else if err != nil {
+		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+	}
+
+	//判断是否关注了该用户
+	isFollowReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
+		UserId:       int32(id),
+		FollowUserId: getUserByIdReply.Id,
+	})
+
+	return &types.GetUserInfoReply{
+		Code: apiErr.SuccessCode,
+		Msg:  apiErr.Success.Msg,
+		User: types.User{
+			Id:            int(getUserByIdReply.Id),
+			Name:          getUserByIdReply.Name,
+			FollowCount:   int(getUserByIdReply.FollowCount),
+			FollowerCount: int(getUserByIdReply.FanCount),
+			IsFollow:      isFollowReply.IsFollow,
+		},
+	}, nil
 }
