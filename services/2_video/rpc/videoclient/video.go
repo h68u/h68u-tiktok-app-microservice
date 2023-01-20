@@ -5,7 +5,6 @@ package videoclient
 
 import (
 	"context"
-
 	"h68u-tiktok-app-microservice/services/2_video/rpc/types/video"
 
 	"github.com/zeromicro/go-zero/zrpc"
@@ -29,7 +28,7 @@ type (
 	IsFavoriteVideoResponse      = video.IsFavoriteVideoResponse
 	PublishVideoRequest          = video.PublishVideoRequest
 	UnFavoriteVideoRequest       = video.UnFavoriteVideoRequest
-	//Video                        = video.Video
+	VideoInfo                    = video.VideoInfo
 
 	Video interface {
 		GetVideoList(ctx context.Context, in *GetVideoListRequest, opts ...grpc.CallOption) (*GetVideoListResponse, error)

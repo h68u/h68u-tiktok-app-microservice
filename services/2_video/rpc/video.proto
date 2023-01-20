@@ -8,7 +8,7 @@ option go_package = "./video";
 message Empty {}
 
 // 视频信息结构体
-message video {
+message VideoInfo {
   int32 Id = 1;
   int32 AuthorId = 2;
   string Title = 3;
@@ -45,11 +45,11 @@ message GetVideoListRequest {
 }
 
 message GetVideoListResponse {
-  repeated video VideoList = 1;
+  repeated VideoInfo VideoList = 1;
 }
 
 message PublishVideoRequest {
-  video Video = 1;
+  VideoInfo Video = 1;
 }
 
 message GetVideoListByAuthorRequest {
@@ -57,7 +57,7 @@ message GetVideoListByAuthorRequest {
 }
 
 message GetVideoListByAuthorResponse {
-  repeated video VideoList = 1;
+  repeated VideoInfo VideoList = 1;
 }
 
 message FavoriteVideoRequest {
@@ -75,7 +75,7 @@ message GetFavoriteVideoListRequest {
 }
 
 message GetFavoriteVideoListResponse {
-  repeated video VideoList = 1;
+  repeated VideoInfo VideoList = 1;
 }
 
 message IsFavoriteVideoRequest {

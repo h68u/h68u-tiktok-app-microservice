@@ -11,6 +11,7 @@ type Config struct {
 
 	// RPC 配置
 	VideoRpc zrpc.RpcClientConf
+	UserRpc  zrpc.RpcClientConf
 
 	// JWT 配置
 	Auth struct {

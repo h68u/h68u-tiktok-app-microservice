@@ -3,9 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	"h68u-tiktok-app-microservice/services/2_video/rpc/internal/config"
-	"h68u-tiktok-app-microservice/services/2_video/rpc/internal/server"
+	s1 "h68u-tiktok-app-microservice/services/2_video/rpc/internal/server"
 	"h68u-tiktok-app-microservice/services/2_video/rpc/internal/svc"
 	"h68u-tiktok-app-microservice/services/2_video/rpc/types/video"
 
@@ -26,7 +25,7 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
-		video.RegisterVideoServer(grpcServer, server.NewVideoServer(ctx))
+		video.RegisterVideoServer(grpcServer, s1.NewVideoServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {
 			reflection.Register(grpcServer)

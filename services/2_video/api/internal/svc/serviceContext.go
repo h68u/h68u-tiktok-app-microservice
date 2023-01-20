@@ -3,6 +3,7 @@ package svc
 import (
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
+	"h68u-tiktok-app-microservice/services/1_user/rpc/userclient"
 	"h68u-tiktok-app-microservice/services/2_video/api/internal/config"
 	"h68u-tiktok-app-microservice/services/2_video/api/internal/middleware"
 	"h68u-tiktok-app-microservice/services/2_video/rpc/videoclient"
@@ -12,6 +13,7 @@ type ServiceContext struct {
 	Config   config.Config
 	Auth     rest.Middleware
 	VideoRpc videoclient.Video
+	UserRpc  userclient.User
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -19,5 +21,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		Config:   c,
 		Auth:     middleware.NewAuthMiddleware(c).Handle,
 		VideoRpc: videoclient.NewVideo(zrpc.MustNewClient(c.VideoRpc)),
+		UserRpc:  userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
 	}
 }

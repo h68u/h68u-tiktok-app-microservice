@@ -38,9 +38,11 @@ message GetUserByIdRequest {
 }
 
 message GetUserReply {
-  int32 Id = 1;
-  string Name = 2;
-  string Password = 3;
+  int32   Id = 1;
+  string  Name = 2;
+  string  Password = 3;
+  int64   FollowCount = 4;
+  int64   FanCount = 5;
 }
 
 message CreateUserRequest {

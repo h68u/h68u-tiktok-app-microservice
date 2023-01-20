@@ -5,10 +5,10 @@ package server
 
 import (
 	"context"
+	"h68u-tiktok-app-microservice/services/2_video/rpc/types/video"
 
 	"h68u-tiktok-app-microservice/services/2_video/rpc/internal/logic"
 	"h68u-tiktok-app-microservice/services/2_video/rpc/internal/svc"
-	"h68u-tiktok-app-microservice/services/2_video/rpc/types/video"
 )
 
 type VideoServer struct {
