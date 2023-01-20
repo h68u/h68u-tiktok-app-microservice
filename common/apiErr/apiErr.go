@@ -31,7 +31,7 @@ var errCodeMap = map[int]string{
 	GenerateTokenFailedCode: "生成token失败",
 	UserNotLoginCode:        "用户还未登录",
 
-	FavouriteActionUnknownCode: "喜欢操作",
+	FavouriteActionUnknownCode: "未知的喜欢操作",
 }
 
 var (
