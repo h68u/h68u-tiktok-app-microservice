@@ -1,0 +1,37 @@
+syntax = "v1"
+
+// 用户信息
+type User {
+    Id            int    `json:"id"`
+    Name          string `json:"name"`
+    FollowCount   int    `json:"follow_count"`
+    FollowerCount int    `json:"follower_count"`
+    IsFollow      bool   `json:"is_follow"`
+}
+
+// 视频信息
+type Video {
+    Id            int    `json:"id"`
+    Title         string `json:"title"`
+    Author        User   `json:"author"`
+    PlayUrl       string `json:"play_url"`
+    CoverUrl      string `json:"cover_url"`
+    FavoriteCount int    `json:"favorite_count"`
+    CommentCount  int    `json:"comment_count"`
+    IsFavorite    bool   `json:"is_favorite"`
+}
+
+// 评论信息
+type Comment {
+    Id         int    `json:"id"`
+    Content    string `json:"content"`
+    User       User   `json:"user"`
+    CreateTime int    `json:"create_time"`
+}
+
+// 聊天消息
+type Message {
+    Id         int    `json:"id"`
+    Content    string `json:"content"`
+    CreateTime string `json:"create_time"`
+}
