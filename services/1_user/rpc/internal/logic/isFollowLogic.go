@@ -2,7 +2,7 @@ package logic
 
 import (
 	"context"
-
+	"h68u-tiktok-app-microservice/services/1_user/model"
 	"h68u-tiktok-app-microservice/services/1_user/rpc/internal/svc"
 	"h68u-tiktok-app-microservice/services/1_user/rpc/types/user"
 
@@ -24,7 +24,18 @@ func NewIsFollowLogic(ctx context.Context, svcCtx *svc.ServiceContext) *IsFollow
 }
 
 func (l *IsFollowLogic) IsFollow(in *user.IsFollowRequest) (*user.IsFollowReply, error) {
-	// todo: add your logic here and delete this line
+	//判断你是否关注了这个人
+	var aUser model.User //
+	l.svcCtx.DBList.Mysql.Where("id = ?", in.UserId).Preload("Follows", "id = ?", in.FollowUserId).Find(&aUser)
 
-	return &user.IsFollowReply{}, nil
+	if len(aUser.Follows) > 0 {
+		return &user.IsFollowReply{
+			IsFollow: true,
+		}, nil
+	} else {
+		return &user.IsFollowReply{
+			IsFollow: false,
+		}, nil
+	}
+
 }

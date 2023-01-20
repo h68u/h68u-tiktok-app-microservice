@@ -12,6 +12,10 @@ const (
 	UserAlreadyExistCode
 	PasswordIncorrectCode
 	GenerateTokenFailedCode
+	TokenParseFailedCode
+	InvalidTokenCode
+	AlreadyFollowedCode
+	NotFollowedCode
 )
 
 var errCodeMap = map[int]string{
@@ -24,6 +28,10 @@ var errCodeMap = map[int]string{
 	UserAlreadyExistCode:    "该用户已存在",
 	PasswordIncorrectCode:   "密码错误",
 	GenerateTokenFailedCode: "生成token失败",
+	TokenParseFailedCode:    "解析token失败",
+	InvalidTokenCode:        "无效的token",
+	AlreadyFollowedCode:     "已关注",
+	NotFollowedCode:         "未关注",
 }
 
 var (
@@ -36,6 +44,10 @@ var (
 	UserAlreadyExist    = NewApiError(UserAlreadyExistCode)
 	PasswordIncorrect   = NewApiError(PasswordIncorrectCode)
 	GenerateTokenFailed = NewApiError(GenerateTokenFailedCode)
+	TokenParseFailed    = NewApiError(TokenParseFailedCode)
+	InvalidToken        = NewApiError(InvalidTokenCode)
+	AlreadyFollowed     = NewApiError(AlreadyFollowedCode)
+	NotFollowed         = NewApiError(NotFollowedCode)
 )
 
 type ApiError struct {

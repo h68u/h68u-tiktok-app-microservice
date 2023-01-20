@@ -26,6 +26,8 @@ func CreateToken(userId int64, AccessSecret string, AccessExpire int64) (string,
 }
 
 // ValidToken 验证用户token
+// bool: 是否过期 default: true 过期
+// error: 解析是否成功 default: nil
 func ValidToken(token string, AccessSecret string) (bool, error) {
 	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(AccessSecret), nil

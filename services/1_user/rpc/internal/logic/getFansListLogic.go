@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"google.golang.org/grpc/status"
+	"h68u-tiktok-app-microservice/common/rpcErr"
+	"h68u-tiktok-app-microservice/services/1_user/model"
 
 	"h68u-tiktok-app-microservice/services/1_user/rpc/internal/svc"
 	"h68u-tiktok-app-microservice/services/1_user/rpc/types/user"
@@ -24,7 +27,22 @@ func NewGetFansListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetFa
 }
 
 func (l *GetFansListLogic) GetFansList(in *user.GetFansListRequest) (*user.GetFansListReply, error) {
-	// todo: add your logic here and delete this line
-
-	return &user.GetFansListReply{}, nil
+	var fans model.User
+	//获取粉丝列表
+	err := l.svcCtx.DBList.Mysql.Where("id = ?", in.UserId).Preload("Fans").Find(&fans).Error
+	if err != nil {
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
+	var fanlist []*user.UserInfo
+	for _, fan := range fans.Fans {
+		fanlist = append(fanlist, &user.UserInfo{
+			Id:          int32(fan.ID),
+			Name:        fan.Username,
+			FollowCount: int32(fan.FollowCount),
+			FansCount:   int32(fan.FanCount),
+		})
+	}
+	return &user.GetFansListReply{
+		FansList: fanlist,
+	}, nil
 }
