@@ -1,0 +1,22 @@
+# 启动配置
+Name: video
+Host: 0.0.0.0
+Port: 8002
+
+# RPC 配置
+VideoRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: video.rpc
+
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+
+# JWT 配置
+Auth:
+  AccessSecret: ThisIsMySecret
+  AccessExpire: 1296000         # 15 天

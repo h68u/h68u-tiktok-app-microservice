@@ -2,6 +2,10 @@ package logic
 
 import (
 	"context"
+	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
+	"h68u-tiktok-app-microservice/common/rpcErr"
+	"h68u-tiktok-app-microservice/services/2_video/model"
 
 	"h68u-tiktok-app-microservice/services/2_video/rpc/internal/svc"
 	"h68u-tiktok-app-microservice/services/2_video/rpc/types/video"
@@ -24,7 +28,22 @@ func NewIsFavoriteVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *I
 }
 
 func (l *IsFavoriteVideoLogic) IsFavoriteVideo(in *video.IsFavoriteVideoRequest) (*video.IsFavoriteVideoResponse, error) {
-	// todo: add your logic here and delete this line
+	// 查询记录是否存在
+	err := l.svcCtx.DBList.Mysql.Where("user_id = ? And video_id = ?", in.UserId, in.VideoId).First(&model.Favorite{}).Error
 
-	return &video.IsFavoriteVideoResponse{}, nil
+	// 记录不存在
+	if err == gorm.ErrRecordNotFound {
+		return &video.IsFavoriteVideoResponse{
+			IsFavorite: false,
+		}, nil
+	}
+
+	// 数据库查询错误
+	if err != nil {
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
+
+	return &video.IsFavoriteVideoResponse{
+		IsFavorite: true,
+	}, nil
 }
