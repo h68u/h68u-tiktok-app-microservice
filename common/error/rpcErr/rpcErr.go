@@ -15,19 +15,26 @@ const (
 	UserNotExistCode
 )
 
+const (
+	InsufficientPermissionsCode = iota + 3000
+)
+
 var errCodeMap = map[codes.Code]string{
 	DataBaseErrorCode:         "数据库错误",
 	PasswordEncryptFailedCode: "密码加密失败",
 
 	UserAlreadyExistCode: "用户已存在",
 	UserNotExistCode:     "用户不存在",
+
+	InsufficientPermissionsCode: "权限不足", // 水平权限管理和垂直权限管理
 }
 
 var (
-	UserAlreadyExist      = NewRpcError(UserAlreadyExistCode)
-	DataBaseError         = NewRpcError(DataBaseErrorCode)
-	PassWordEncryptFailed = NewRpcError(PasswordEncryptFailedCode)
-	UserNotExist          = NewRpcError(UserNotExistCode)
+	UserAlreadyExist        = NewRpcError(UserAlreadyExistCode)
+	DataBaseError           = NewRpcError(DataBaseErrorCode)
+	PassWordEncryptFailed   = NewRpcError(PasswordEncryptFailedCode)
+	UserNotExist            = NewRpcError(UserNotExistCode)
+	InsufficientPermissions = NewRpcError(InsufficientPermissionsCode)
 )
 
 type RpcError struct {
