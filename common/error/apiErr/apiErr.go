@@ -21,6 +21,7 @@ const (
 
 const (
 	FavouriteActionUnknownCode int = iota + 2000
+	CommentActionUnknownCode
 )
 
 var errCodeMap = map[int]string{
@@ -41,6 +42,7 @@ var errCodeMap = map[int]string{
 	NotFollowedCode:      "未关注",
 
 	FavouriteActionUnknownCode: "未知的喜欢操作",
+	CommentActionUnknownCode:   "未知的评论操作",
 }
 
 var (
@@ -60,6 +62,7 @@ var (
 	NotFollowed         = NewApiError(NotFollowedCode)
 
 	FavouriteActionUnknown = NewApiError(FavouriteActionUnknownCode)
+	CommentActionUnknown   = NewApiError(CommentActionUnknownCode)
 )
 
 type ApiError struct {
