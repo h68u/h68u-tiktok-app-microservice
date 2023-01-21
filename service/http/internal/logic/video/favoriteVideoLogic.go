@@ -12,6 +12,11 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
+const (
+	FavoriteVideoAction   = 1
+	UnFavoriteVideoAction = 2
+)
+
 type FavoriteVideoLogic struct {
 	logx.Logger
 	ctx    context.Context
@@ -33,10 +38,8 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 		return nil, apiErr.UserNotLogin
 	}
 
-	l.Logger.Infof("用户喜欢视频, 用户id:%d\n", UserId)
-
-	// 根据action决定点赞操作
-	if req.ActionType == 1 {
+	switch req.ActionType {
+	case FavoriteVideoAction:
 		if _, err = l.svcCtx.VideoRpc.FavoriteVideo(l.ctx, &videoclient.FavoriteVideoRequest{
 			UserId:  int32(UserId),
 			VideoId: int32(req.VideoId),
@@ -44,7 +47,7 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 			return nil, apiErr.RPCFailed.WithDetails(err.Error())
 		}
 
-	} else if req.ActionType == 0 {
+	case UnFavoriteVideoAction:
 		if _, err = l.svcCtx.VideoRpc.UnFavoriteVideo(l.ctx, &videoclient.UnFavoriteVideoRequest{
 			UserId:  int32(UserId),
 			VideoId: int32(req.VideoId),
@@ -52,7 +55,7 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 			return nil, apiErr.RPCFailed.WithDetails(err.Error())
 		}
 
-	} else { // 未知的点赞操作
+	default:
 		return nil, apiErr.FavouriteActionUnknown
 	}
 
