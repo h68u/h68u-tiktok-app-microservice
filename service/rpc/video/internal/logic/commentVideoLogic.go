@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"google.golang.org/grpc/status"
+	"h68u-tiktok-app-microservice/common/error/rpcErr"
+	"h68u-tiktok-app-microservice/common/model"
 	"h68u-tiktok-app-microservice/service/rpc/video/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
 
@@ -23,7 +26,16 @@ func NewCommentVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Comm
 }
 
 func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.Empty, error) {
-	// todo: add your logic here and delete this line
+	// 创建评论记录
+	comment := model.Comment{
+		VideoId: int64(in.VideoId),
+		UserId:  int64(in.UserId),
+		Content: in.Content,
+	}
+
+	if err := l.svcCtx.DBList.Mysql.Create(&comment).Error; err != nil {
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
 
 	return &video.Empty{}, nil
 }
