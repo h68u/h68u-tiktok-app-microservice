@@ -36,7 +36,7 @@ service Video {
   rpc GetFavoriteVideoList(GetFavoriteVideoListRequest) returns (GetFavoriteVideoListResponse);
   rpc IsFavoriteVideo(IsFavoriteVideoRequest) returns (IsFavoriteVideoResponse);
 
-  rpc CommentVideo(CommentVideoRequest) returns (Empty);
+  rpc CommentVideo(CommentVideoRequest) returns (CommentVideoResponse);
   rpc GetCommentList(GetCommentListRequest) returns (GetCommentListResponse);
   rpc DeleteVideoComment(DeleteVideoCommentRequest) returns(Empty);
 }
@@ -92,6 +92,13 @@ message CommentVideoRequest {
   int32 UserId = 1;
   int32 VideoId = 2;
   string Content = 3;
+}
+
+message CommentVideoResponse {
+  int64 Id = 1;
+  int64 UserId = 2;
+  string Content = 3;
+  int32 CreatedTime = 4;
 }
 
 message GetCommentListRequest {

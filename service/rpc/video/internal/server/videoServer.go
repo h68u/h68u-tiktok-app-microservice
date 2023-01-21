@@ -57,7 +57,7 @@ func (s *VideoServer) IsFavoriteVideo(ctx context.Context, in *video.IsFavoriteV
 	return l.IsFavoriteVideo(in)
 }
 
-func (s *VideoServer) CommentVideo(ctx context.Context, in *video.CommentVideoRequest) (*video.Empty, error) {
+func (s *VideoServer) CommentVideo(ctx context.Context, in *video.CommentVideoRequest) (*video.CommentVideoResponse, error) {
 	l := logic.NewCommentVideoLogic(ctx, s.svcCtx)
 	return l.CommentVideo(in)
 }

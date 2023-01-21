@@ -29,7 +29,7 @@ type VideoClient interface {
 	UnFavoriteVideo(ctx context.Context, in *UnFavoriteVideoRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetFavoriteVideoList(ctx context.Context, in *GetFavoriteVideoListRequest, opts ...grpc.CallOption) (*GetFavoriteVideoListResponse, error)
 	IsFavoriteVideo(ctx context.Context, in *IsFavoriteVideoRequest, opts ...grpc.CallOption) (*IsFavoriteVideoResponse, error)
-	CommentVideo(ctx context.Context, in *CommentVideoRequest, opts ...grpc.CallOption) (*Empty, error)
+	CommentVideo(ctx context.Context, in *CommentVideoRequest, opts ...grpc.CallOption) (*CommentVideoResponse, error)
 	GetCommentList(ctx context.Context, in *GetCommentListRequest, opts ...grpc.CallOption) (*GetCommentListResponse, error)
 	DeleteVideoComment(ctx context.Context, in *DeleteVideoCommentRequest, opts ...grpc.CallOption) (*Empty, error)
 }
@@ -105,8 +105,8 @@ func (c *videoClient) IsFavoriteVideo(ctx context.Context, in *IsFavoriteVideoRe
 	return out, nil
 }
 
-func (c *videoClient) CommentVideo(ctx context.Context, in *CommentVideoRequest, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
+func (c *videoClient) CommentVideo(ctx context.Context, in *CommentVideoRequest, opts ...grpc.CallOption) (*CommentVideoResponse, error) {
+	out := new(CommentVideoResponse)
 	err := c.cc.Invoke(ctx, "/video.Video/CommentVideo", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -143,7 +143,7 @@ type VideoServer interface {
 	UnFavoriteVideo(context.Context, *UnFavoriteVideoRequest) (*Empty, error)
 	GetFavoriteVideoList(context.Context, *GetFavoriteVideoListRequest) (*GetFavoriteVideoListResponse, error)
 	IsFavoriteVideo(context.Context, *IsFavoriteVideoRequest) (*IsFavoriteVideoResponse, error)
-	CommentVideo(context.Context, *CommentVideoRequest) (*Empty, error)
+	CommentVideo(context.Context, *CommentVideoRequest) (*CommentVideoResponse, error)
 	GetCommentList(context.Context, *GetCommentListRequest) (*GetCommentListResponse, error)
 	DeleteVideoComment(context.Context, *DeleteVideoCommentRequest) (*Empty, error)
 	mustEmbedUnimplementedVideoServer()
@@ -174,7 +174,7 @@ func (UnimplementedVideoServer) GetFavoriteVideoList(context.Context, *GetFavori
 func (UnimplementedVideoServer) IsFavoriteVideo(context.Context, *IsFavoriteVideoRequest) (*IsFavoriteVideoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsFavoriteVideo not implemented")
 }
-func (UnimplementedVideoServer) CommentVideo(context.Context, *CommentVideoRequest) (*Empty, error) {
+func (UnimplementedVideoServer) CommentVideo(context.Context, *CommentVideoRequest) (*CommentVideoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CommentVideo not implemented")
 }
 func (UnimplementedVideoServer) GetCommentList(context.Context, *GetCommentListRequest) (*GetCommentListResponse, error) {

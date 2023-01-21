@@ -5,6 +5,7 @@ import (
 	"google.golang.org/grpc/status"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
+
 	"h68u-tiktok-app-microservice/service/rpc/video/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
 
@@ -25,7 +26,7 @@ func NewCommentVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Comm
 	}
 }
 
-func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.Empty, error) {
+func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.CommentVideoResponse, error) {
 	// 创建评论记录
 	comment := model.Comment{
 		VideoId: int64(in.VideoId),
@@ -37,5 +38,10 @@ func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
 	}
 
-	return &video.Empty{}, nil
+	return &video.CommentVideoResponse{
+		Id:          comment.VideoId,
+		UserId:      comment.UserId,
+		Content:     comment.Content,
+		CreatedTime: int32(comment.CreatedAt.Unix()),
+	}, nil
 }
