@@ -66,3 +66,8 @@ func (s *VideoServer) GetCommentList(ctx context.Context, in *video.GetCommentLi
 	l := logic.NewGetCommentListLogic(ctx, s.svcCtx)
 	return l.GetCommentList(in)
 }
+
+func (s *VideoServer) DeleteVideoComment(ctx context.Context, in *video.DeleteVideoCommentRequest) (*video.Empty, error) {
+	l := logic.NewDeleteVideoCommentLogic(ctx, s.svcCtx)
+	return l.DeleteVideoComment(in)
+}

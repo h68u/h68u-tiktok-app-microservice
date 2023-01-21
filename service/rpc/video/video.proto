@@ -38,6 +38,7 @@ service Video {
 
   rpc CommentVideo(CommentVideoRequest) returns (Empty);
   rpc GetCommentList(GetCommentListRequest) returns (GetCommentListResponse);
+  rpc DeleteVideoComment(DeleteVideoCommentRequest) returns(Empty);
 }
 
 message GetVideoListRequest {
@@ -99,4 +100,9 @@ message GetCommentListRequest {
 
 message GetCommentListResponse {
   repeated Comment CommentList = 1;
+}
+
+message DeleteVideoCommentRequest {
+  int64 UserId = 1;
+  int64 CommentId = 2;
 }
