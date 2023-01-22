@@ -15,12 +15,18 @@ const (
 	UserNotExistCode
 )
 
+const (
+	CommentNotExistCode codes.Code = iota + 3000
+)
+
 var errCodeMap = map[codes.Code]string{
 	DataBaseErrorCode:         "数据库错误",
 	PasswordEncryptFailedCode: "密码加密失败",
 
 	UserAlreadyExistCode: "用户已存在",
 	UserNotExistCode:     "用户不存在",
+
+	CommentNotExistCode: "评论不存在",
 }
 
 var (
@@ -28,6 +34,7 @@ var (
 	DataBaseError         = NewRpcError(DataBaseErrorCode)
 	PassWordEncryptFailed = NewRpcError(PasswordEncryptFailedCode)
 	UserNotExist          = NewRpcError(UserNotExistCode)
+	CommentNotExist       = NewRpcError(CommentNotExistCode)
 )
 
 type RpcError struct {

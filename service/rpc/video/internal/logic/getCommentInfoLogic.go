@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
 
@@ -12,33 +13,32 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type CommentVideoLogic struct {
+type GetCommentInfoLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 	logx.Logger
 }
 
-func NewCommentVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CommentVideoLogic {
-	return &CommentVideoLogic{
+func NewGetCommentInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetCommentInfoLogic {
+	return &GetCommentInfoLogic{
 		ctx:    ctx,
 		svcCtx: svcCtx,
 		Logger: logx.WithContext(ctx),
 	}
 }
 
-func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.CommentVideoResponse, error) {
-	// 创建评论记录
-	comment := model.Comment{
-		VideoId: int64(in.VideoId),
-		UserId:  int64(in.UserId),
-		Content: in.Content,
+func (l *GetCommentInfoLogic) GetCommentInfo(in *video.GetCommentInfoRequest) (*video.GetCommentInfoResponse, error) {
+	var comment model.Comment
+	err := l.svcCtx.DBList.Mysql.Where("id = ?", in.CommentId).First(&comment).Error
+	if err == gorm.ErrRecordNotFound {
+		return nil, status.Error(rpcErr.CommentNotExist.Code, err.Error())
 	}
 
-	if err := l.svcCtx.DBList.Mysql.Create(&comment).Error; err != nil {
+	if err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
 	}
 
-	return &video.CommentVideoResponse{
+	return &video.GetCommentInfoResponse{
 		Id:          int64(comment.ID),
 		UserId:      comment.UserId,
 		Content:     comment.Content,
