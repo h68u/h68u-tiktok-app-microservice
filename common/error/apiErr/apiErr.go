@@ -17,6 +17,7 @@ const (
 	AlreadyFollowedCode
 	NotFollowedCode
 	UserNotLoginCode
+	InsufficientPermissionsCode
 )
 
 const (
@@ -43,15 +44,18 @@ var errCodeMap = map[int]string{
 
 	FavouriteActionUnknownCode: "未知的喜欢操作",
 	CommentActionUnknownCode:   "未知的评论操作",
+
+	InsufficientPermissionsCode: "权限不足",
 }
 
 var (
-	Success          = NewApiError(SuccessCode)
-	PermissionDenied = NewApiError(PermissionDeniedCode)
-	InvalidParams    = NewApiError(InvalidParamsCode)
-	RPCFailed        = NewApiError(RPCFailedCode)
-	UserNotFound     = NewApiError(UserNotFoundCode)
-	UserNotLogin     = NewApiError(UserNotLoginCode)
+	Success                 = NewApiError(SuccessCode)
+	PermissionDenied        = NewApiError(PermissionDeniedCode)
+	InvalidParams           = NewApiError(InvalidParamsCode)
+	RPCFailed               = NewApiError(RPCFailedCode)
+	UserNotFound            = NewApiError(UserNotFoundCode)
+	UserNotLogin            = NewApiError(UserNotLoginCode)
+	InsufficientPermissions = NewApiError(InsufficientPermissionsCode)
 
 	UserAlreadyExist    = NewApiError(UserAlreadyExistCode)
 	PasswordIncorrect   = NewApiError(PasswordIncorrectCode)

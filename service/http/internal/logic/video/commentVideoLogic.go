@@ -90,8 +90,23 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		}, nil
 
 	case DeleteCommentAction:
+		// 权限校验，判断用户是否有权限删除此评论，目前仅支持评论作者删除此评论
+		// 获取评论信息
+		commentInfo, err := l.svcCtx.VideoRpc.GetCommentInfo(l.ctx, &videoclient.GetCommentInfoRequest{
+			CommentId: int64(req.CommentId),
+		})
+
+		if err != nil {
+			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		}
+
+		// 权限校验
+		if commentInfo.UserId != UserId {
+			return nil, apiErr.InsufficientPermissions.WithDetails("此用户无权删除此评论")
+		}
+
+		// 删除评论
 		if _, err = l.svcCtx.VideoRpc.DeleteVideoComment(l.ctx, &videoclient.DeleteVideoCommentRequest{
-			UserId:    UserId,
 			CommentId: int64(req.CommentId),
 		}); err != nil {
 			return nil, apiErr.RPCFailed.WithDetails(err.Error())

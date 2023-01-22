@@ -16,7 +16,7 @@ const (
 )
 
 const (
-	InsufficientPermissionsCode = iota + 3000
+	CommentNotExistCode codes.Code = iota + 3000
 )
 
 var errCodeMap = map[codes.Code]string{
@@ -26,15 +26,15 @@ var errCodeMap = map[codes.Code]string{
 	UserAlreadyExistCode: "用户已存在",
 	UserNotExistCode:     "用户不存在",
 
-	InsufficientPermissionsCode: "权限不足", // 水平权限管理和垂直权限管理
+	CommentNotExistCode: "评论不存在",
 }
 
 var (
-	UserAlreadyExist        = NewRpcError(UserAlreadyExistCode)
-	DataBaseError           = NewRpcError(DataBaseErrorCode)
-	PassWordEncryptFailed   = NewRpcError(PasswordEncryptFailedCode)
-	UserNotExist            = NewRpcError(UserNotExistCode)
-	InsufficientPermissions = NewRpcError(InsufficientPermissionsCode)
+	UserAlreadyExist      = NewRpcError(UserAlreadyExistCode)
+	DataBaseError         = NewRpcError(DataBaseErrorCode)
+	PassWordEncryptFailed = NewRpcError(PasswordEncryptFailedCode)
+	UserNotExist          = NewRpcError(UserNotExistCode)
+	CommentNotExist       = NewRpcError(CommentNotExistCode)
 )
 
 type RpcError struct {

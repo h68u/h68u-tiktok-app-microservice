@@ -71,3 +71,8 @@ func (s *VideoServer) DeleteVideoComment(ctx context.Context, in *video.DeleteVi
 	l := logic.NewDeleteVideoCommentLogic(ctx, s.svcCtx)
 	return l.DeleteVideoComment(in)
 }
+
+func (s *VideoServer) GetCommentInfo(ctx context.Context, in *video.GetCommentInfoRequest) (*video.GetCommentInfoResponse, error) {
+	l := logic.NewGetCommentInfoLogic(ctx, s.svcCtx)
+	return l.GetCommentInfo(in)
+}

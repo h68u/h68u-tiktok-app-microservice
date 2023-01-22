@@ -19,6 +19,8 @@ type (
 	DeleteVideoCommentRequest    = video.DeleteVideoCommentRequest
 	Empty                        = video.Empty
 	FavoriteVideoRequest         = video.FavoriteVideoRequest
+	GetCommentInfoRequest        = video.GetCommentInfoRequest
+	GetCommentInfoResponse       = video.GetCommentInfoResponse
 	GetCommentListRequest        = video.GetCommentListRequest
 	GetCommentListResponse       = video.GetCommentListResponse
 	GetFavoriteVideoListRequest  = video.GetFavoriteVideoListRequest
@@ -44,6 +46,7 @@ type (
 		CommentVideo(ctx context.Context, in *CommentVideoRequest, opts ...grpc.CallOption) (*CommentVideoResponse, error)
 		GetCommentList(ctx context.Context, in *GetCommentListRequest, opts ...grpc.CallOption) (*GetCommentListResponse, error)
 		DeleteVideoComment(ctx context.Context, in *DeleteVideoCommentRequest, opts ...grpc.CallOption) (*Empty, error)
+		GetCommentInfo(ctx context.Context, in *GetCommentInfoRequest, opts ...grpc.CallOption) (*GetCommentInfoResponse, error)
 	}
 
 	defaultVideo struct {
@@ -105,4 +108,9 @@ func (m *defaultVideo) GetCommentList(ctx context.Context, in *GetCommentListReq
 func (m *defaultVideo) DeleteVideoComment(ctx context.Context, in *DeleteVideoCommentRequest, opts ...grpc.CallOption) (*Empty, error) {
 	client := video.NewVideoClient(m.cli.Conn())
 	return client.DeleteVideoComment(ctx, in, opts...)
+}
+
+func (m *defaultVideo) GetCommentInfo(ctx context.Context, in *GetCommentInfoRequest, opts ...grpc.CallOption) (*GetCommentInfoResponse, error) {
+	client := video.NewVideoClient(m.cli.Conn())
+	return client.GetCommentInfo(ctx, in, opts...)
 }
