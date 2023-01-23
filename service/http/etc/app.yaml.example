@@ -22,3 +22,9 @@ UserRpc:
 Auth:
   AccessSecret: ThisIsMySecret
   AccessExpire: 1296000         # 15 天
+
+OSS:
+  Endpoint: oss-cn-hongkong.aliyuncs.com
+  AccessKeyID: xxxxxxx
+  AccessKeySecret: xxxxxx
+  BucketName: h68u-tiktok
