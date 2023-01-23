@@ -3,6 +3,7 @@ package config
 import (
 	"github.com/zeromicro/go-zero/rest"
 	"github.com/zeromicro/go-zero/zrpc"
+	"h68u-tiktok-app-microservice/common/oss"
 )
 
 type Config struct {
@@ -18,4 +19,6 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
+
+	OSS oss.AliyunCfg
 }

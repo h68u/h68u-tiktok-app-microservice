@@ -2,6 +2,8 @@
 Name: h68u-tiktok
 Host: 0.0.0.0
 Port: 8080
+MaxBytes: 104857600 # 100MB
+Timeout: 100000 # 100s
 
 # RPC 配置
 VideoRpc:

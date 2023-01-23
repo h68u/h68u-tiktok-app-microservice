@@ -1,7 +1,8 @@
 package middleware
 
 import (
-	"encoding/json"
+	"fmt"
+	"github.com/zeromicro/go-zero/rest/httpx"
 	"h68u-tiktok-app-microservice/common/error/apiErr"
 	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/http/internal/config"
@@ -23,25 +24,31 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 
 		token := r.URL.Query().Get("token")
 
+		if token == "" {
+			token = r.PostFormValue("token")
+		}
+
 		timeOut, err := utils.ValidToken(token, m.Config.Auth.AccessSecret)
 		if err != nil || timeOut {
 			//  返回json
-			w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			w.WriteHeader(http.StatusOK)
+			//w.Header().Set("Content-Type", "application/json; charset=utf-8")
+			//w.WriteHeader(http.StatusOK)
+			//
+			//reply, _ := json.Marshal(struct {
+			//	Code int    `json:"status_code"`
+			//	Msg  string `json:"status_msg"`
+			//}{
+			//	Code: apiErr.PermissionDenied.Code,
+			//	Msg:  apiErr.PermissionDenied.Msg,
+			//})
+			//
 
-			reply, _ := json.Marshal(struct {
-				Code int    `json:"status_code"`
-				Msg  string `json:"status_msg"`
-			}{
-				Code: apiErr.PermissionDenied.Code,
-				Msg:  apiErr.PermissionDenied.Msg,
-			})
-
-			// TODO: 处理错误
-			w.Write(reply)
+			//w.Write(reply)
+			fmt.Println("unpass!")
+			httpx.OkJson(w, apiErr.PermissionDenied)
 			return
 		}
-
+		fmt.Println("pass!")
 		// Passthrough to next handler if need
 		next(w, r)
 	}

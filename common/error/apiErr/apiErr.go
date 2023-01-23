@@ -25,6 +25,11 @@ const (
 	CommentActionUnknownCode
 )
 
+const (
+	FileUploadFailedCode int = iota + 3000
+	FileIsNotVideoCode
+)
+
 var errCodeMap = map[int]string{
 	SuccessCode:          "成功",
 	PermissionDeniedCode: "权限不足",
@@ -46,6 +51,9 @@ var errCodeMap = map[int]string{
 	CommentActionUnknownCode:   "未知的评论操作",
 
 	InsufficientPermissionsCode: "权限不足",
+
+	FileUploadFailedCode: "文件上传失败",
+	FileIsNotVideoCode:   "文件不是视频",
 }
 
 var (
@@ -67,6 +75,9 @@ var (
 
 	FavouriteActionUnknown = NewApiError(FavouriteActionUnknownCode)
 	CommentActionUnknown   = NewApiError(CommentActionUnknownCode)
+
+	FileUploadFailed = NewApiError(FileUploadFailedCode)
+	FileIsNotVideo   = NewApiError(FileIsNotVideoCode)
 )
 
 type ApiError struct {

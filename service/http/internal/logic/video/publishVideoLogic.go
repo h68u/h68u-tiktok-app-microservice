@@ -2,7 +2,7 @@ package video
 
 import (
 	"context"
-
+	"h68u-tiktok-app-microservice/common/error/apiErr"
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
 
@@ -24,7 +24,13 @@ func NewPublishVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Publ
 }
 
 func (l *PublishVideoLogic) PublishVideo(req *types.PublishVideoRequest) (resp *types.PublishVideoReply, err error) {
-	// todo: add your logic here and delete this line
 
-	return
+	_ = req
+
+	// 因为要处理文件，业务逻辑在handler中
+
+	return &types.PublishVideoReply{
+		Code: apiErr.Success.Code,
+		Msg:  apiErr.Success.Msg,
+	}, nil
 }
