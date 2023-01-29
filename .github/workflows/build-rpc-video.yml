@@ -62,11 +62,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
-#      - name: Pull and run
-#        uses: appleboy/ssh-action@master
-#        with:
-#          host: ${{ secrets.SSH_HOST }}
-#          username: ${{ secrets.SSH_USER }}
-#          password: ${{ secrets.SSH_SECRET }}
-#          port: ${{ secrets.SSH_PORT }}
-#          script: sudo docker login --username=${{ secrets.ALIYUN_REGISTRY_USERNAME }} -p ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} registry.cn-shanghai.aliyuncs.com && cd /root/projects/hdu-packaging-design-be && docker-compose pull ${{ env.CONTAINER }} && docker-compose up ${{ env.CONTAINER }} -d
+      - name: Webhook
+        run: |
+          curl '${{ secrets.WEBHOOK_URL }}&target=${{ env.CONTAINER }}'
