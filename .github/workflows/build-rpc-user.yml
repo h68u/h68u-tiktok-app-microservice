@@ -1,0 +1,72 @@
+name: build-rpc-user
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/build-rpc-user.yml'
+      - 'service/rpc/user/**'
+      - 'common/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/build-rpc-user.yml'
+      - 'service/rpc/user/**'
+      - 'common/**'
+
+env:
+  CONTAINER: rpc-user
+
+jobs:
+  build-base:
+    name: Build Base
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v4
+        with:
+          # list of Docker images to use as base name for tags
+          images: registry.cn-hongkong.aliyuncs.com/h68u-tiktok-microservice/${{ env.CONTAINER }}
+          # generate Docker tags based on the following events/attributes
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=sha
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Aliyun Registry
+        uses: docker/login-action@v1
+        with:
+          registry: registry.cn-hongkong.aliyuncs.com
+          username: ${{ secrets.ALIYUN_REGISTRY_USERNAME }}
+          password: ${{ secrets.ALIYUN_REGISTRY_PASSWORD }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: service/rpc/user/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
+#      - name: Pull and run
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.SSH_HOST }}
+#          username: ${{ secrets.SSH_USER }}
+#          password: ${{ secrets.SSH_SECRET }}
+#          port: ${{ secrets.SSH_PORT }}
+#          script: sudo docker login --username=${{ secrets.ALIYUN_REGISTRY_USERNAME }} -p ${{ secrets.ALIYUN_REGISTRY_PASSWORD }} registry.cn-shanghai.aliyuncs.com && cd /root/projects/hdu-packaging-design-be && docker-compose pull ${{ env.CONTAINER }} && docker-compose up ${{ env.CONTAINER }} -d
