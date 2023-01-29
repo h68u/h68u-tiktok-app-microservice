@@ -1,3 +1,4 @@
+cd ../
 :: api
 goctl api go -api ./service/http/app.api -dir ./service/http -style goZero
 
