@@ -6,6 +6,8 @@ import (
 	"mime/multipart"
 )
 
+//TODO:重构成接口类型，每种存储介质只需实现对应的方法
+
 type AliyunCfg struct {
 	Endpoint        string
 	AccessKeyID     string
