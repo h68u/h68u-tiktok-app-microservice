@@ -33,46 +33,84 @@ func (l *PublishedListLogic) PublishedList(req *types.PublishedListRequest) (res
 	}
 	//获取发布列表数据
 	publishedList, err := l.svcCtx.VideoRpc.GetVideoListByAuthor(l.ctx, &videoclient.GetVideoListByAuthorRequest{
-		AuthorId: int32(UserId),
+		AuthorId: int32(req.UserId),
 	})
 	if err != nil {
 		return nil, apiErr.RPCFailed.WithDetails(err.Error())
 	}
 	//获取用户信息
 	authorInfo, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userclient.GetUserByIdRequest{
-		Id: int32(UserId),
+		Id: int32(req.UserId),
 	})
 	if err != nil {
 		return nil, apiErr.RPCFailed.WithDetails(err.Error())
 	}
-	author := types.User{
-		Id:            int(authorInfo.Id),
-		Name:          authorInfo.Name,
-		FollowCount:   int(authorInfo.FollowCount),
-		FollowerCount: int(authorInfo.FanCount),
-		// 这里查询的是用户的发布列表,无需获取用户是否关注
-		IsFollow: true,
-	}
 	//封装数据
 	videoList := make([]types.Video, 0, len(publishedList.VideoList))
-	for _, video := range publishedList.VideoList {
+	if UserId == int64(req.UserId) {
+		for _, video := range publishedList.VideoList {
 
-		videoList = append(videoList, types.Video{
-			Id:            int(video.Id),
-			Title:         video.Title,
-			Author:        author,
-			PlayUrl:       video.PlayUrl,
-			CoverUrl:      video.CoverUrl,
-			FavoriteCount: int(video.FavoriteCount),
-			CommentCount:  int(video.CommentCount),
-			// 这里查询的是用户的发布列表,无需获取用户是否点赞
-			IsFavorite: true,
+			videoList = append(videoList, types.Video{
+				Id:    int(video.Id),
+				Title: video.Title,
+				Author: types.User{
+					Id:            int(authorInfo.Id),
+					Name:          authorInfo.Name,
+					FollowCount:   int(authorInfo.FollowCount),
+					FollowerCount: int(authorInfo.FanCount),
+					// 这里查询的是用户自己的发布列表,无需获取用户是否关注
+					IsFollow: true,
+				},
+				PlayUrl:       video.PlayUrl,
+				CoverUrl:      video.CoverUrl,
+				FavoriteCount: int(video.FavoriteCount),
+				CommentCount:  int(video.CommentCount),
+				// 这里查询的是用户自己的发布列表,无需获取用户是否点赞
+				IsFavorite: true,
+			})
+		}
+	} else {
+		//是否关注作者
+		isFollowRes, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
+			UserId:       int32(UserId),
+			FollowUserId: int32(req.UserId),
 		})
+		if err != nil {
+			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		}
+
+		author := types.User{
+			Id:            int(authorInfo.Id),
+			Name:          authorInfo.Name,
+			FollowCount:   int(authorInfo.FollowCount),
+			FollowerCount: int(authorInfo.FanCount),
+			IsFollow:      isFollowRes.IsFollow,
+		}
+		for _, video := range publishedList.VideoList {
+			//是否点赞
+			isFavoriteRes, err := l.svcCtx.VideoRpc.IsFavoriteVideo(l.ctx, &videoclient.IsFavoriteVideoRequest{
+				UserId:  int32(UserId),
+				VideoId: video.Id,
+			})
+			if err != nil {
+				return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			}
+			videoList = append(videoList, types.Video{
+				Id:            int(video.Id),
+				Title:         video.Title,
+				Author:        author,
+				PlayUrl:       video.PlayUrl,
+				CoverUrl:      video.CoverUrl,
+				FavoriteCount: int(video.FavoriteCount),
+				CommentCount:  int(video.CommentCount),
+				IsFavorite:    isFavoriteRes.IsFavorite,
+			})
+		}
+
 	}
 
 	return &types.PublishedListReply{
-		Code:      apiErr.SuccessCode,
-		Msg:       apiErr.Success.Msg,
-		VideoList: videoList,
+		BasicReply: types.BasicReply(apiErr.Success),
+		VideoList:  videoList,
 	}, nil
 }
