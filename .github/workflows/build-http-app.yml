@@ -7,12 +7,13 @@ on:
       - '.github/workflows/build-http-app.yml'
       - 'service/http/**'
       - 'common/**'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '.github/workflows/build-http-app.yml'
-      - 'service/http/**'
-      - 'common/**'
+#  pull_request:
+#    branches: [ main ]
+#    paths:
+#      - '.github/workflows/build-http-app.yml'
+#      - 'service/http/**'
+#      - 'common/**'
+#    types: [closed]
 
 env:
   CONTAINER: http-app
