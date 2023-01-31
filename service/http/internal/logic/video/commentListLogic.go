@@ -109,8 +109,7 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 	}
 
 	return &types.CommentListReply{
-		Code:        apiErr.SuccessCode,
-		Msg:         apiErr.Success.Msg,
+		BasicReply:  types.BasicReply(apiErr.Success),
 		CommentList: commentList,
 	}, nil
 

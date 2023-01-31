@@ -57,9 +57,8 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginReply, err
 	}
 
 	return &types.LoginReply{
-		Code:   apiErr.SuccessCode,
-		Msg:    apiErr.Success.Msg,
-		UserId: int(GetUserByNameReply.Id),
-		Token:  jwtToken,
+		BasicReply: types.BasicReply(apiErr.Success),
+		UserId:     int(GetUserByNameReply.Id),
+		Token:      jwtToken,
 	}, nil
 }

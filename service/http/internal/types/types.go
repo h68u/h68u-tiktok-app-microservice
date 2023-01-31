@@ -7,8 +7,7 @@ type RegisterRequest struct {
 }
 
 type RegisterReply struct {
-	Code   int    `json:"status_code"`
-	Msg    string `json:"status_msg"`
+	BasicReply
 	UserId int    `json:"user_id"`
 	Token  string `json:"token"`
 }
@@ -19,8 +18,7 @@ type LoginRequest struct {
 }
 
 type LoginReply struct {
-	Code   int    `json:"status_code"`
-	Msg    string `json:"status_msg"`
+	BasicReply
 	UserId int    `json:"user_id"`
 	Token  string `json:"token"`
 }
@@ -31,9 +29,8 @@ type GetUserInfoRequest struct {
 }
 
 type GetUserInfoReply struct {
-	Code int    `json:"status_code"`
-	Msg  string `json:"status_msg"`
-	User User   `json:"user"`
+	BasicReply
+	User User `json:"user"`
 }
 
 type FollowRequest struct {
@@ -44,8 +41,7 @@ type FollowRequest struct {
 }
 
 type FollowReply struct {
-	Code int    `json:"status_code"`
-	Msg  string `json:"status_msg"`
+	BasicReply
 }
 
 type FollowListRequest struct {
@@ -54,8 +50,7 @@ type FollowListRequest struct {
 }
 
 type FollowListReply struct {
-	Code  int    `json:"status_code"`
-	Msg   string `json:"status_msg"`
+	BasicReply
 	Users []User `json:"user_list"`
 }
 
@@ -65,9 +60,13 @@ type FansListRequest struct {
 }
 
 type FansListReply struct {
-	Code  int    `json:"status_code"`
-	Msg   string `json:"status_msg"`
+	BasicReply
 	Users []User `json:"user_list"`
+}
+
+type BasicReply struct {
+	Code int    `json:"status_code"`
+	Msg  string `json:"status_msg"`
 }
 
 type User struct {
@@ -108,8 +107,7 @@ type GetVideoListRequest struct {
 }
 
 type GetVideoListReply struct {
-	Code      int     `json:"status_code"`
-	Msg       string  `json:"status_msg"`
+	BasicReply
 	NextTime  int64   `json:"next_time"`
 	VideoList []Video `json:"video_list"`
 }
@@ -120,8 +118,7 @@ type PublishVideoRequest struct {
 }
 
 type PublishVideoReply struct {
-	Code int    `json:"status_code"`
-	Msg  string `json:"status_msg"`
+	BasicReply
 }
 
 type PublishedListRequest struct {
@@ -130,8 +127,7 @@ type PublishedListRequest struct {
 }
 
 type PublishedListReply struct {
-	Code      int     `json:"status_code"`
-	Msg       string  `json:"status_msg"`
+	BasicReply
 	VideoList []Video `json:"video_list"`
 }
 
@@ -142,8 +138,7 @@ type FavoriteVideoRequest struct {
 }
 
 type FavoriteVideoReply struct {
-	Code int    `json:"status_code"`
-	Msg  string `json:"status_msg"`
+	BasicReply
 }
 
 type FavoriteListRequest struct {
@@ -152,8 +147,7 @@ type FavoriteListRequest struct {
 }
 
 type FavoriteListReply struct {
-	Code      int     `json:"status_code"`
-	Msg       string  `json:"status_msg"`
+	BasicReply
 	VideoList []Video `json:"video_list"`
 }
 
@@ -166,8 +160,7 @@ type CommentVideoRequest struct {
 }
 
 type CommentVideoReply struct {
-	Code    int     `json:"status_code"`
-	Msg     string  `json:"status_msg"`
+	BasicReply
 	Comment Comment `json:"comment"`
 }
 
@@ -177,8 +170,7 @@ type CommentListRequest struct {
 }
 
 type CommentListReply struct {
-	Code        int       `json:"status_code"`
-	Msg         string    `json:"status_msg"`
+	BasicReply
 	CommentList []Comment `json:"comment_list"`
 }
 
@@ -201,8 +193,7 @@ type SendMessageRequest struct {
 }
 
 type SendMessageReply struct {
-	Code int    `json:"status_code"`
-	Msg  string `json:"status_msg"`
+	BasicReply
 }
 
 type GetHistoryMessageRequest struct {
@@ -211,7 +202,6 @@ type GetHistoryMessageRequest struct {
 }
 
 type GetHistoryMessageReply struct {
-	Code        int       `json:"status_code"`
-	Msg         string    `json:"status_msg"`
+	BasicReply
 	MessageList []Message `json:"message_list"`
 }

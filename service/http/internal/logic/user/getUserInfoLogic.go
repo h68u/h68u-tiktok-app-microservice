@@ -51,8 +51,7 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *typ
 	})
 
 	return &types.GetUserInfoReply{
-		Code: apiErr.SuccessCode,
-		Msg:  apiErr.Success.Msg,
+		BasicReply: types.BasicReply(apiErr.Success),
 		User: types.User{
 			Id:            int(getUserByIdReply.Id),
 			Name:          getUserByIdReply.Name,

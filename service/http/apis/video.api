@@ -18,8 +18,7 @@ type (
 		Token      string `form:"token,optional"`
 	}
 	GetVideoListReply {
-		Code      int     `json:"status_code"`
-		Msg       string  `json:"status_msg"`
+		BasicReply
 		NextTime  int64   `json:"next_time"`
 		VideoList []Video `json:"video_list"`
 	}
@@ -57,8 +56,7 @@ type (
 		Token string `form:"token"`
 	}
 	PublishVideoReply {
-		Code int    `json:"status_code"`
-		Msg  string `json:"status_msg"`
+		BasicReply
 	}
 )
 
@@ -69,8 +67,7 @@ type (
 		UserId int    `form:"user_id"`
 	}
 	PublishedListReply {
-		Code      int     `json:"status_code"`
-		Msg       string  `json:"status_msg"`
+		BasicReply
 		VideoList []Video `json:"video_list"`
 	}
 )
@@ -83,8 +80,7 @@ type (
 		ActionType int    `form:"action_type"`
 	}
 	FavoriteVideoReply {
-		Code int    `json:"status_code"`
-		Msg  string `json:"status_msg"`
+		BasicReply
 	}
 )
 
@@ -95,8 +91,7 @@ type (
 		UserId int    `form:"user_id"`
 	}
 	FavoriteListReply {
-		Code      int     `json:"status_code"`
-		Msg       string  `json:"status_msg"`
+		BasicReply
 		VideoList []Video `json:"video_list"`
 	}
 )
@@ -111,8 +106,7 @@ type (
 		CommentId  int    `form:"comment_id"`
 	}
 	CommentVideoReply {
-		Code    int     `json:"status_code"`
-		Msg     string  `json:"status_msg"`
+		BasicReply
 		Comment Comment `json:"comment"`
 	}
 )
@@ -124,8 +118,7 @@ type (
 		VideoId int    `form:"video_id"`
 	}
 	CommentListReply {
-		Code        int       `json:"status_code"`
-		Msg         string    `json:"status_msg"`
+		BasicReply
 		CommentList []Comment `json:"comment_list"`
 	}
 )
