@@ -1,5 +1,10 @@
 syntax = "v1"
 
+type BasicReply  {
+    Code int    `json:"status_code"`
+    Msg  string `json:"status_msg"`
+}
+
 // 用户信息
 type User {
     Id            int    `json:"id"`

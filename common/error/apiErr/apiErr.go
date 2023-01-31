@@ -85,20 +85,32 @@ type ApiError struct {
 	Msg  string `json:"status_msg"`
 }
 
-func NewApiError(code int) *ApiError {
-	return &ApiError{
+func NewApiError(code int) ApiError {
+	return ApiError{
 		Code: code,
 		Msg:  errCodeMap[code],
 	}
 }
 
-func (e *ApiError) Error() string {
+func (e ApiError) Error() string {
 	return e.Msg
 }
 
-func (e *ApiError) WithDetails(detail string) *ApiError {
-	return &ApiError{
+func (e ApiError) WithDetails(detail string) ApiError {
+	return ApiError{
 		Code: e.Code,
 		Msg:  e.Msg + ", Details: " + detail,
+	}
+}
+
+type CodeErrorResponse struct {
+	Code int    `json:"status_code"`
+	Msg  string `json:"status_msg"`
+}
+
+func (e ApiError) Data() *CodeErrorResponse {
+	return &CodeErrorResponse{
+		Code: e.Code,
+		Msg:  e.Msg,
 	}
 }

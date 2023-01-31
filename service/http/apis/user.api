@@ -21,8 +21,7 @@ type (
 		Password string `form:"password"`
 	}
 	RegisterReply {
-		Code   int    `json:"status_code"`
-		Msg    string `json:"status_msg"`
+		BasicReply
 		UserId int    `json:"user_id"`
 		Token  string `json:"token"`
 	}
@@ -35,8 +34,7 @@ type (
 		Password string `form:"password"`
 	}
 	LoginReply {
-		Code   int    `json:"status_code"`
-		Msg    string `json:"status_msg"`
+		BasicReply
 		UserId int    `json:"user_id"`
 		Token  string `json:"token"`
 	}
@@ -68,8 +66,7 @@ type (
 		Token  string `form:"token"`
 	}
 	GetUserInfoReply {
-		Code int    `json:"status_code"`
-		Msg  string `json:"status_msg"`
+		BasicReply
 		User User   `json:"user"`
 	}
 )
@@ -83,8 +80,7 @@ type (
 		ActionType int    `form:"action_type"`
 	}
 	FollowReply {
-		Code int    `json:"status_code"`
-		Msg  string `json:"status_msg"`
+		BasicReply
 	}
 )
 
@@ -95,8 +91,7 @@ type (
 		Token  string `form:"token"`
 	}
 	FollowListReply {
-		Code  int    `json:"status_code"`
-		Msg   string `json:"status_msg"`
+		BasicReply
 		Users []User `json:"user_list"`
 	}
 )
@@ -108,8 +103,7 @@ type (
 		Token  string `form:"token"`
 	}
 	FansListReply {
-		Code  int    `json:"status_code"`
-		Msg   string `json:"status_msg"`
+		BasicReply
 		Users []User `json:"user_list"`
 	}
 )

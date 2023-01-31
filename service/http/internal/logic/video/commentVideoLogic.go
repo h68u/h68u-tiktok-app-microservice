@@ -73,8 +73,7 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 
 		// 封装返回数据
 		return &types.CommentVideoReply{
-			Code: apiErr.SuccessCode,
-			Msg:  apiErr.Success.Msg,
+			BasicReply: types.BasicReply(apiErr.Success),
 			Comment: types.Comment{
 				Id:         int(res.Id),
 				Content:    res.Content,
@@ -113,8 +112,7 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		}
 
 		return &types.CommentVideoReply{
-			Code: apiErr.SuccessCode,
-			Msg:  apiErr.Success.Msg,
+			BasicReply: types.BasicReply(apiErr.Success),
 		}, nil
 
 	default:

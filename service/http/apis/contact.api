@@ -39,8 +39,7 @@ type (
 		ActionType int    `json:"action_type"`
 	}
 	SendMessageReply {
-		Code int    `json:"status_code"`
-		Msg  string `json:"status_msg"`
+		BasicReply
 	}
 )
 
@@ -51,8 +50,7 @@ type (
 		ToUserId int    `json:"to_user_id"`
 	}
 	GetHistoryMessageReply {
-		Code        int       `json:"status_code"`
-		Msg         string    `json:"status_msg"`
+		BasicReply
 		MessageList []Message `json:"message_list"`
 	}
 )

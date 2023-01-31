@@ -30,7 +30,6 @@ func (l *PublishVideoLogic) PublishVideo(req *types.PublishVideoRequest) (resp *
 	// 因为要处理文件，业务逻辑在handler中
 
 	return &types.PublishVideoReply{
-		Code: apiErr.Success.Code,
-		Msg:  apiErr.Success.Msg,
+		BasicReply: types.BasicReply(apiErr.Success),
 	}, nil
 }

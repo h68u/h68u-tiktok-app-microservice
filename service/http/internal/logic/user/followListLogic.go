@@ -53,8 +53,7 @@ func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.
 		})
 	}
 	return &types.FollowListReply{
-		Code:  apiErr.SuccessCode,
-		Msg:   apiErr.Success.Msg,
-		Users: followList,
+		BasicReply: types.BasicReply(apiErr.Success),
+		Users:      followList,
 	}, nil
 }

@@ -53,8 +53,7 @@ func (l *FansListLogic) FansList(req *types.FansListRequest) (resp *types.FansLi
 	}
 
 	return &types.FansListReply{
-		Code:  apiErr.SuccessCode,
-		Msg:   apiErr.Success.Msg,
-		Users: fansList,
+		BasicReply: types.BasicReply(apiErr.Success),
+		Users:      fansList,
 	}, nil
 }

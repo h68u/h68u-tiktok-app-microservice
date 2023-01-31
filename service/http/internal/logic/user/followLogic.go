@@ -77,7 +77,6 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 
 	}
 	return &types.FollowReply{
-		Code: apiErr.SuccessCode,
-		Msg:  apiErr.Success.Msg,
+		BasicReply: types.BasicReply(apiErr.Success),
 	}, nil
 }

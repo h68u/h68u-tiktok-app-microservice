@@ -122,8 +122,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	}
 
 	return &types.FavoriteListReply{
-		Code:      apiErr.SuccessCode,
-		Msg:       apiErr.Success.Msg,
-		VideoList: videoList,
+		BasicReply: types.BasicReply(apiErr.Success),
+		VideoList:  videoList,
 	}, nil
 }

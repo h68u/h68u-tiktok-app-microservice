@@ -60,7 +60,6 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 	}
 
 	return &types.FavoriteVideoReply{
-		Code: apiErr.SuccessCode,
-		Msg:  apiErr.Success.Msg,
+		BasicReply: types.BasicReply(apiErr.Success),
 	}, nil
 }

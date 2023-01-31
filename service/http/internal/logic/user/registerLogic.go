@@ -59,9 +59,8 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 	}
 
 	return &types.RegisterReply{
-		Code:   apiErr.SuccessCode,
-		Msg:    apiErr.Success.Msg,
-		UserId: int(CreateUserReply.Id),
-		Token:  jwtToken,
+		BasicReply: types.BasicReply(apiErr.Success),
+		UserId:     int(CreateUserReply.Id),
+		Token:      jwtToken,
 	}, nil
 }
