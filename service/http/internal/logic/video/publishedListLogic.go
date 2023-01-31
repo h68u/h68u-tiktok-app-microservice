@@ -59,7 +59,7 @@ func (l *PublishedListLogic) PublishedList(req *types.PublishedListRequest) (res
 					FollowCount:   int(authorInfo.FollowCount),
 					FollowerCount: int(authorInfo.FanCount),
 					// 这里查询的是用户自己的发布列表,无需获取用户是否关注
-					IsFollow: true,
+					IsFollow: false,
 				},
 				PlayUrl:       video.PlayUrl,
 				CoverUrl:      video.CoverUrl,
