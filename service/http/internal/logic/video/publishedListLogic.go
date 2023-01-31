@@ -2,11 +2,13 @@ package video
 
 import (
 	"context"
-
+	"github.com/zeromicro/go-zero/core/logx"
+	"h68u-tiktok-app-microservice/common/error/apiErr"
+	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
+	"h68u-tiktok-app-microservice/service/rpc/user/userclient"
+	"h68u-tiktok-app-microservice/service/rpc/video/videoclient"
 )
 
 type PublishedListLogic struct {
@@ -24,7 +26,53 @@ func NewPublishedListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Pub
 }
 
 func (l *PublishedListLogic) PublishedList(req *types.PublishedListRequest) (resp *types.PublishedListReply, err error) {
-	// todo: add your logic here and delete this line
+	// 获取登录用户id
+	UserId, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
+	if err != nil {
+		return nil, apiErr.UserNotLogin
+	}
+	//获取发布列表数据
+	publishedList, err := l.svcCtx.VideoRpc.GetVideoListByAuthor(l.ctx, &videoclient.GetVideoListByAuthorRequest{
+		AuthorId: int32(UserId),
+	})
+	if err != nil {
+		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+	}
+	//获取用户信息
+	authorInfo, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userclient.GetUserByIdRequest{
+		Id: int32(UserId),
+	})
+	if err != nil {
+		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+	}
+	author := types.User{
+		Id:            int(authorInfo.Id),
+		Name:          authorInfo.Name,
+		FollowCount:   int(authorInfo.FollowCount),
+		FollowerCount: int(authorInfo.FanCount),
+		// 这里查询的是用户的发布列表,无需获取用户是否关注
+		IsFollow: true,
+	}
+	//封装数据
+	videoList := make([]types.Video, 0, len(publishedList.VideoList))
+	for _, video := range publishedList.VideoList {
 
-	return
+		videoList = append(videoList, types.Video{
+			Id:            int(video.Id),
+			Title:         video.Title,
+			Author:        author,
+			PlayUrl:       video.PlayUrl,
+			CoverUrl:      video.CoverUrl,
+			FavoriteCount: int(video.FavoriteCount),
+			CommentCount:  int(video.CommentCount),
+			// 这里查询的是用户的发布列表,无需获取用户是否点赞
+			IsFavorite: true,
+		})
+	}
+
+	return &types.PublishedListReply{
+		Code:      apiErr.SuccessCode,
+		Msg:       apiErr.Success.Msg,
+		VideoList: videoList,
+	}, nil
 }
