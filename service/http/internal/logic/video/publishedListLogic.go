@@ -71,8 +71,7 @@ func (l *PublishedListLogic) PublishedList(req *types.PublishedListRequest) (res
 	}
 
 	return &types.PublishedListReply{
-		Code:      apiErr.SuccessCode,
-		Msg:       apiErr.Success.Msg,
-		VideoList: videoList,
+		BasicReply: types.BasicReply(apiErr.Success),
+		VideoList:  videoList,
 	}, nil
 }

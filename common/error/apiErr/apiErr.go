@@ -23,6 +23,7 @@ const (
 const (
 	FavouriteActionUnknownCode int = iota + 2000
 	CommentActionUnknownCode
+	MessageActionUnknownCode
 )
 
 const (
@@ -49,6 +50,7 @@ var errCodeMap = map[int]string{
 
 	FavouriteActionUnknownCode: "未知的喜欢操作",
 	CommentActionUnknownCode:   "未知的评论操作",
+	MessageActionUnknownCode:   "未知的消息操作",
 
 	InsufficientPermissionsCode: "权限不足",
 
@@ -75,6 +77,7 @@ var (
 
 	FavouriteActionUnknown = NewApiError(FavouriteActionUnknownCode)
 	CommentActionUnknown   = NewApiError(CommentActionUnknownCode)
+	MessageActionUnknown   = NewApiError(MessageActionUnknownCode)
 
 	FileUploadFailed = NewApiError(FileUploadFailedCode)
 	FileIsNotVideo   = NewApiError(FileIsNotVideoCode)

@@ -2,10 +2,13 @@ package logic
 
 import (
 	"context"
+	"github.com/zeromicro/go-zero/core/logx"
+	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
+	"h68u-tiktok-app-microservice/common/error/rpcErr"
+	"h68u-tiktok-app-microservice/common/model"
 	"h68u-tiktok-app-microservice/service/rpc/contact/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/contact/types/contact"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type CreateMessageLogic struct {
@@ -23,7 +26,22 @@ func NewCreateMessageLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Cre
 }
 
 func (l *CreateMessageLogic) CreateMessage(in *contact.CreateMessageRequest) (*contact.Empty, error) {
-	// todo: add your logic here and delete this line
+	err := l.svcCtx.DBList.Mysql.Transaction(func(tx *gorm.DB) error {
+		//创建并增加消息记录
+		message := model.Message{
+			FromId:   int64(in.FromId),
+			ToUserId: int64(in.ToId),
+			Content:  in.Content,
+		}
 
+		if err := l.svcCtx.DBList.Mysql.Create(&message).Error; err != nil {
+			return status.Error(rpcErr.DataBaseError.Code, err.Error())
+		}
+
+		return nil
+	})
+	if err != nil {
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
 	return &contact.Empty{}, nil
 }

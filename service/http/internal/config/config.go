@@ -11,8 +11,9 @@ type Config struct {
 	rest.RestConf
 
 	// RPC 配置
-	VideoRpc zrpc.RpcClientConf
-	UserRpc  zrpc.RpcClientConf
+	VideoRpc   zrpc.RpcClientConf
+	UserRpc    zrpc.RpcClientConf
+	ContactRpc zrpc.RpcClientConf
 
 	// JWT 配置
 	Auth struct {
