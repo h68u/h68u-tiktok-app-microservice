@@ -16,6 +16,7 @@ message VideoInfo {
   string CoverUrl = 5;
   int32 FavoriteCount = 6;
   int32 CommentCount = 7;
+  int64 CreateTime = 8;
 }
 
 // 评论信息结构体
@@ -44,6 +45,7 @@ service Video {
 
 message GetVideoListRequest {
   int32 Num = 1;
+  int64 LatestTime = 2;
 }
 
 message GetVideoListResponse {
