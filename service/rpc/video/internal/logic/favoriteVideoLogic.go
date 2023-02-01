@@ -52,9 +52,9 @@ func (l *FavoriteVideoLogic) FavoriteVideo(in *video.FavoriteVideoRequest) (*vid
 		// 视频点赞量加一
 		if err := tx.Model(&model.Video{}).
 			Where("id = ?", in.VideoId).
-			Update("favorite_count", "favorite_count + 1").
+			//Update("favorite_count", "favorite_count + 1").
+			UpdateColumn("favorite_count", gorm.Expr("favorite_count + ?", 1)).
 			Error; err != nil {
-
 			return status.Error(rpcErr.DataBaseError.Code, err.Error())
 		}
 
