@@ -7,6 +7,7 @@ import (
 	"h68u-tiktok-app-microservice/common/model"
 	"h68u-tiktok-app-microservice/service/rpc/video/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -28,12 +29,17 @@ func NewGetVideoListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetV
 func (l *GetVideoListLogic) GetVideoList(in *video.GetVideoListRequest) (*video.GetVideoListResponse, error) {
 	var videos []model.Video
 
-	err := l.svcCtx.DBList.Mysql.Order("created_at desc").Limit(int(in.Num)).Find(&videos).Error
-	if  err != nil {
+	err := l.svcCtx.DBList.Mysql.
+		Model(&model.Video{}).
+		Where("created_at < ?", time.Unix(in.LatestTime, 0)).
+		Order("created_at desc"). // 按照创建时间倒序，最新的在前面
+		Limit(int(in.Num)).
+		Find(&videos).Error
+	if err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
 	}
 
-	var videoList  []*video.VideoInfo
+	var videoList []*video.VideoInfo
 	for _, v := range videos {
 		videoList = append(videoList, &video.VideoInfo{
 			Id:            int32(v.ID),
@@ -43,6 +49,7 @@ func (l *GetVideoListLogic) GetVideoList(in *video.GetVideoListRequest) (*video.
 			CoverUrl:      v.CoverUrl,
 			FavoriteCount: int32(v.FavoriteCount),
 			CommentCount:  int32(v.CommentCount),
+			CreateTime:    v.CreatedAt.Unix(),
 		})
 	}
 
