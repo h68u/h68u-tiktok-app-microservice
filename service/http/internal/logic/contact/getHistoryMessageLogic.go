@@ -9,6 +9,7 @@ import (
 	"h68u-tiktok-app-microservice/service/http/internal/types"
 	"h68u-tiktok-app-microservice/service/rpc/contact/contactclient"
 	"sync"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -70,9 +71,11 @@ func (l *GetHistoryMessageLogic) GetHistoryMessage(req *types.GetHistoryMessageR
 			}
 
 			messageList[index] = types.Message{
-				Id:         int(messageInfo.Id),
-				Content:    messageInfo.Content,
-				CreateTime: string(messageInfo.CreateTime),
+				Id:      int(messageInfo.Id),
+				Content: messageInfo.Content,
+				// 消息发送时间 yyyy-MM-dd HH:MM:ss
+				// TODO:把时间换成int64
+				CreateTime: time.Unix(int64(messageInfo.CreateTime), 0).Format("2006-01-02 15:04:05"),
 			}
 
 		})
