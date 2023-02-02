@@ -3,6 +3,7 @@ package video
 import (
 	"bytes"
 	"github.com/h2non/filetype"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"h68u-tiktok-app-microservice/common/error/apiErr"
 	"h68u-tiktok-app-microservice/common/oss"
@@ -28,7 +29,7 @@ func PublishVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		// 获取用户id
 		userId, err := utils.GetUserIDFormToken(req.Token, svcCtx.Config.Auth.AccessSecret)
 		if err != nil {
-			httpx.Error(w, apiErr.PermissionDenied.WithDetails(err.Error()))
+			httpx.Error(w, apiErr.InvalidToken)
 			return
 		}
 
@@ -88,7 +89,8 @@ func PublishVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		})
 
 		if err != nil {
-			httpx.Error(w, apiErr.RPCFailed.WithDetails(err.Error()))
+			logx.WithContext(r.Context()).Errorf("PublishVideo rpc error: %v", err)
+			httpx.Error(w, apiErr.InternalError(r.Context(), err.Error()))
 			return
 		}
 

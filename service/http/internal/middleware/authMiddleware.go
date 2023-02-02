@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"h68u-tiktok-app-microservice/common/error/apiErr"
 	"h68u-tiktok-app-microservice/common/utils"
@@ -22,34 +21,19 @@ func NewAuthMiddleware(c config.Config) *AuthMiddleware {
 func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		token := r.URL.Query().Get("token")
-
-		if token == "" {
+		var token string
+		if token = r.URL.Query().Get("token"); token == "" {
 			token = r.PostFormValue("token")
 		}
-
-		timeOut, err := utils.ValidToken(token, m.Config.Auth.AccessSecret)
-		if err != nil || timeOut {
-			//  返回json
-			//w.Header().Set("Content-Type", "application/json; charset=utf-8")
-			//w.WriteHeader(http.StatusOK)
-			//
-			//reply, _ := json.Marshal(struct {
-			//	Code int    `json:"status_code"`
-			//	Msg  string `json:"status_msg"`
-			//}{
-			//	Code: apiErr.PermissionDenied.Code,
-			//	Msg:  apiErr.PermissionDenied.Msg,
-			//})
-			//
-
-			//w.Write(reply)
-			fmt.Println("unpass!")
-			httpx.OkJson(w, apiErr.PermissionDenied)
+		if token == "" {
+			httpx.OkJson(w, apiErr.NotLogin)
+		}
+		isTimeOut, err := utils.ValidToken(token, m.Config.Auth.AccessSecret)
+		if err != nil || isTimeOut {
+			httpx.OkJson(w, apiErr.InvalidToken)
 			return
 		}
-		fmt.Println("pass!")
-		// Passthrough to next handler if need
+
 		next(w, r)
 	}
 }

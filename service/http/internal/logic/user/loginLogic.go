@@ -30,14 +30,6 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 
 func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginReply, err error) {
 
-	//fmt.Println(trace.TraceIDFromContext(l.ctx))
-	//
-	//logx.Info("LoginLogic.Login")
-	//logx.WithContext(l.ctx).Info("LoginLogic.Login")
-
-	//logx.WithContext(l.ctx).Info("LoginLogic.Login", "username", req.Username, "password", req.Password)
-	//return nil, apiErr.InternalError(l.ctx, "test")
-
 	// 调用rpc
 	GetUserByNameReply, err := l.svcCtx.UserRpc.GetUserByName(l.ctx, &user.GetUserByNameRequest{
 		Name: req.Username,
@@ -63,7 +55,8 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginReply, err
 	)
 
 	if err != nil {
-		return nil, apiErr.GenerateTokenFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("LoginLogic.Login CreateToken err: %v", err)
+		return nil, apiErr.GenerateTokenFailed
 	}
 
 	return &types.LoginReply{
