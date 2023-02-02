@@ -60,7 +60,7 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 
 		threading.GoSafe(func() {
 			defer wg.Done()
-			// 获取对方用户信息
+			// 获取评论用户信息
 
 			l.Logger.Infof("评论用户id: %d", commentInfo.AuthorId)
 			userInfo, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userclient.GetUserByIdRequest{
