@@ -42,7 +42,7 @@ func (l *GetHistoryMessageLogic) GetHistoryMessage(req *types.GetHistoryMessageR
 		return nil, apiErr.RPCFailed.WithDetails(err.Error())
 	}
 
-	// 封装评论列表数据
+	// 封装消息列表数据
 	wg := sync.WaitGroup{}
 	errChan := make(chan error, 1)
 	finished := make(chan bool, 1)
