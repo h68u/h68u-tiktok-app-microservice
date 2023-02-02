@@ -22,6 +22,7 @@ var (
 	FavouriteActionUnknown = newError(40004, "未知的收藏操作")
 	FileUploadFailed       = newError(40005, "文件上传失败")
 	FileIsNotVideo         = newError(40006, "文件不是视频")
+	MessageActionUnknown   = newError(40007, "未知的消息操作")
 )
 
 // 401 WITHOUT PERMISSION

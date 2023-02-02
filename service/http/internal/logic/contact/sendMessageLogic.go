@@ -29,7 +29,7 @@ func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *typ
 	// 参数检查
 	UserId, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
-		return nil, apiErr.UserNotLogin
+		return nil, apiErr.InvalidToken
 	}
 	if UserId == int64(req.ToUserId) {
 		return nil, apiErr.InvalidParams.WithDetails("不能发消息给自己")
@@ -44,7 +44,7 @@ func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *typ
 		if rpcErr.Is(err, rpcErr.UserNotExist) {
 			return nil, apiErr.UserNotFound
 		} else if err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 	} else {
 		return nil, apiErr.MessageActionUnknown

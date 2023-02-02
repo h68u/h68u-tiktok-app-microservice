@@ -28,10 +28,12 @@ func NewGetHistoryMessageLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *GetHistoryMessageLogic) GetHistoryMessage(req *types.GetHistoryMessageRequest) (resp *types.GetHistoryMessageReply, err error) {
+	logx.WithContext(l.ctx).Infof("获取历史消息列表请求参数: %v", req)
+
 	// 获取登录用户id
 	UserId, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
-		return nil, apiErr.UserNotLogin
+		return nil, apiErr.InvalidToken
 	}
 	res, err := l.svcCtx.ContactRpc.GetMessageList(l.ctx, &contactclient.GetMessageListRequest{
 		FromId: int32(UserId),
@@ -39,7 +41,8 @@ func (l *GetHistoryMessageLogic) GetHistoryMessage(req *types.GetHistoryMessageR
 	})
 
 	if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("获取历史消息列表失败: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	// 封装消息列表数据
@@ -62,7 +65,8 @@ func (l *GetHistoryMessageLogic) GetHistoryMessage(req *types.GetHistoryMessageR
 			l.Logger.Infof("消息用户id: %d", messageInfo.Id)
 
 			if err != nil {
-				errChan <- apiErr.RPCFailed.WithDetails(err.Error())
+				logx.WithContext(l.ctx).Errorf("获取历史消息列表失败: %v", err)
+				errChan <- apiErr.InternalError(l.ctx, err.Error())
 			}
 
 			messageList[index] = types.Message{
