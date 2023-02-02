@@ -29,6 +29,15 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 }
 
 func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginReply, err error) {
+
+	//fmt.Println(trace.TraceIDFromContext(l.ctx))
+	//
+	//logx.Info("LoginLogic.Login")
+	//logx.WithContext(l.ctx).Info("LoginLogic.Login")
+
+	//logx.WithContext(l.ctx).Info("LoginLogic.Login", "username", req.Username, "password", req.Password)
+	//return nil, apiErr.InternalError(l.ctx, "test")
+
 	// 调用rpc
 	GetUserByNameReply, err := l.svcCtx.UserRpc.GetUserByName(l.ctx, &user.GetUserByNameRequest{
 		Name: req.Username,
@@ -36,7 +45,8 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginReply, err
 	if rpcErr.Is(err, rpcErr.UserNotExist) {
 		return nil, apiErr.UserNotFound
 	} else if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("LoginLogic.Login GetUserByName err: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	// 校验密码

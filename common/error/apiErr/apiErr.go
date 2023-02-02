@@ -1,5 +1,13 @@
 package apiErr
 
+import (
+	"context"
+	"fmt"
+	"github.com/zeromicro/go-zero/core/service"
+	"github.com/zeromicro/go-zero/core/trace"
+	"github.com/zeromicro/go-zero/rest"
+)
+
 const (
 	SuccessCode int = iota
 	PermissionDeniedCode
@@ -81,6 +89,17 @@ var (
 )
 
 type ApiError struct {
+	Code int
+	Msg  string
+}
+
+type ApiErrorInternal struct {
+	ApiError
+	Details string
+	TraceId string
+}
+
+type ErrorResponse struct {
 	Code int    `json:"status_code"`
 	Msg  string `json:"status_msg"`
 }
@@ -96,21 +115,45 @@ func (e ApiError) Error() string {
 	return e.Msg
 }
 
+// WithDetails 在基础错误上追加详细信息，例如：密码错误，密码长度不足6位
 func (e ApiError) WithDetails(detail string) ApiError {
 	return ApiError{
 		Code: e.Code,
-		Msg:  e.Msg + ", Details: " + detail,
+		Msg:  e.Msg + ": " + detail,
 	}
 }
 
-type CodeErrorResponse struct {
-	Code int    `json:"status_code"`
-	Msg  string `json:"status_msg"`
+// InternalError 用于返回内部错误，例如RPC连接故障，数据库报错等，
+// 该方法会自动从上下文中获取 traceId，
+// debugDetail 用于调试，生成环境不会返回给客户端，
+// 当 Mode 为 service.ProMode 仅返回 traceId，
+// 当 Mode 为 service.DevMode 同时返回 debugDetail 和 traceId，帮助调试
+func InternalError(ctx context.Context, debugDetail string) ApiErrorInternal {
+	return ApiErrorInternal{
+		ApiError: NewApiError(RPCFailedCode),
+		Details:  debugDetail,
+		TraceId:  trace.TraceIDFromContext(ctx),
+	}
 }
 
-func (e ApiError) Data() *CodeErrorResponse {
-	return &CodeErrorResponse{
+func (e ApiError) Response() *ErrorResponse {
+	return &ErrorResponse{
 		Code: e.Code,
 		Msg:  e.Msg,
+	}
+}
+
+func (e ApiErrorInternal) Response(cfg rest.RestConf) *ErrorResponse {
+	switch cfg.Mode {
+	case service.ProMode:
+		return &ErrorResponse{
+			Code: e.Code,
+			Msg:  fmt.Sprintf("%s，请求 ID: %s", e.Msg, e.TraceId),
+		}
+	default:
+		return &ErrorResponse{
+			Code: e.Code,
+			Msg:  fmt.Sprintf("%s, Details: %s, TraceId: %s", e.Msg, e.Details, e.TraceId),
+		}
 	}
 }
