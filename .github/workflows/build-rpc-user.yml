@@ -7,12 +7,13 @@ on:
       - '.github/workflows/build-rpc-user.yml'
       - 'service/rpc/user/**'
       - 'common/**'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - '.github/workflows/build-rpc-user.yml'
-      - 'service/rpc/user/**'
-      - 'common/**'
+#  pull_request:
+#    branches: [ main ]
+#    paths:
+#      - '.github/workflows/build-rpc-user.yml'
+#      - 'service/rpc/user/**'
+#      - 'common/**'
+#    types: [closed]
 
 env:
   CONTAINER: rpc-user

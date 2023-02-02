@@ -30,10 +30,12 @@ func NewCommentListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Comme
 }
 
 func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *types.CommentListReply, err error) {
+	logx.WithContext(l.ctx).Infof("获取评论列表: %v", req)
+
 	// 获取登录用户id
 	UserId, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
-		return nil, apiErr.UserNotLogin
+		return nil, apiErr.InvalidToken
 	}
 
 	// 获取评论数据
@@ -42,7 +44,8 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 	})
 
 	if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("获取评论列表失败: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	// 封装评论列表数据
@@ -68,7 +71,8 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 			})
 
 			if err != nil {
-				errChan <- apiErr.RPCFailed.WithDetails(err.Error())
+				logx.WithContext(l.ctx).Errorf("获取评论用户信息失败: %v", err)
+				errChan <- apiErr.InternalError(l.ctx, err.Error())
 			}
 
 			// 获取用户是否关注该作者
@@ -78,7 +82,8 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 			})
 
 			if err != nil {
-				errChan <- apiErr.RPCFailed.WithDetails(err.Error())
+				logx.WithContext(l.ctx).Errorf("获取用户是否关注该作者失败: %v", err)
+				errChan <- apiErr.InternalError(l.ctx, err.Error())
 			}
 
 			commentList[index] = types.Comment{

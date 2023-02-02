@@ -32,10 +32,12 @@ func NewFavoriteVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Fav
 }
 
 func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (resp *types.FavoriteVideoReply, err error) { // 获取登录用户id
+	logx.WithContext(l.ctx).Infof("收藏视频: %v", req)
+
 	// 获取登录用户id
 	UserId, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
-		return nil, apiErr.UserNotLogin
+		return nil, apiErr.InvalidToken
 	}
 
 	switch req.ActionType {
@@ -44,7 +46,8 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 			UserId:  int32(UserId),
 			VideoId: int32(req.VideoId),
 		}); err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("收藏视频失败: %v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
 	case UnFavoriteVideoAction:
@@ -52,7 +55,8 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 			UserId:  int32(UserId),
 			VideoId: int32(req.VideoId),
 		}); err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("取消收藏视频失败: %v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
 	default:

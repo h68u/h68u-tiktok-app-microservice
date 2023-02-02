@@ -33,10 +33,12 @@ func NewCommentVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Comm
 }
 
 func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *types.CommentVideoReply, err error) {
+	logx.WithContext(l.ctx).Infof("评论视频: %v", req)
+
 	// 获取登录用户id
 	UserId, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
-		return nil, apiErr.UserNotLogin
+		return nil, apiErr.InvalidToken
 	}
 
 	switch req.ActionType {
@@ -49,7 +51,8 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		})
 
 		if err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("rpc调用失败: %s", err.Error())
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
 		// 获取评论用户信息
@@ -58,7 +61,8 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		})
 
 		if err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("rpc调用失败: %s", err.Error())
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
 		// 用户是否关注改评论的作者
@@ -68,7 +72,8 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		})
 
 		if err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("rpc调用失败: %s", err.Error())
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
 		// 封装返回数据
@@ -96,19 +101,21 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		})
 
 		if err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("rpc调用失败: %s", err.Error())
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
 		// 权限校验
 		if commentInfo.UserId != UserId {
-			return nil, apiErr.InsufficientPermissions.WithDetails("此用户无权删除此评论")
+			return nil, apiErr.PermissionDenied.WithDetails("此用户无权删除此评论")
 		}
 
 		// 删除评论
 		if _, err = l.svcCtx.VideoRpc.DeleteVideoComment(l.ctx, &videoclient.DeleteVideoCommentRequest{
 			CommentId: int64(req.CommentId),
 		}); err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("rpc调用失败: %s", err.Error())
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
 		return &types.CommentVideoReply{

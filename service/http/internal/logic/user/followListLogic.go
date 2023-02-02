@@ -26,12 +26,15 @@ func NewFollowListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Follow
 }
 
 func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.FollowListReply, err error) {
+	logx.WithContext(l.ctx).Infof("获取关注列表: %v", req)
+
 	//拿到关注列表的数据
 	GetFollowListReply, err := l.svcCtx.UserRpc.GetFollowList(l.ctx, &user.GetFollowListRequest{
 		UserId: int32(req.UserId),
 	})
 	if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("GetFollowList failed, err:%v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	var followList []types.User
@@ -42,7 +45,8 @@ func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.
 			FollowUserId: int32(req.UserId),
 		})
 		if err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("IsFollow failed, err:%v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 		followList = append(followList, types.User{
 			Id:            int(follow.Id),
