@@ -28,6 +28,8 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.RegisterReply, err error) {
+	logx.WithContext(l.ctx).Infof("注册: %v", req)
+
 	// 参数检查
 	if len(req.Username) > 32 {
 		return nil, apiErr.InvalidParams.WithDetails("用户名最长32个字符")
@@ -44,7 +46,8 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 	if rpcErr.Is(err, rpcErr.UserAlreadyExist) {
 		return nil, apiErr.UserAlreadyExist
 	} else if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("调用rpc CreateUser 失败: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	// 生成 token

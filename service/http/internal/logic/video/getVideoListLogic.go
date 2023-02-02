@@ -32,6 +32,8 @@ func NewGetVideoListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetV
 // nextTime 本次返回的视频中，发布最早的时间，作为下次请求时的latest_time
 
 func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *types.GetVideoListReply, err error) {
+	logx.WithContext(l.ctx).Infof("GetVideoList req: %+v", req)
+
 	// 获取登录用户id
 	UserId, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
@@ -64,7 +66,8 @@ func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *
 			Id: v.AuthorId,
 		})
 		if err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("GetUserById err: %+v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
 		// 获取用户关注状态
@@ -75,7 +78,8 @@ func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *
 				FollowUserId: v.AuthorId,
 			})
 			if err != nil {
-				return nil, apiErr.RPCFailed.WithDetails(err.Error())
+				logx.WithContext(l.ctx).Errorf("IsFollow err: %+v", err)
+				return nil, apiErr.InternalError(l.ctx, err.Error())
 			}
 			isFollowed = IsFollowedReply.IsFollow
 		}
@@ -88,7 +92,8 @@ func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *
 				VideoId: v.Id,
 			})
 			if err != nil {
-				return nil, apiErr.RPCFailed.WithDetails(err.Error())
+				logx.WithContext(l.ctx).Errorf("IsFavoriteVideo err: %+v", err)
+				return nil, apiErr.InternalError(l.ctx, err.Error())
 			}
 			isFavorite = IsFavoriteVideoReply.IsFavorite
 		}

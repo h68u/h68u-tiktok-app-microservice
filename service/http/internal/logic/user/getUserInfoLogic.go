@@ -28,10 +28,12 @@ func NewGetUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetUs
 }
 
 func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *types.GetUserInfoReply, err error) {
+	logx.WithContext(l.ctx).Infof("获取用户信息: %v", req)
+
 	//从token获取自己的id
 	id, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
-		return nil, apiErr.TokenParseFailed
+		return nil, apiErr.InvalidToken
 	}
 
 	//获取用户信息(名字与id)
@@ -41,7 +43,8 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *typ
 	if rpcErr.Is(err, rpcErr.UserNotExist) {
 		return nil, apiErr.UserNotFound
 	} else if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("获取用户信息失败: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	//判断是否关注了该用户
@@ -49,6 +52,10 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *typ
 		UserId:       int32(id),
 		FollowUserId: getUserByIdReply.Id,
 	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("获取是否关注失败: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
+	}
 
 	return &types.GetUserInfoReply{
 		BasicReply: types.BasicReply(apiErr.Success),

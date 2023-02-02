@@ -30,10 +30,12 @@ func NewFavoriteListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Favo
 }
 
 func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *types.FavoriteListReply, err error) {
+	logx.WithContext(l.ctx).Infof("获取用户喜欢视频列表: %v", req)
+
 	// 获取登录用户id
 	UserId, err := utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
-		return nil, apiErr.UserNotLogin
+		return nil, apiErr.InvalidToken
 	}
 
 	l.Logger.Debugf("获取用户喜欢视频列表, 用户id:%d\n", UserId)
@@ -44,7 +46,8 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	})
 
 	if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("获取用户喜欢视频列表失败: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	l.Logger.Infof("获取到的点赞视频数量为: %d\n", len(res.VideoList))
@@ -72,7 +75,8 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 			})
 
 			if err != nil {
-				errChan <- apiErr.RPCFailed.WithDetails(err.Error())
+				logx.WithContext(l.ctx).Errorf("获取作者信息失败: %v", err)
+				errChan <- apiErr.InternalError(l.ctx, err.Error())
 			}
 
 			// 获取用户是否关注该作者
@@ -82,7 +86,8 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 			})
 
 			if err != nil {
-				errChan <- apiErr.RPCFailed.WithDetails(err.Error())
+				logx.WithContext(l.ctx).Errorf("获取用户是否关注该作者失败: %v", err)
+				errChan <- apiErr.InternalError(l.ctx, err.Error())
 			}
 
 			author := types.User{

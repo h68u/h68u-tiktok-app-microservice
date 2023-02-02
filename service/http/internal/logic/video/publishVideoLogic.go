@@ -24,8 +24,7 @@ func NewPublishVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Publ
 }
 
 func (l *PublishVideoLogic) PublishVideo(req *types.PublishVideoRequest) (resp *types.PublishVideoReply, err error) {
-
-	_ = req
+	logx.WithContext(l.ctx).Infof("发布视频: %v", req)
 
 	// 因为要处理文件，业务逻辑在handler中
 

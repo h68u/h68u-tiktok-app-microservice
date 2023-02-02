@@ -26,12 +26,15 @@ func NewFansListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FansList
 }
 
 func (l *FansListLogic) FansList(req *types.FansListRequest) (resp *types.FansListReply, err error) {
+	logx.WithContext(l.ctx).Infof("获取粉丝列表: %v", req)
+
 	//拿到粉丝列表的信息
 	GetFansListReply, err := l.svcCtx.UserRpc.GetFansList(l.ctx, &user.GetFansListRequest{
 		UserId: int32(req.UserId),
 	})
 	if err != nil {
-		return nil, apiErr.RPCFailed.WithDetails(err.Error())
+		logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetFansList err: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 	var fansList []types.User
 	for _, fans := range GetFansListReply.FansList {
@@ -41,7 +44,8 @@ func (l *FansListLogic) FansList(req *types.FansListRequest) (resp *types.FansLi
 			FollowUserId: fans.Id,
 		})
 		if err != nil {
-			return nil, apiErr.RPCFailed.WithDetails(err.Error())
+			logx.WithContext(l.ctx).Errorf("FansListLogic.FansList IsFollow err: %v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 		fansList = append(fansList, types.User{
 			Id:            int(fans.Id),

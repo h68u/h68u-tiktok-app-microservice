@@ -31,8 +31,10 @@ func main() {
 
 	httpx.SetErrorHandler(func(err error) (int, interface{}) {
 		switch e := err.(type) {
-		case *apiErr.ApiError:
-			return http.StatusOK, *e
+		case apiErr.ApiErr:
+			return http.StatusOK, e.Response()
+		case apiErr.ErrInternal:
+			return http.StatusOK, e.Response(c.RestConf)
 		default:
 			return http.StatusInternalServerError, err
 		}
