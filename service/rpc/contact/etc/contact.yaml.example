@@ -1,0 +1,19 @@
+# 启动配置
+Name: contact.rpc
+ListenOn: 0.0.0.0:9003
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: contact.rpc
+
+
+DBList:
+  Mysql:
+    Address: 127.0.0.1:3306
+    Username: root
+    Password: "12345678"
+    DBName: h68u-tiktok
+    TablePrefix: ""
+  Redis:
+    Address: 127.0.0.1:6379
+    Password:

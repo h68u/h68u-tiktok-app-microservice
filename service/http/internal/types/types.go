@@ -186,10 +186,10 @@ type GetFriendListReply struct {
 }
 
 type SendMessageRequest struct {
-	Token      string `json:"token"`
-	ToUserId   int    `json:"to_user_id"`
-	Content    string `json:"content"`
-	ActionType int    `json:"action_type"`
+	Token      string `form:"token"`
+	ToUserId   int    `form:"to_user_id"`
+	Content    string `form:"content"`
+	ActionType int    `form:"action_type"`
 }
 
 type SendMessageReply struct {
@@ -197,8 +197,8 @@ type SendMessageReply struct {
 }
 
 type GetHistoryMessageRequest struct {
-	Token    string `json:"token"`
-	ToUserId int    `json:"to_user_id"`
+	Token    string `form:"token"`
+	ToUserId int    `form:"to_user_id"`
 }
 
 type GetHistoryMessageReply struct {

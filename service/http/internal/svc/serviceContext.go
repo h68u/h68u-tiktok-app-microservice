@@ -7,6 +7,7 @@ import (
 	oss2 "h68u-tiktok-app-microservice/common/oss"
 	"h68u-tiktok-app-microservice/service/http/internal/config"
 	"h68u-tiktok-app-microservice/service/http/internal/middleware"
+	"h68u-tiktok-app-microservice/service/rpc/contact/contactclient"
 	"h68u-tiktok-app-microservice/service/rpc/user/userclient"
 	"h68u-tiktok-app-microservice/service/rpc/video/videoclient"
 )
@@ -17,6 +18,7 @@ type ServiceContext struct {
 	AliyunClient *oss.Client
 	VideoRpc     videoclient.Video
 	UserRpc      userclient.User
+	ContactRpc   contactclient.Contact
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -26,5 +28,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		AliyunClient: oss2.AliyunInit(c.OSS),
 		VideoRpc:     videoclient.NewVideo(zrpc.MustNewClient(c.VideoRpc)),
 		UserRpc:      userclient.NewUser(zrpc.MustNewClient(c.UserRpc)),
+		ContactRpc:   contactclient.NewContact(zrpc.MustNewClient(c.ContactRpc)),
 	}
 }

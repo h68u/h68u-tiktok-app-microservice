@@ -6,6 +6,12 @@ MaxBytes: 104857600 # 100MB
 Timeout: 100000 # 100s
 
 # RPC 配置
+ContactRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: contact.rpc
+
 VideoRpc:
   Etcd:
     Hosts:
