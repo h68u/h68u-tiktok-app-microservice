@@ -9,10 +9,13 @@ package apiErr
 //4**	客户端错误，请求包含语法错误或无法完成请求
 //5**	服务器错误，服务器在处理请求的过程中发生了错误
 
-// 200 OK
-var (
-	Success = newError(200, "Success")
-)
+// Success 根据官方文档 0 代表成功
+var Success = newError(0, "Success")
+
+//// 200 OK
+//var (
+//	Success = newError(200, "Success")
+//)
 
 // 400 BAD REQUEST
 var (
