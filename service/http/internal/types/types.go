@@ -175,8 +175,8 @@ type CommentListReply struct {
 }
 
 type GetFriendListRequest struct {
-	UserId int    `json:"user_id"`
-	Token  string `json:"token"`
+	UserId int    `form:"user_id"`
+	Token  string `form:"token"`
 }
 
 type GetFriendListReply struct {
