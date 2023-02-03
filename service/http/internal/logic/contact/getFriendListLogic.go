@@ -59,8 +59,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 		})
 	}
 	return &types.GetFriendListReply{
-		Code:       0,
-		Msg:        "Success",
+		BasicReply: types.BasicReply(apiErr.Success),
 		FriendList: friendList,
 	}, nil
 

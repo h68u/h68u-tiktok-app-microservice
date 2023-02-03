@@ -24,8 +24,7 @@ type (
 		Token  string `json:"token"`
 	}
 	GetFriendListReply {
-		Code     int    `json:"status_code"`
-		Msg      string `json:"status_msg"`
+		BasicReply
 		UserList []User `json:"user_list"`
 	}
 )

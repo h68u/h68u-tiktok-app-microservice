@@ -190,8 +190,7 @@ type GetFriendListRequest struct {
 }
 
 type GetFriendListReply struct {
-	Code       int      `json:"status_code"`
-	Msg        string   `json:"status_msg"`
+	BasicReply
 	FriendList []Friend `json:"friend_list"`
 }
 
