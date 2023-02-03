@@ -19,6 +19,8 @@ message UserInfo {
   string Name = 2;
   int32 FollowCount = 3;
   int32 FansCount = 4;
+  string NewMessage = 5;
+  int32 MsgType = 6;
 }
 
 service Contact {

@@ -37,7 +37,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
-	var friendList []types.User
+	var friendList []types.Friend
 	for _, friend := range GetFriendListResponse.FriendsId {
 		//判断关注者是否关注了你
 		isFollowReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
@@ -48,18 +48,20 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 			logx.WithContext(l.ctx).Errorf("IsFollow failed, err:%v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
-		friendList = append(friendList, types.User{
+		friendList = append(friendList, types.Friend{
 			Id:            int(friend.Id),
 			Name:          friend.Name,
 			FollowCount:   int(friend.FollowCount),
 			FollowerCount: int(friend.FansCount),
 			IsFollow:      isFollowReply.IsFollow,
+			NewMessage:    friend.NewMessage,
+			MsgType:       int(friend.MsgType),
 		})
 	}
 	return &types.GetFriendListReply{
-		Code:     0,
-		Msg:      "Success",
-		UserList: friendList,
+		Code:       0,
+		Msg:        "Success",
+		FriendList: friendList,
 	}, nil
 
 }
