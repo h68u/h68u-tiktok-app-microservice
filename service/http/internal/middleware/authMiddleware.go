@@ -27,6 +27,7 @@ func (m *AuthMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		}
 		if token == "" {
 			httpx.OkJson(w, apiErr.NotLogin)
+			return
 		}
 		isTimeOut, err := utils.ValidToken(token, m.Config.Auth.AccessSecret)
 		if err != nil || isTimeOut {
