@@ -32,6 +32,7 @@ func NewGetFriendsIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetF
 const (
 	MsgTypeSend    = 1
 	MSgTypeReceive = 0
+	MsgNone        = 2
 )
 
 func (l *GetFriendsIdLogic) GetFriendsId(in *contact.GetFriendsIdRequest) (*contact.GetFriendsIdResponse, error) {
@@ -100,7 +101,7 @@ func (l *GetFriendsIdLogic) GetFriendsId(in *contact.GetFriendsIdRequest) (*cont
 				}
 			} else {
 				//内容均为空
-				msgType = 2 //如果没有发过信息,我把这个设为2
+				msgType = MsgNone //如果没有发过信息,我把这个设为2
 				message.Content = ""
 			}
 			friendList = append(friendList, &contact.UserInfo{
