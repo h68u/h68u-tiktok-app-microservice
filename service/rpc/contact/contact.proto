@@ -13,6 +13,15 @@ message Message {
   string Content = 2;
   int32 CreateTime = 3;
 }
+// 用户信息结构体
+message UserInfo {
+  int32 Id = 1;
+  string Name = 2;
+  int32 FollowCount = 3;
+  int32 FansCount = 4;
+  string NewMessage = 5;
+  int32 MsgType = 6;
+}
 
 service Contact {
   rpc GetFriendsId (GetFriendsIdRequest) returns (GetFriendsIdResponse);
@@ -25,7 +34,7 @@ message GetFriendsIdRequest {
 }
 
 message GetFriendsIdResponse {
-  repeated string FriendsId = 1;
+  repeated UserInfo FriendsId = 1;
 }
 
 message CreateMessageRequest {

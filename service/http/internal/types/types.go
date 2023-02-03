@@ -101,6 +101,16 @@ type Message struct {
 	CreateTime string `json:"create_time"`
 }
 
+type Friend struct {
+	Id            int    `json:"id"`
+	Name          string `json:"name"`
+	FollowCount   int    `json:"follow_count"`
+	FollowerCount int    `json:"follower_count"`
+	IsFollow      bool   `json:"is_follow"`
+	NewMessage    string `json:"new_message"`
+	MsgType       int    `json:"msg_type"`
+}
+
 type GetVideoListRequest struct {
 	LatestTime int64  `form:"latest_time,optional"`
 	Token      string `form:"token,optional"`
@@ -175,14 +185,13 @@ type CommentListReply struct {
 }
 
 type GetFriendListRequest struct {
-	UserId int    `json:"user_id"`
-	Token  string `json:"token"`
+	UserId int    `form:"user_id"`
+	Token  string `form:"token"`
 }
 
 type GetFriendListReply struct {
-	Code     int    `json:"status_code"`
-	Msg      string `json:"status_msg"`
-	UserList []User `json:"user_list"`
+	BasicReply
+	FriendList []Friend `json:"friend_list"`
 }
 
 type SendMessageRequest struct {
