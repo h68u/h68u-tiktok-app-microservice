@@ -1,0 +1,43 @@
+global:
+  scrape_interval:
+  external_labels:
+    monitor: 'codelab-monitor'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s  #global catch time
+    static_configs:
+      - targets: ['127.0.0.1:9090']
+
+
+  - job_name: 'http-app'
+    static_configs:
+      - targets: [ 'h68u-tiktok:4000' ]
+        labels:
+          job: http-app
+          app: http-app
+          env: dev
+
+  - job_name: 'rpc-user'
+    static_configs:
+      - targets: [ 'h68u-tiktok:4001' ]
+        labels:
+          job: rpc-user
+          app: rpc-user
+          env: dev
+
+  - job_name: 'rpc-video'
+    static_configs:
+      - targets: [ 'h68u-tiktok:4002' ]
+        labels:
+          job: rpc-video
+          app: rpc-video
+          env: dev
+
+  - job_name: 'rpc-contact'
+    static_configs:
+      - targets: [ 'h68u-tiktok:4003' ]
+        labels:
+          job: rpc-contact
+          app: rpc-contact
+          env: dev

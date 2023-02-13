@@ -1,19 +1,27 @@
 # 启动配置
-Name: video.rpc
+Name: video-rpc
 ListenOn: 0.0.0.0:9002
-Etcd:
-  Hosts:
-  - 127.0.0.1:2379
-  Key: video.rpc
-
 
 DBList:
   Mysql:
-    Address: 127.0.0.1:3306
+    Address: mysql:3306
     Username: root
-    Password: "12345678"
+    Password: "PXDN93VRKUm8TeE7"
     DBName: h68u-tiktok
     TablePrefix: ""
   Redis:
-    Address: 127.0.0.1:6379
+    Address: redis:6379
     Password:
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 4002
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: rpc-video
+  Endpoint:  http://jaeger:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger

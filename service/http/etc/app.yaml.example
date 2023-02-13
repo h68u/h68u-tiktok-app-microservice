@@ -2,27 +2,25 @@
 Name: h68u-tiktok
 Host: 0.0.0.0
 Port: 8080
+#Mode: dev
 MaxBytes: 104857600 # 100MB
 Timeout: 100000 # 100s
 
 # RPC 配置
 ContactRpc:
-  Etcd:
-    Hosts:
-      - 127.0.0.1:2379
-    Key: contact.rpc
+  Endpoints:
+    - 127.0.0.1:9003
+  NonBlock: true
 
 VideoRpc:
-  Etcd:
-    Hosts:
-      - 127.0.0.1:2379
-    Key: video.rpc
+  Endpoints:
+    - 127.0.0.1:9002
+  NonBlock: true
 
 UserRpc:
-  Etcd:
-    Hosts:
-      - 127.0.0.1:2379
-    Key: user.rpc
+  Endpoints:
+    - 127.0.0.1:9001
+  NonBlock: true
 
 # JWT 配置
 Auth:
@@ -31,6 +29,20 @@ Auth:
 
 OSS:
   Endpoint: oss-cn-hongkong.aliyuncs.com
-  AccessKeyID: xxxxxxx
-  AccessKeySecret: xxxxxx
+  AccessKeyID:
+  AccessKeySecret:
   BucketName: h68u-tiktok
+
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 4000
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: http-app
+  Endpoint: http://jaeger:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger

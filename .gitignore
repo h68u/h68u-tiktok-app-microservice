@@ -16,3 +16,5 @@
 
 *.yaml
 .idea/
+deploy/data/*
+deploy/build/*
