@@ -47,7 +47,7 @@ func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *
 			if req.LatestTime == 0 {
 				return time.Now().Unix()
 			} else {
-				return req.LatestTime
+				return req.LatestTime / 1000 // 前端传入的时间戳精确到毫秒，转换为秒
 			}
 		}(),
 	})

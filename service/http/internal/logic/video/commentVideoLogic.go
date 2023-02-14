@@ -41,8 +41,13 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		return nil, apiErr.InvalidToken
 	}
 
+	logx.WithContext(l.ctx).Infof("ActionType==PublishCommentAction ", req.ActionType == PublishCommentAction)
+
 	switch req.ActionType {
 	case PublishCommentAction:
+
+		logx.WithContext(l.ctx).Infof("start comment: %d", UserId)
+
 		// 创建评论并获取评论数据
 		res, err := l.svcCtx.VideoRpc.CommentVideo(l.ctx, &videoclient.CommentVideoRequest{
 			UserId:  int32(UserId),

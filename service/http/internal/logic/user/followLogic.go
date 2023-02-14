@@ -30,14 +30,12 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 
 	// 参数检查
 	var Id int64
-	if req.UserId == 0 {
-		Id, err = utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
-		if err != nil {
-			return nil, apiErr.InvalidToken
-		}
-	} else {
-		Id = int64(req.UserId)
+
+	Id, err = utils.GetUserIDFormToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
+	if err != nil {
+		return nil, apiErr.InvalidToken
 	}
+
 	if Id == int64(req.ToUserId) {
 		return nil, apiErr.IllegalOperation.WithDetails("不能关注自己")
 	}

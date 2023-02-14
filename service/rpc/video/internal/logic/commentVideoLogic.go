@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
 
@@ -34,9 +35,22 @@ func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.
 		Content: in.Content,
 	}
 
-	if err := l.svcCtx.DBList.Mysql.Create(&comment).Error; err != nil {
+	tx := l.svcCtx.DBList.Mysql.Begin()
+
+	if err := tx.Create(&comment).Error; err != nil {
+		tx.Rollback()
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
 	}
+
+	// 更新视频评论数
+	if err := tx.Model(&model.Video{}).
+		Where("id = ?", in.VideoId).
+		UpdateColumn("comment_count", gorm.Expr("comment_count + ?", 1)).
+		Error; err != nil {
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
+
+	tx.Commit()
 
 	return &video.CommentVideoResponse{
 		Id:          int64(comment.ID),

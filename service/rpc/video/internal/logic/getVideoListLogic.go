@@ -2,14 +2,13 @@ package logic
 
 import (
 	"context"
+	"github.com/zeromicro/go-zero/core/logx"
 	"google.golang.org/grpc/status"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
 	"h68u-tiktok-app-microservice/service/rpc/video/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
 	"time"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type GetVideoListLogic struct {

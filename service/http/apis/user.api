@@ -74,7 +74,7 @@ type (
 // 关注用户
 type (
 	FollowRequest {
-		UserId     int    `form:"user_id"`
+//		UserId     int    `form:"user_id"`
 		Token      string `form:"token"`
 		ToUserId   int    `form:"to_user_id"`
 		ActionType int    `form:"action_type"`

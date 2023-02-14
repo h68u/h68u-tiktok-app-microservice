@@ -34,7 +34,6 @@ type GetUserInfoReply struct {
 }
 
 type FollowRequest struct {
-	UserId     int    `form:"user_id"`
 	Token      string `form:"token"`
 	ToUserId   int    `form:"to_user_id"`
 	ActionType int    `form:"action_type"`
@@ -101,16 +100,6 @@ type Message struct {
 	CreateTime string `json:"create_time"`
 }
 
-type Friend struct {
-	Id            int    `json:"id"`
-	Name          string `json:"name"`
-	FollowCount   int    `json:"follow_count"`
-	FollowerCount int    `json:"follower_count"`
-	IsFollow      bool   `json:"is_follow"`
-	NewMessage    string `json:"new_message"`
-	MsgType       int    `json:"msg_type"`
-}
-
 type GetVideoListRequest struct {
 	LatestTime int64  `form:"latest_time,optional"`
 	Token      string `form:"token,optional"`
@@ -166,7 +155,7 @@ type CommentVideoRequest struct {
 	Token      string `form:"token"`
 	ActionType int    `form:"action_type"`
 	Content    string `form:"comment_text"`
-	CommentId  int    `form:"comment_id"`
+	CommentId  int    `form:"comment_id,optional"`
 }
 
 type CommentVideoReply struct {
@@ -194,11 +183,21 @@ type GetFriendListReply struct {
 	FriendList []Friend `json:"friend_list"`
 }
 
+type Friend struct {
+	Id            int    `json:"id"`
+	Name          string `json:"name"`
+	FollowCount   int    `json:"follow_count"`
+	FollowerCount int    `json:"follower_count"`
+	IsFollow      bool   `json:"is_follow"`
+	NewMessage    string `json:"new_message"`
+	MsgType       int    `json:"msg_type"`
+}
+
 type SendMessageRequest struct {
-	Token      string `form:"token"`
-	ToUserId   int    `form:"to_user_id"`
-	Content    string `form:"content"`
-	ActionType int    `form:"action_type"`
+	Token      string `json:"token"`
+	ToUserId   int    `json:"to_user_id"`
+	Content    string `json:"content"`
+	ActionType int    `json:"action_type"`
 }
 
 type SendMessageReply struct {
@@ -206,8 +205,8 @@ type SendMessageReply struct {
 }
 
 type GetHistoryMessageRequest struct {
-	Token    string `form:"token"`
-	ToUserId int    `form:"to_user_id"`
+	Token    string `json:"token"`
+	ToUserId int    `json:"to_user_id"`
 }
 
 type GetHistoryMessageReply struct {

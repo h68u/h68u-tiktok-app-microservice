@@ -20,12 +20,21 @@ service app {
 // 获取好友列表
 type (
 	GetFriendListRequest {
-		UserId int    `json:"user_id"`
-		Token  string `json:"token"`
+		UserId int    `form:"user_id"`
+		Token  string `form:"token"`
 	}
 	GetFriendListReply {
 		BasicReply
-		UserList []User `json:"user_list"`
+		FriendList []Friend `json:"friend_list"`
+	}
+	Friend {
+		Id            int    `json:"id"`
+		Name          string `json:"name"`
+		FollowCount   int    `json:"follow_count"`
+		FollowerCount int    `json:"follower_count"`
+		IsFollow      bool   `json:"is_follow"`
+		NewMessage    string `json:"new_message"`
+		MsgType       int    `json:"msg_type"`
 	}
 )
 

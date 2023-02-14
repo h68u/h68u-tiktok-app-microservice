@@ -20,6 +20,7 @@ type (
 	GetMessageListRequest  = contact.GetMessageListRequest
 	GetMessageListResponse = contact.GetMessageListResponse
 	Message                = contact.Message
+	UserInfo               = contact.UserInfo
 
 	Contact interface {
 		GetFriendsId(ctx context.Context, in *GetFriendsIdRequest, opts ...grpc.CallOption) (*GetFriendsIdResponse, error)

@@ -103,7 +103,7 @@ type (
 		Token      string `form:"token"`
 		ActionType int    `form:"action_type"`
 		Content    string `form:"comment_text"`
-		CommentId  int    `form:"comment_id"`
+		CommentId  int    `form:"comment_id,optional"`
 	}
 	CommentVideoReply {
 		BasicReply
