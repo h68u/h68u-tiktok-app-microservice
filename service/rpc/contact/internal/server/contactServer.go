@@ -22,14 +22,14 @@ func NewContactServer(svcCtx *svc.ServiceContext) *ContactServer {
 	}
 }
 
-func (s *ContactServer) GetFriendsId(ctx context.Context, in *contact.GetFriendsIdRequest) (*contact.GetFriendsIdResponse, error) {
-	l := logic.NewGetFriendsIdLogic(ctx, s.svcCtx)
-	return l.GetFriendsId(in)
-}
-
 func (s *ContactServer) CreateMessage(ctx context.Context, in *contact.CreateMessageRequest) (*contact.Empty, error) {
 	l := logic.NewCreateMessageLogic(ctx, s.svcCtx)
 	return l.CreateMessage(in)
+}
+
+func (s *ContactServer) GetLatestMessage(ctx context.Context, in *contact.GetLatestMessageRequest) (*contact.GetLatestMessageResponse, error) {
+	l := logic.NewGetLatestMessageLogic(ctx, s.svcCtx)
+	return l.GetLatestMessage(in)
 }
 
 func (s *ContactServer) GetMessageList(ctx context.Context, in *contact.GetMessageListRequest) (*contact.GetMessageListResponse, error) {

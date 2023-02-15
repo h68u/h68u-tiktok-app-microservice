@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"h68u-tiktok-app-microservice/common/error/apiErr"
 	"net/http"
@@ -39,6 +40,8 @@ func main() {
 			return http.StatusInternalServerError, err
 		}
 	})
+
+	logx.DisableStat()
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

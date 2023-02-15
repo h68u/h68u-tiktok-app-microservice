@@ -12,29 +12,23 @@ message Message {
   int32 Id = 1;
   string Content = 2;
   int32 CreateTime = 3;
-}
-// 用户信息结构体
-message UserInfo {
-  int32 Id = 1;
-  string Name = 2;
-  int32 FollowCount = 3;
-  int32 FansCount = 4;
-  string NewMessage = 5;
-  int32 MsgType = 6;
+  int32 FromId = 4;
+  int32 ToId = 5;
 }
 
 service Contact {
-  rpc GetFriendsId (GetFriendsIdRequest) returns (GetFriendsIdResponse);
   rpc CreateMessage (CreateMessageRequest) returns (Empty);
+  rpc GetLatestMessage (GetLatestMessageRequest) returns (GetLatestMessageResponse);
   rpc GetMessageList (GetMessageListRequest) returns (GetMessageListResponse);
 }
 
-message GetFriendsIdRequest {
-  int32 Id = 1;
+message GetLatestMessageRequest {
+  int32 UserAId = 1;
+  int32 UserBId = 2;
 }
 
-message GetFriendsIdResponse {
-  repeated UserInfo FriendsId = 1;
+message GetLatestMessageResponse {
+  Message Message = 1;
 }
 
 message CreateMessageRequest {

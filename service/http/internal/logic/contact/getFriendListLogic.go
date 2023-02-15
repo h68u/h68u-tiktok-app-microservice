@@ -2,12 +2,12 @@ package contact
 
 import (
 	"context"
+	"github.com/liyue201/gostl/ds/set"
 	"h68u-tiktok-app-microservice/common/error/apiErr"
-	"h68u-tiktok-app-microservice/service/rpc/contact/types/contact"
-	"h68u-tiktok-app-microservice/service/rpc/user/types/user"
-
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
+	"h68u-tiktok-app-microservice/service/rpc/contact/types/contact"
+	"h68u-tiktok-app-microservice/service/rpc/user/types/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -26,41 +26,153 @@ func NewGetFriendListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 	}
 }
 
+const (
+	MsgTypeReceived = 0
+	MsgTypeSent     = 1
+)
+
 func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (resp *types.GetFriendListReply, err error) {
-	logx.WithContext(l.ctx).Infof("获取朋友列表: %v", req)
-	//拿数据
-	GetFriendListResponse, err := l.svcCtx.ContactRpc.GetFriendsId(l.ctx, &contact.GetFriendsIdRequest{
-		Id: int32(req.UserId),
+
+	// 声明一个set记录好友列表
+	friendSet := set.New[*user.UserInfo](func(a, b *user.UserInfo) int {
+		if a.Id == b.Id {
+			return 0
+		} else if a.Id > b.Id {
+			return 1
+		} else {
+			return -1
+		}
+	}, set.WithGoroutineSafe())
+
+	// 记录有没有关注某个用户
+	followedMap := make(map[int32]bool)
+
+	//拿到关注列表的数据
+	GetFollowListReply, err := l.svcCtx.UserRpc.GetFollowList(l.ctx, &user.GetFollowListRequest{
+		UserId: int32(req.UserId),
 	})
 	if err != nil {
-		logx.WithContext(l.ctx).Errorf("获取朋友列表失败:%v", err)
+		logx.WithContext(l.ctx).Errorf("GetFollowList failed, err:%v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
+	}
+	for _, v := range GetFollowListReply.FollowList {
+		friendSet.Insert(v)
+		followedMap[v.Id] = true
+	}
+
+	//拿到粉丝列表的信息
+	GetFansListReply, err := l.svcCtx.UserRpc.GetFansList(l.ctx, &user.GetFansListRequest{
+		UserId: int32(req.UserId),
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetFansList err: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
+	}
+	for _, v := range GetFansListReply.FansList {
+		friendSet.Insert(v)
+	}
+
+	//遍历set，确认哪些用户的关注信息不在map中，需要查询
+	var needQueryUserIds []int32
+	for iter := friendSet.Begin(); iter.IsValid(); iter.Next() {
+		if _, ok := followedMap[iter.Value().Id]; !ok {
+			needQueryUserIds = append(needQueryUserIds, iter.Value().Id)
+		}
+	}
+
+	//查询用户关注信息
+	IsFollowV2Reply, err := l.svcCtx.UserRpc.IsFollowV2(l.ctx, &user.IsFollowV2Request{
+		FollowList: func() []*user.IsFollowRequest {
+			var followList []*user.IsFollowRequest
+			for _, v := range needQueryUserIds {
+				followList = append(followList, &user.IsFollowRequest{
+					UserId:       int32(req.UserId),
+					FollowUserId: v,
+				})
+			}
+			return followList
+		}(),
+	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("FansListLogic.FansList IsFollowV2 err: %v", err)
 		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
-	var friendList []types.Friend
-	for _, friend := range GetFriendListResponse.FriendsId {
-		//判断关注者是否关注了你
-		isFollowReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
-			UserId:       friend.Id,
-			FollowUserId: int32(req.UserId),
+	//遍历查询结果，更新map
+	for _, v := range IsFollowV2Reply.IsFollowedUserId {
+		followedMap[v] = true
+	}
+
+	// 查询最近消息
+	//GetGetLatestMessageV2Reply, err := l.svcCtx.ContactRpc.GetLatestMessageV2(l.ctx, &contact.GetLatestMessageV2Request{
+	//	UserPair: func() []*contact.UserPair {
+	//		var userPairList []*contact.UserPair
+	//		for iter := friendSet.Begin(); iter.IsValid(); iter.Next() {
+	//			userPairList = append(userPairList, &contact.UserPair{
+	//				UserAId: min(int32(req.UserId), iter.Value().Id),
+	//				UserBId: max(int32(req.UserId), iter.Value().Id),
+	//			})
+	//		}
+	//		return userPairList
+	//	}(),
+	//})
+	//if err != nil {
+	//	logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetLatestMessageV2 err: %v", err)
+	//	return nil, apiErr.InternalError(l.ctx, err.Error())
+	//}
+
+	// 准备返回值
+	var friends []types.Friend
+	for iter := friendSet.Begin(); iter.IsValid(); iter.Next() {
+
+		// 查询最近消息
+		GetGetLatestMessageReply, err := l.svcCtx.ContactRpc.GetLatestMessage(l.ctx, &contact.GetLatestMessageRequest{
+			UserAId: int32(req.UserId),
+			UserBId: iter.Value().Id,
 		})
 		if err != nil {
-			logx.WithContext(l.ctx).Errorf("IsFollow failed, err:%v", err)
+			logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetLatestMessageV2 err: %v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
-		friendList = append(friendList, types.Friend{
-			Id:            int(friend.Id),
-			Name:          friend.Name,
-			FollowCount:   int(friend.FollowCount),
-			FollowerCount: int(friend.FansCount),
-			IsFollow:      isFollowReply.IsFollow,
-			NewMessage:    friend.NewMessage,
-			MsgType:       int(friend.MsgType),
+
+		friends = append(friends, types.Friend{
+			Id:            int(iter.Value().Id),
+			Name:          iter.Value().Name,
+			FollowCount:   int(iter.Value().FollowCount),
+			FollowerCount: int(iter.Value().FansCount),
+			IsFollow:      followedMap[iter.Value().Id],
+			Message:       GetGetLatestMessageReply.Message.Content,
+			MsgType: func() int {
+				if GetGetLatestMessageReply.Message.FromId == int32(req.UserId) {
+					return MsgTypeSent
+				} else {
+					return MsgTypeReceived
+				}
+			}(),
 		})
 	}
+
+	//// 遍历最近消息，更新返回值
+	//for _, v := range GetGetLatestMessageV2Reply.Message {
+	//	if v.FromId == int32(req.UserId) {
+	//		friends[v.ToId] = func() types.Friend {
+	//			friend := friends[v.ToId]
+	//			friend.Message = v.Content
+	//			friend.MsgType = MsgTypeSent
+	//			return friend
+	//		}()
+	//	} else {
+	//		friends[v.FromId] = func() types.Friend {
+	//			friend := friends[v.FromId]
+	//			friend.Message = v.Content
+	//			friend.MsgType = MsgTypeReceived
+	//			return friend
+	//		}()
+	//	}
+	//}
+
 	return &types.GetFriendListReply{
 		BasicReply: types.BasicReply(apiErr.Success),
-		FriendList: friendList,
+		FriendList: friends,
 	}, nil
-
 }

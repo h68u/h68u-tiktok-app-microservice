@@ -27,6 +27,7 @@ service User {
   rpc GetFansList(GetFansListRequest) returns (GetFansListReply);
 
   rpc IsFollow(IsFollowRequest) returns (IsFollowReply);
+  rpc IsFollowV2(IsFollowV2Request) returns (IsFollowV2Reply);
 }
 
 message GetUserByNameRequest {
@@ -87,4 +88,12 @@ message IsFollowRequest {
 
 message IsFollowReply {
   bool IsFollow = 1;
+}
+
+message IsFollowV2Request {
+  repeated IsFollowRequest FollowList = 1;
+}
+
+message IsFollowV2Reply {
+  repeated int32 IsFollowedUserId = 1;
 }

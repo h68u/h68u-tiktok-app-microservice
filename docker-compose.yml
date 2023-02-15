@@ -8,8 +8,11 @@ services:
   
   #前端api + 业务rpc - Front-end API + business RPC
   h68u-tiktok:
-    image: lyumikael/gomodd:v1.0.0 # if you "macOs intel" or "linux amd"
+#    image: lyumikael/gomodd:v1.0.0 # if you "macOs intel" or "linux amd"
 #    image: lyumikael/go-modd-env:v1.0.0  # if you macOs m1
+    build:
+      context: .
+      dockerfile: deploy/config/modd.DockerFile
     container_name: h68u-tiktok
     environment:
       # 时区上海 - Timezone Shanghai
@@ -130,8 +133,8 @@ services:
 
   #消费kafka中filebeat收集的数据输出到es - The data output collected by FileBeat in Kafka is output to ES
   go-stash:
-    image: kevinwan/go-stash:1.0 # if you "macOs intel" or "linux amd"
-#    image: kevinwan/go-stash:1.0-arm64 #  if you "macOs m1" or "linux arm"
+    image: kevinwan/go-stash:1.0 # if you "macOS intel" or "linux amd"
+#    image: kevinwan/go-stash:1.0-arm64 #  if you "macOS m1" or "linux arm"
     container_name: go-stash
     environment:
       # 时区上海 - Time zone Shanghai (Change if needed)

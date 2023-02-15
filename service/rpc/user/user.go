@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/logx"
 	"h68u-tiktok-app-microservice/service/rpc/user/internal/config"
 	"h68u-tiktok-app-microservice/service/rpc/user/internal/server"
 	"h68u-tiktok-app-microservice/service/rpc/user/internal/svc"
@@ -33,6 +34,7 @@ func main() {
 	})
 	defer s.Stop()
 
+	logx.DisableStat()
 	fmt.Printf("Starting rpc server at %s...\n", c.ListenOn)
 	s.Start()
 }

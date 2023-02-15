@@ -26,6 +26,8 @@ type (
 	GetUserReply         = user.GetUserReply
 	IsFollowReply        = user.IsFollowReply
 	IsFollowRequest      = user.IsFollowRequest
+	IsFollowV2Reply      = user.IsFollowV2Reply
+	IsFollowV2Request    = user.IsFollowV2Request
 	UnFollowUserRequest  = user.UnFollowUserRequest
 	UserInfo             = user.UserInfo
 
@@ -38,6 +40,7 @@ type (
 		GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListReply, error)
 		GetFansList(ctx context.Context, in *GetFansListRequest, opts ...grpc.CallOption) (*GetFansListReply, error)
 		IsFollow(ctx context.Context, in *IsFollowRequest, opts ...grpc.CallOption) (*IsFollowReply, error)
+		IsFollowV2(ctx context.Context, in *IsFollowV2Request, opts ...grpc.CallOption) (*IsFollowV2Reply, error)
 	}
 
 	defaultUser struct {
@@ -89,4 +92,9 @@ func (m *defaultUser) GetFansList(ctx context.Context, in *GetFansListRequest, o
 func (m *defaultUser) IsFollow(ctx context.Context, in *IsFollowRequest, opts ...grpc.CallOption) (*IsFollowReply, error) {
 	client := user.NewUserClient(m.cli.Conn())
 	return client.IsFollow(ctx, in, opts...)
+}
+
+func (m *defaultUser) IsFollowV2(ctx context.Context, in *IsFollowV2Request, opts ...grpc.CallOption) (*IsFollowV2Reply, error) {
+	client := user.NewUserClient(m.cli.Conn())
+	return client.IsFollowV2(ctx, in, opts...)
 }

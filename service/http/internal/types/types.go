@@ -97,7 +97,9 @@ type Comment struct {
 type Message struct {
 	Id         int    `json:"id"`
 	Content    string `json:"content"`
-	CreateTime string `json:"create_time"`
+	CreateTime int64  `json:"create_time"`
+	FromUserId int    `json:"from_user_id"`
+	ToUserId   int    `json:"to_user_id"`
 }
 
 type GetVideoListRequest struct {
@@ -180,7 +182,7 @@ type GetFriendListRequest struct {
 
 type GetFriendListReply struct {
 	BasicReply
-	FriendList []Friend `json:"friend_list"`
+	FriendList []Friend `json:"user_list"` // 没错就是这个名字
 }
 
 type Friend struct {
@@ -189,15 +191,15 @@ type Friend struct {
 	FollowCount   int    `json:"follow_count"`
 	FollowerCount int    `json:"follower_count"`
 	IsFollow      bool   `json:"is_follow"`
-	NewMessage    string `json:"new_message"`
-	MsgType       int    `json:"msg_type"`
+	Message       string `json:"message"`
+	MsgType       int    `json:"msgType"`
 }
 
 type SendMessageRequest struct {
-	Token      string `json:"token"`
-	ToUserId   int    `json:"to_user_id"`
-	Content    string `json:"content"`
-	ActionType int    `json:"action_type"`
+	Token      string `from:"token"`
+	ToUserId   int    `from:"to_user_id"`
+	Content    string `from:"content"`
+	ActionType int    `from:"action_type"`
 }
 
 type SendMessageReply struct {
@@ -205,8 +207,8 @@ type SendMessageReply struct {
 }
 
 type GetHistoryMessageRequest struct {
-	Token    string `json:"token"`
-	ToUserId int    `json:"to_user_id"`
+	Token    string `form:"token"`
+	ToUserId int    `form:"to_user_id"`
 }
 
 type GetHistoryMessageReply struct {

@@ -25,26 +25,27 @@ type (
 	}
 	GetFriendListReply {
 		BasicReply
-		FriendList []Friend `json:"friend_list"`
+		FriendList []Friend `json:"user_list"` // 没错就是这个名字
 	}
 	Friend {
 		Id            int    `json:"id"`
 		Name          string `json:"name"`
+//		Avatar 	  string `json:"avatar"`
 		FollowCount   int    `json:"follow_count"`
 		FollowerCount int    `json:"follower_count"`
 		IsFollow      bool   `json:"is_follow"`
-		NewMessage    string `json:"new_message"`
-		MsgType       int    `json:"msg_type"`
+		Message    string `json:"message"`
+		MsgType       int    `json:"msgType"`
 	}
 )
 
 // 发送消息
 type (
 	SendMessageRequest {
-		Token      string `json:"token"`
-		ToUserId   int    `json:"to_user_id"`
-		Content    string `json:"content"`
-		ActionType int    `json:"action_type"`
+		Token      string `from:"token"`
+		ToUserId   int    `from:"to_user_id"`
+		Content    string `from:"content"`
+		ActionType int    `from:"action_type"`
 	}
 	SendMessageReply {
 		BasicReply
@@ -54,8 +55,8 @@ type (
 // 获取聊天记录
 type (
 	GetHistoryMessageRequest {
-		Token    string `json:"token"`
-		ToUserId int    `json:"to_user_id"`
+		Token    string `form:"token"`
+		ToUserId int    `form:"to_user_id"`
 	}
 	GetHistoryMessageReply {
 		BasicReply

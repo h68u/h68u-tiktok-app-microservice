@@ -13,18 +13,17 @@ import (
 )
 
 type (
-	CreateMessageRequest   = contact.CreateMessageRequest
-	Empty                  = contact.Empty
-	GetFriendsIdRequest    = contact.GetFriendsIdRequest
-	GetFriendsIdResponse   = contact.GetFriendsIdResponse
-	GetMessageListRequest  = contact.GetMessageListRequest
-	GetMessageListResponse = contact.GetMessageListResponse
-	Message                = contact.Message
-	UserInfo               = contact.UserInfo
+	CreateMessageRequest     = contact.CreateMessageRequest
+	Empty                    = contact.Empty
+	GetLatestMessageRequest  = contact.GetLatestMessageRequest
+	GetLatestMessageResponse = contact.GetLatestMessageResponse
+	GetMessageListRequest    = contact.GetMessageListRequest
+	GetMessageListResponse   = contact.GetMessageListResponse
+	Message                  = contact.Message
 
 	Contact interface {
-		GetFriendsId(ctx context.Context, in *GetFriendsIdRequest, opts ...grpc.CallOption) (*GetFriendsIdResponse, error)
 		CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*Empty, error)
+		GetLatestMessage(ctx context.Context, in *GetLatestMessageRequest, opts ...grpc.CallOption) (*GetLatestMessageResponse, error)
 		GetMessageList(ctx context.Context, in *GetMessageListRequest, opts ...grpc.CallOption) (*GetMessageListResponse, error)
 	}
 
@@ -39,14 +38,14 @@ func NewContact(cli zrpc.Client) Contact {
 	}
 }
 
-func (m *defaultContact) GetFriendsId(ctx context.Context, in *GetFriendsIdRequest, opts ...grpc.CallOption) (*GetFriendsIdResponse, error) {
-	client := contact.NewContactClient(m.cli.Conn())
-	return client.GetFriendsId(ctx, in, opts...)
-}
-
 func (m *defaultContact) CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*Empty, error) {
 	client := contact.NewContactClient(m.cli.Conn())
 	return client.CreateMessage(ctx, in, opts...)
+}
+
+func (m *defaultContact) GetLatestMessage(ctx context.Context, in *GetLatestMessageRequest, opts ...grpc.CallOption) (*GetLatestMessageResponse, error) {
+	client := contact.NewContactClient(m.cli.Conn())
+	return client.GetLatestMessage(ctx, in, opts...)
 }
 
 func (m *defaultContact) GetMessageList(ctx context.Context, in *GetMessageListRequest, opts ...grpc.CallOption) (*GetMessageListResponse, error) {

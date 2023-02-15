@@ -22,8 +22,8 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ContactClient interface {
-	GetFriendsId(ctx context.Context, in *GetFriendsIdRequest, opts ...grpc.CallOption) (*GetFriendsIdResponse, error)
 	CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*Empty, error)
+	GetLatestMessage(ctx context.Context, in *GetLatestMessageRequest, opts ...grpc.CallOption) (*GetLatestMessageResponse, error)
 	GetMessageList(ctx context.Context, in *GetMessageListRequest, opts ...grpc.CallOption) (*GetMessageListResponse, error)
 }
 
@@ -35,18 +35,18 @@ func NewContactClient(cc grpc.ClientConnInterface) ContactClient {
 	return &contactClient{cc}
 }
 
-func (c *contactClient) GetFriendsId(ctx context.Context, in *GetFriendsIdRequest, opts ...grpc.CallOption) (*GetFriendsIdResponse, error) {
-	out := new(GetFriendsIdResponse)
-	err := c.cc.Invoke(ctx, "/contact.Contact/GetFriendsId", in, out, opts...)
+func (c *contactClient) CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/contact.Contact/CreateMessage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *contactClient) CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*Empty, error) {
-	out := new(Empty)
-	err := c.cc.Invoke(ctx, "/contact.Contact/CreateMessage", in, out, opts...)
+func (c *contactClient) GetLatestMessage(ctx context.Context, in *GetLatestMessageRequest, opts ...grpc.CallOption) (*GetLatestMessageResponse, error) {
+	out := new(GetLatestMessageResponse)
+	err := c.cc.Invoke(ctx, "/contact.Contact/GetLatestMessage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,8 +66,8 @@ func (c *contactClient) GetMessageList(ctx context.Context, in *GetMessageListRe
 // All implementations must embed UnimplementedContactServer
 // for forward compatibility
 type ContactServer interface {
-	GetFriendsId(context.Context, *GetFriendsIdRequest) (*GetFriendsIdResponse, error)
 	CreateMessage(context.Context, *CreateMessageRequest) (*Empty, error)
+	GetLatestMessage(context.Context, *GetLatestMessageRequest) (*GetLatestMessageResponse, error)
 	GetMessageList(context.Context, *GetMessageListRequest) (*GetMessageListResponse, error)
 	mustEmbedUnimplementedContactServer()
 }
@@ -76,11 +76,11 @@ type ContactServer interface {
 type UnimplementedContactServer struct {
 }
 
-func (UnimplementedContactServer) GetFriendsId(context.Context, *GetFriendsIdRequest) (*GetFriendsIdResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetFriendsId not implemented")
-}
 func (UnimplementedContactServer) CreateMessage(context.Context, *CreateMessageRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateMessage not implemented")
+}
+func (UnimplementedContactServer) GetLatestMessage(context.Context, *GetLatestMessageRequest) (*GetLatestMessageResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLatestMessage not implemented")
 }
 func (UnimplementedContactServer) GetMessageList(context.Context, *GetMessageListRequest) (*GetMessageListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMessageList not implemented")
@@ -98,24 +98,6 @@ func RegisterContactServer(s grpc.ServiceRegistrar, srv ContactServer) {
 	s.RegisterService(&Contact_ServiceDesc, srv)
 }
 
-func _Contact_GetFriendsId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetFriendsIdRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ContactServer).GetFriendsId(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/contact.Contact/GetFriendsId",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContactServer).GetFriendsId(ctx, req.(*GetFriendsIdRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Contact_CreateMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateMessageRequest)
 	if err := dec(in); err != nil {
@@ -130,6 +112,24 @@ func _Contact_CreateMessage_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ContactServer).CreateMessage(ctx, req.(*CreateMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Contact_GetLatestMessage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetLatestMessageRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContactServer).GetLatestMessage(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/contact.Contact/GetLatestMessage",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContactServer).GetLatestMessage(ctx, req.(*GetLatestMessageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -160,12 +160,12 @@ var Contact_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ContactServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetFriendsId",
-			Handler:    _Contact_GetFriendsId_Handler,
-		},
-		{
 			MethodName: "CreateMessage",
 			Handler:    _Contact_CreateMessage_Handler,
+		},
+		{
+			MethodName: "GetLatestMessage",
+			Handler:    _Contact_GetLatestMessage_Handler,
 		},
 		{
 			MethodName: "GetMessageList",

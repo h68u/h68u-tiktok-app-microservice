@@ -61,3 +61,8 @@ func (s *UserServer) IsFollow(ctx context.Context, in *user.IsFollowRequest) (*u
 	l := logic.NewIsFollowLogic(ctx, s.svcCtx)
 	return l.IsFollow(in)
 }
+
+func (s *UserServer) IsFollowV2(ctx context.Context, in *user.IsFollowV2Request) (*user.IsFollowV2Reply, error) {
+	l := logic.NewIsFollowV2Logic(ctx, s.svcCtx)
+	return l.IsFollowV2(in)
+}

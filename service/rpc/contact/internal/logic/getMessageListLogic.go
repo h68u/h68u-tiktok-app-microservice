@@ -34,9 +34,11 @@ func (l *GetMessageListLogic) GetMessageList(in *contact.GetMessageListRequest) 
 	var messageList []*contact.Message
 	for _, message := range messages {
 		messageList = append(messageList, &contact.Message{
-			Id:         int32(message.FromId),
-			Content:    string(message.Content),
+			Id:         int32(message.ID),
+			Content:    message.Content,
 			CreateTime: int32(message.CreatedAt.Unix()),
+			FromId:     int32(message.FromId),
+			ToId:       int32(message.ToUserId),
 		})
 	}
 	return &contact.GetMessageListResponse{
