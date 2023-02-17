@@ -29,9 +29,11 @@ func (l *GetLatestMessageLogic) GetLatestMessage(in *contact.GetLatestMessageReq
 
 	l.svcCtx.DBList.Mysql.
 		Where("from_id = ? and to_user_id = ?", in.UserAId, in.UserBId).
-		Or("from_id = ? and to_user_id = ?", in.UserAId, in.UserBId).
+		Or("from_id = ? and to_user_id = ?", in.UserBId, in.UserAId).
 		Order("created_at desc").
 		First(&result)
+
+	l.Logger.Info("GetLatestMessage", result)
 
 	return &contact.GetLatestMessageResponse{
 		Message: &contact.Message{

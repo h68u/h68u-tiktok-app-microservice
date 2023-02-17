@@ -54,7 +54,7 @@ func initMysql(c config.Config) *gorm.DB {
 	}
 
 	// 自动建表
-	err = db.AutoMigrate(&model.Message{})
+	err = db.AutoMigrate(&model.Message{}, &model.Friend{})
 	if err != nil {
 		panic(err)
 	}

@@ -8,3 +8,9 @@ type Message struct {
 	ToUserId int64
 	Content  string `gorm:"not null"`
 }
+
+type Friend struct {
+	gorm.Model
+	UserId   int64
+	FriendId int64
+}

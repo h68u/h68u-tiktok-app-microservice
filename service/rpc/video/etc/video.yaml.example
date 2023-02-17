@@ -7,7 +7,7 @@ DBList:
     Address: mysql:3306
     Username: root
     Password: "PXDN93VRKUm8TeE7"
-    DBName: h68u-tiktok
+    DBName: tiktok-video
     TablePrefix: ""
   Redis:
     Address: redis:6379

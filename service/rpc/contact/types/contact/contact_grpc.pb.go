@@ -25,6 +25,9 @@ type ContactClient interface {
 	CreateMessage(ctx context.Context, in *CreateMessageRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetLatestMessage(ctx context.Context, in *GetLatestMessageRequest, opts ...grpc.CallOption) (*GetLatestMessageResponse, error)
 	GetMessageList(ctx context.Context, in *GetMessageListRequest, opts ...grpc.CallOption) (*GetMessageListResponse, error)
+	MakeFriends(ctx context.Context, in *MakeFriendsRequest, opts ...grpc.CallOption) (*Empty, error)
+	LoseFriends(ctx context.Context, in *LoseFriendsRequest, opts ...grpc.CallOption) (*Empty, error)
+	GetFriendsList(ctx context.Context, in *GetFriendsListRequest, opts ...grpc.CallOption) (*GetFriendsListResponse, error)
 }
 
 type contactClient struct {
@@ -62,6 +65,33 @@ func (c *contactClient) GetMessageList(ctx context.Context, in *GetMessageListRe
 	return out, nil
 }
 
+func (c *contactClient) MakeFriends(ctx context.Context, in *MakeFriendsRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/contact.Contact/MakeFriends", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contactClient) LoseFriends(ctx context.Context, in *LoseFriendsRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/contact.Contact/LoseFriends", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *contactClient) GetFriendsList(ctx context.Context, in *GetFriendsListRequest, opts ...grpc.CallOption) (*GetFriendsListResponse, error) {
+	out := new(GetFriendsListResponse)
+	err := c.cc.Invoke(ctx, "/contact.Contact/GetFriendsList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ContactServer is the server API for Contact service.
 // All implementations must embed UnimplementedContactServer
 // for forward compatibility
@@ -69,6 +99,9 @@ type ContactServer interface {
 	CreateMessage(context.Context, *CreateMessageRequest) (*Empty, error)
 	GetLatestMessage(context.Context, *GetLatestMessageRequest) (*GetLatestMessageResponse, error)
 	GetMessageList(context.Context, *GetMessageListRequest) (*GetMessageListResponse, error)
+	MakeFriends(context.Context, *MakeFriendsRequest) (*Empty, error)
+	LoseFriends(context.Context, *LoseFriendsRequest) (*Empty, error)
+	GetFriendsList(context.Context, *GetFriendsListRequest) (*GetFriendsListResponse, error)
 	mustEmbedUnimplementedContactServer()
 }
 
@@ -84,6 +117,15 @@ func (UnimplementedContactServer) GetLatestMessage(context.Context, *GetLatestMe
 }
 func (UnimplementedContactServer) GetMessageList(context.Context, *GetMessageListRequest) (*GetMessageListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMessageList not implemented")
+}
+func (UnimplementedContactServer) MakeFriends(context.Context, *MakeFriendsRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MakeFriends not implemented")
+}
+func (UnimplementedContactServer) LoseFriends(context.Context, *LoseFriendsRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LoseFriends not implemented")
+}
+func (UnimplementedContactServer) GetFriendsList(context.Context, *GetFriendsListRequest) (*GetFriendsListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetFriendsList not implemented")
 }
 func (UnimplementedContactServer) mustEmbedUnimplementedContactServer() {}
 
@@ -152,6 +194,60 @@ func _Contact_GetMessageList_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Contact_MakeFriends_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MakeFriendsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContactServer).MakeFriends(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/contact.Contact/MakeFriends",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContactServer).MakeFriends(ctx, req.(*MakeFriendsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Contact_LoseFriends_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LoseFriendsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContactServer).LoseFriends(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/contact.Contact/LoseFriends",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContactServer).LoseFriends(ctx, req.(*LoseFriendsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Contact_GetFriendsList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetFriendsListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContactServer).GetFriendsList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/contact.Contact/GetFriendsList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContactServer).GetFriendsList(ctx, req.(*GetFriendsListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Contact_ServiceDesc is the grpc.ServiceDesc for Contact service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -170,6 +266,18 @@ var Contact_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMessageList",
 			Handler:    _Contact_GetMessageList_Handler,
+		},
+		{
+			MethodName: "MakeFriends",
+			Handler:    _Contact_MakeFriends_Handler,
+		},
+		{
+			MethodName: "LoseFriends",
+			Handler:    _Contact_LoseFriends_Handler,
+		},
+		{
+			MethodName: "GetFriendsList",
+			Handler:    _Contact_GetFriendsList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

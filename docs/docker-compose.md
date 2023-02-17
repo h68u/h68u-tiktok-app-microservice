@@ -54,9 +54,9 @@ $ FLUSH PRIVILEGES;
 
 ![image-20230213233846140](https://pic-go-img.oss-cn-hangzhou.aliyuncs.com/202302132338164.png)
 
-创建项目会访问到的库（严格来说微服务不应该共用一个库的，当这个项目很简单，为了方便就先这么做了）
+创建项目会访问到的库
 
-![image-20230213234616495](https://pic-go-img.oss-cn-hangzhou.aliyuncs.com/202302132346532.png)
+![image-20230216223030583](https://pic-go-img.oss-cn-hangzhou.aliyuncs.com/202302162230942.png)
 
 ## 启动所有服务
 

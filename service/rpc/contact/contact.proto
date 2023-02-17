@@ -20,6 +20,9 @@ service Contact {
   rpc CreateMessage (CreateMessageRequest) returns (Empty);
   rpc GetLatestMessage (GetLatestMessageRequest) returns (GetLatestMessageResponse);
   rpc GetMessageList (GetMessageListRequest) returns (GetMessageListResponse);
+  rpc MakeFriends (MakeFriendsRequest) returns (Empty);
+  rpc LoseFriends (LoseFriendsRequest) returns (Empty);
+  rpc GetFriendsList (GetFriendsListRequest) returns (GetFriendsListResponse);
 }
 
 message GetLatestMessageRequest {
@@ -44,4 +47,22 @@ message GetMessageListRequest {
 
 message GetMessageListResponse {
   repeated Message Messages = 1;
+}
+
+message MakeFriendsRequest {
+  int32 UserAId = 1;
+  int32 UserBId = 2;
+}
+
+message LoseFriendsRequest {
+  int32 UserAId = 1;
+  int32 UserBId = 2;
+}
+
+message GetFriendsListRequest {
+  int32 UserId = 1;
+}
+
+message GetFriendsListResponse {
+  repeated int32 FriendsId = 1;
 }

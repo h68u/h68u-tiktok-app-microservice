@@ -6,6 +6,7 @@ import (
 	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
+	"h68u-tiktok-app-microservice/service/rpc/contact/types/contact"
 	"h68u-tiktok-app-microservice/service/rpc/user/types/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -40,6 +41,7 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 		return nil, apiErr.IllegalOperation.WithDetails("不能关注自己")
 	}
 	if req.ActionType == 1 {
+
 		//判断是否已经关注
 		isFollowReply, _ := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
 			UserId:       int32(Id),
@@ -49,6 +51,7 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 			logx.WithContext(l.ctx).Errorf("已经关注过了")
 			return nil, apiErr.AlreadyFollowed
 		}
+
 		//关注
 		_, err := l.svcCtx.UserRpc.FollowUser(l.ctx, &user.FollowUserRequest{
 			UserId:       int32(Id),
@@ -58,6 +61,26 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 			logx.WithContext(l.ctx).Errorf("关注失败: %v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
+
+		//todo: 异步处理
+		// 检查是否互相关注
+		isFollowReply, _ = l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
+			UserId:       int32(req.ToUserId),
+			FollowUserId: int32(Id),
+		})
+
+		// 如果相互关注了就加好友
+		if isFollowReply.IsFollow {
+			_, err := l.svcCtx.ContactRpc.MakeFriends(l.ctx, &contact.MakeFriendsRequest{
+				UserAId: int32(Id),
+				UserBId: int32(req.ToUserId),
+			})
+			if err != nil {
+				logx.WithContext(l.ctx).Errorf("加好友失败: %v", err)
+				return nil, apiErr.InternalError(l.ctx, err.Error())
+			}
+		}
+
 	} else {
 		//判断是否已经关注
 		isFollowReply, _ := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
@@ -68,6 +91,7 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 			logx.WithContext(l.ctx).Errorf("还没有关注过")
 			return nil, apiErr.NotFollowed
 		}
+
 		//取消关注
 		_, err := l.svcCtx.UserRpc.UnFollowUser(l.ctx, &user.UnFollowUserRequest{
 			UserId:         int32(Id),
@@ -75,6 +99,17 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 		})
 		if err != nil {
 			logx.WithContext(l.ctx).Errorf("取消关注失败: %v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
+		}
+
+		//todo: 异步处理
+		// 解除好友关系
+		_, err = l.svcCtx.ContactRpc.LoseFriends(l.ctx, &contact.LoseFriendsRequest{
+			UserAId: int32(Id),
+			UserBId: int32(req.ToUserId),
+		})
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("解除好友关系失败: %v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 	}

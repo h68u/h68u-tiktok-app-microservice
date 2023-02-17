@@ -36,3 +36,18 @@ func (s *ContactServer) GetMessageList(ctx context.Context, in *contact.GetMessa
 	l := logic.NewGetMessageListLogic(ctx, s.svcCtx)
 	return l.GetMessageList(in)
 }
+
+func (s *ContactServer) MakeFriends(ctx context.Context, in *contact.MakeFriendsRequest) (*contact.Empty, error) {
+	l := logic.NewMakeFriendsLogic(ctx, s.svcCtx)
+	return l.MakeFriends(in)
+}
+
+func (s *ContactServer) LoseFriends(ctx context.Context, in *contact.LoseFriendsRequest) (*contact.Empty, error) {
+	l := logic.NewLoseFriendsLogic(ctx, s.svcCtx)
+	return l.LoseFriends(in)
+}
+
+func (s *ContactServer) GetFriendsList(ctx context.Context, in *contact.GetFriendsListRequest) (*contact.GetFriendsListResponse, error) {
+	l := logic.NewGetFriendsListLogic(ctx, s.svcCtx)
+	return l.GetFriendsList(in)
+}
