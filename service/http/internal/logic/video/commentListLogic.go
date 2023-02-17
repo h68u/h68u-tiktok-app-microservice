@@ -2,12 +2,12 @@ package video
 
 import (
 	"context"
-	"github.com/zeromicro/go-zero/core/threading"
+	"github.com/zeromicro/go-zero/core/mr"
 	"h68u-tiktok-app-microservice/common/error/apiErr"
 	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/rpc/user/userclient"
+	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
 	"h68u-tiktok-app-microservice/service/rpc/video/videoclient"
-	"sync"
 
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
@@ -39,7 +39,7 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 	}
 
 	// 获取评论数据
-	res, err := l.svcCtx.VideoRpc.GetCommentList(l.ctx, &videoclient.GetCommentListRequest{
+	commentListData, err := l.svcCtx.VideoRpc.GetCommentList(l.ctx, &videoclient.GetCommentListRequest{
 		VideoId: int32(req.VideoId),
 	})
 
@@ -48,74 +48,82 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
-	// 封装评论列表数据
-	wg := sync.WaitGroup{}
-	errChan := make(chan error, 1)
-	finished := make(chan bool, 1)
+	// 用于 reduce 时保持原来的顺序
+	// commentList 中 commentId 是唯一的, key 选择 commentId, value 是该 comment 再 commentList 中原始的位置
+	orderMp := make(map[int]int, len(commentListData.CommentList))
 
-	commentList := make([]types.Comment, len(res.CommentList))
-	for i, v := range res.CommentList {
-		wg.Add(1)
+	// mapreduce 并发处理列表请求
+	commentList, err := mr.MapReduce(func(source chan<- interface{}) {
+		for i, v := range commentListData.CommentList {
+			source <- v
+			orderMp[int(v.Id)] = i
+		}
 
-		// 协程函数入参(闭包)
-		index := i
-		commentInfo := v
+	}, func(item interface{}, writer mr.Writer, cancel func(error)) {
+		comment := item.(*video.Comment)
 
-		threading.GoSafe(func() {
-			defer wg.Done()
-			// 获取评论用户信息
-
-			l.Logger.Infof("评论用户id: %d", commentInfo.AuthorId)
-			userInfo, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userclient.GetUserByIdRequest{
-				Id: commentInfo.AuthorId,
-			})
-
-			if err != nil {
-				logx.WithContext(l.ctx).Errorf("获取评论用户信息失败: %v", err)
-				errChan <- apiErr.InternalError(l.ctx, err.Error())
-			}
-
-			// 获取用户是否关注该作者
-			isFollowRes, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
-				UserId:       int32(UserId),
-				FollowUserId: commentInfo.AuthorId,
-			})
-
-			if err != nil {
-				logx.WithContext(l.ctx).Errorf("获取用户是否关注该作者失败: %v", err)
-				errChan <- apiErr.InternalError(l.ctx, err.Error())
-			}
-
-			commentList[index] = types.Comment{
-				Id:         int(commentInfo.Id),
-				Content:    commentInfo.Content,
-				CreateTime: int(commentInfo.CreateTime),
-				User: types.User{
-					Id:            int(userInfo.Id),
-					Name:          userInfo.Name,
-					FollowCount:   int(userInfo.FollowCount),
-					FollowerCount: int(userInfo.FanCount),
-					IsFollow:      isFollowRes.IsFollow,
-				},
-			}
-
+		// 获取评论用户信息
+		l.Logger.Infof("评论用户id: %d", comment.AuthorId)
+		userInfo, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userclient.GetUserByIdRequest{
+			Id: comment.AuthorId,
 		})
-	}
 
-	threading.GoSafe(func() {
-		wg.Wait()
-		close(finished)
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("获取评论用户信息失败: %v", err)
+			cancel(apiErr.InternalError(l.ctx, err.Error()))
+			return
+		}
+
+		// 获取用户是否关注该作者
+		isFollowRes, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
+			UserId:       int32(UserId),
+			FollowUserId: comment.AuthorId,
+		})
+
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("获取用户是否关注该作者失败: %v", err)
+			cancel(apiErr.InternalError(l.ctx, err.Error()))
+			return
+		}
+
+		// 将包装好的数据返回
+		writer.Write(types.Comment{
+			Id:         int(comment.Id),
+			Content:    comment.Content,
+			CreateTime: int(comment.CreateTime),
+			User: types.User{
+				Id:            int(userInfo.Id),
+				Name:          userInfo.Name,
+				FollowCount:   int(userInfo.FollowCount),
+				FollowerCount: int(userInfo.FanCount),
+				IsFollow:      isFollowRes.IsFollow,
+			},
+		})
+
+	}, func(pipe <-chan interface{}, writer mr.Writer, cancel func(error)) {
+		list := make([]types.Comment, len(commentListData.CommentList))
+		for item := range pipe {
+			comment := item.(types.Comment)
+			// 从 orderMp 中获取评论在列表中的原始位置，避免 mapreduce 处理后导致分页数据混乱
+			i, ok := orderMp[comment.Id]
+			if !ok {
+				cancel(apiErr.InternalError(l.ctx, "获取评论在列表中的原始位置失败"))
+				return
+			}
+
+			list[i] = comment
+		}
+
+		writer.Write(list)
 	})
 
-	select {
-	case <-finished: // 正常退出
-	case err := <-errChan: // 获取时发生错误
-		return nil, err
+	if err != nil {
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	return &types.CommentListReply{
 		BasicReply:  types.BasicReply(apiErr.Success),
-		CommentList: commentList,
+		CommentList: commentList.([]types.Comment),
 	}, nil
 
 }

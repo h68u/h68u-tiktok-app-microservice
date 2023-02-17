@@ -2,15 +2,14 @@ package video
 
 import (
 	"context"
-	"github.com/zeromicro/go-zero/core/threading"
+	"github.com/zeromicro/go-zero/core/mr"
 	"h68u-tiktok-app-microservice/common/error/apiErr"
 	"h68u-tiktok-app-microservice/common/utils"
-	"h68u-tiktok-app-microservice/service/rpc/user/userclient"
-	"h68u-tiktok-app-microservice/service/rpc/video/videoclient"
-	"sync"
-
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
+	"h68u-tiktok-app-microservice/service/rpc/user/userclient"
+	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
+	"h68u-tiktok-app-microservice/service/rpc/video/videoclient"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -41,7 +40,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 	l.Logger.Debugf("获取用户喜欢视频列表, 用户id:%d\n", UserId)
 
 	// 获取用户喜欢视频列表
-	res, err := l.svcCtx.VideoRpc.GetFavoriteVideoList(l.ctx, &videoclient.GetFavoriteVideoListRequest{
+	likeVideoList, err := l.svcCtx.VideoRpc.GetFavoriteVideoList(l.ctx, &videoclient.GetFavoriteVideoListRequest{
 		UserId: int32(req.UserId),
 	})
 
@@ -50,84 +49,87 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
-	l.Logger.Infof("获取到的点赞视频数量为: %d\n", len(res.VideoList))
+	l.Logger.Infof("获取到的点赞视频数量为: %d\n", len(likeVideoList.VideoList))
 
-	// 封装列表数据
-	wg := sync.WaitGroup{}
-	errChan := make(chan error, 1)
-	finished := make(chan bool, 1)
+	// 用于 reduce 时保持原来的顺序
+	// likeVideoList 中 videoId 是唯一的, key 选择 videoId, value 是该 video 再 likeVideoList 中原始的位置
+	orderMp := make(map[int]int, len(likeVideoList.VideoList))
 
-	videoList := make([]types.Video, len(res.VideoList))
-	for i, v := range res.VideoList {
-		wg.Add(1)
+	// mapreduce 并发处理列表请求
+	videoList, err := mr.MapReduce(func(source chan<- interface{}) {
+		for i, v := range likeVideoList.VideoList {
+			source <- v
+			orderMp[int(v.Id)] = i
+		}
 
-		// 使用闭包将参数传入协程
-		index := i
-		videoRow := v
+	}, func(item interface{}, writer mr.Writer, cancel func(error)) {
+		videoInfo := item.(*video.VideoInfo)
 
-		threading.GoSafe(func() {
-			defer wg.Done()
-
-			// 获取作者信息
-			// todo:作者信息可以传切片查
-			authorInfo, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userclient.GetUserByIdRequest{
-				Id: videoRow.AuthorId,
-			})
-
-			if err != nil {
-				logx.WithContext(l.ctx).Errorf("获取作者信息失败: %v", err)
-				errChan <- apiErr.InternalError(l.ctx, err.Error())
-			}
-
-			// 获取用户是否关注该作者
-			isFollowRes, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
-				UserId:       int32(UserId),
-				FollowUserId: authorInfo.Id,
-			})
-
-			if err != nil {
-				logx.WithContext(l.ctx).Errorf("获取用户是否关注该作者失败: %v", err)
-				errChan <- apiErr.InternalError(l.ctx, err.Error())
-			}
-
-			author := types.User{
-				Id:            int(authorInfo.Id),
-				Name:          authorInfo.Name,
-				FollowCount:   int(authorInfo.FollowCount),
-				FollowerCount: int(authorInfo.FanCount),
-				IsFollow:      isFollowRes.IsFollow,
-			}
-
-			videoInfo := types.Video{
-				Id:            int(videoRow.Id),
-				Title:         videoRow.Title,
-				Author:        author,
-				PlayUrl:       videoRow.PlayUrl,
-				CoverUrl:      videoRow.CoverUrl,
-				FavoriteCount: int(videoRow.FavoriteCount),
-				CommentCount:  int(videoRow.CommentCount),
-				// 这里查询的是用户喜欢的视频列表,无需获取用户是否喜欢
-				IsFavorite: true,
-			}
-
-			videoList[index] = videoInfo
+		// 获取作者信息
+		authorInfo, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userclient.GetUserByIdRequest{
+			Id: videoInfo.AuthorId,
 		})
 
-	}
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("获取作者信息失败: %v", err)
+			cancel(apiErr.InternalError(l.ctx, err.Error()))
+			return
+		}
 
-	threading.GoSafe(func() {
-		wg.Wait()
-		close(finished)
+		// 获取用户是否关注该作者
+		isFollowRes, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
+			UserId:       int32(UserId),
+			FollowUserId: authorInfo.Id,
+		})
+
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("获取用户是否关注该作者失败: %v", err)
+			cancel(apiErr.InternalError(l.ctx, err.Error()))
+			return
+		}
+
+		author := types.User{
+			Id:            int(authorInfo.Id),
+			Name:          authorInfo.Name,
+			FollowCount:   int(authorInfo.FollowCount),
+			FollowerCount: int(authorInfo.FanCount),
+			IsFollow:      isFollowRes.IsFollow,
+		}
+
+		writer.Write(types.Video{
+			Id:            int(videoInfo.Id),
+			Title:         videoInfo.Title,
+			Author:        author,
+			PlayUrl:       videoInfo.PlayUrl,
+			CoverUrl:      videoInfo.CoverUrl,
+			FavoriteCount: int(videoInfo.FavoriteCount),
+			CommentCount:  int(videoInfo.CommentCount),
+			// 这里查询的是用户喜欢的视频列表,无需获取用户是否喜欢
+			IsFavorite: true,
+		})
+
+	}, func(pipe <-chan interface{}, writer mr.Writer, cancel func(error)) {
+		list := make([]types.Video, len(likeVideoList.VideoList))
+		for item := range pipe {
+			videoInfo := item.(types.Video)
+			i, ok := orderMp[videoInfo.Id]
+			if !ok {
+				cancel(apiErr.InternalError(l.ctx, "获取视频在列表中的原始位置失败"))
+				return
+			}
+
+			list[i] = videoInfo
+		}
+
+		writer.Write(list)
 	})
 
-	select {
-	case <-finished: // 正常退出
-	case err := <-errChan: // 获取时发生错误
-		return nil, err
+	if err != nil {
+		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 
 	return &types.FavoriteListReply{
 		BasicReply: types.BasicReply(apiErr.Success),
-		VideoList:  videoList,
+		VideoList:  videoList.([]types.Video),
 	}, nil
 }
