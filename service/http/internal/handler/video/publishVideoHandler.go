@@ -54,7 +54,7 @@ func PublishVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			httpx.Error(w, apiErr.FileUploadFailed.WithDetails(err.Error()))
 			return
 		}
-		if filetype.IsVideo(buf.Bytes()) == false {
+		if !filetype.IsVideo(buf.Bytes()) {
 			httpx.Error(w, apiErr.FileIsNotVideo)
 			return
 		}
