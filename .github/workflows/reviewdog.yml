@@ -19,13 +19,13 @@ jobs:
         # you can push it successfully even if there are lint errors
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3.4.0
-        if: github.event_name == 'push'
+#        if: github.event_name == 'push'
         with:
           version: latest
         # pull request lint
         # you should check lint errors before you merge it.
       - name: Run golangci-lint with reviewdog
         uses: reviewdog/action-golangci-lint@v2.2.2
-        if: github.event_name == 'pull_request'
-        with:
-          workdir: ./
+#        if: github.event_name == 'pull_request'
+#        with:
+#          workdir: ./
