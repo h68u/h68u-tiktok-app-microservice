@@ -30,7 +30,6 @@ type UserClient interface {
 	GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListReply, error)
 	GetFansList(ctx context.Context, in *GetFansListRequest, opts ...grpc.CallOption) (*GetFansListReply, error)
 	IsFollow(ctx context.Context, in *IsFollowRequest, opts ...grpc.CallOption) (*IsFollowReply, error)
-	IsFollowV2(ctx context.Context, in *IsFollowV2Request, opts ...grpc.CallOption) (*IsFollowV2Reply, error)
 }
 
 type userClient struct {
@@ -113,15 +112,6 @@ func (c *userClient) IsFollow(ctx context.Context, in *IsFollowRequest, opts ...
 	return out, nil
 }
 
-func (c *userClient) IsFollowV2(ctx context.Context, in *IsFollowV2Request, opts ...grpc.CallOption) (*IsFollowV2Reply, error) {
-	out := new(IsFollowV2Reply)
-	err := c.cc.Invoke(ctx, "/user.User/IsFollowV2", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -134,7 +124,6 @@ type UserServer interface {
 	GetFollowList(context.Context, *GetFollowListRequest) (*GetFollowListReply, error)
 	GetFansList(context.Context, *GetFansListRequest) (*GetFansListReply, error)
 	IsFollow(context.Context, *IsFollowRequest) (*IsFollowReply, error)
-	IsFollowV2(context.Context, *IsFollowV2Request) (*IsFollowV2Reply, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -165,9 +154,6 @@ func (UnimplementedUserServer) GetFansList(context.Context, *GetFansListRequest)
 }
 func (UnimplementedUserServer) IsFollow(context.Context, *IsFollowRequest) (*IsFollowReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsFollow not implemented")
-}
-func (UnimplementedUserServer) IsFollowV2(context.Context, *IsFollowV2Request) (*IsFollowV2Reply, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method IsFollowV2 not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -326,24 +312,6 @@ func _User_IsFollow_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
-func _User_IsFollowV2_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(IsFollowV2Request)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(UserServer).IsFollowV2(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/user.User/IsFollowV2",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServer).IsFollowV2(ctx, req.(*IsFollowV2Request))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -382,10 +350,6 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IsFollow",
 			Handler:    _User_IsFollow_Handler,
-		},
-		{
-			MethodName: "IsFollowV2",
-			Handler:    _User_IsFollowV2_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

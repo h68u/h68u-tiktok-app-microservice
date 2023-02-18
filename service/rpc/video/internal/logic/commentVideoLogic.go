@@ -4,6 +4,7 @@ import (
 	"context"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
 
@@ -45,6 +46,7 @@ func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.
 	// 更新视频评论数
 	if err := tx.Model(&model.Video{}).
 		Where("id = ?", in.VideoId).
+		Clauses(clause.Locking{Strength: "UPDATE"}).
 		UpdateColumn("comment_count", gorm.Expr("comment_count + ?", 1)).
 		Error; err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())

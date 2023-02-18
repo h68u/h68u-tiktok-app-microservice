@@ -27,17 +27,23 @@ func NewCreateUserLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Create
 }
 
 func (l *CreateUserLogic) CreateUser(in *user.CreateUserRequest) (*user.CreatUserReply, error) {
+	tx := l.svcCtx.DBList.Mysql.Begin()
 
 	// 检查是否已经存在
 	var count int64
-	l.svcCtx.DBList.Mysql.Model(&model.User{}).Where("username = ?", in.Name).Count(&count)
+	if err := tx.Model(&model.User{}).Where("username = ?", in.Name).Count(&count).Error; err != nil {
+		tx.Rollback()
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
 	if count > 0 {
+		tx.Rollback()
 		return nil, status.Error(rpcErr.UserAlreadyExist.Code, rpcErr.UserAlreadyExist.Message)
 	}
 
 	// 密码加密
 	password, err := bcrypt.GenerateFromPassword([]byte(in.Password), bcrypt.DefaultCost)
 	if err != nil {
+		tx.Rollback()
 		return nil, status.Error(rpcErr.PassWordEncryptFailed.Code, err.Error())
 	}
 
@@ -48,8 +54,12 @@ func (l *CreateUserLogic) CreateUser(in *user.CreateUserRequest) (*user.CreatUse
 	}
 
 	// 插入数据
-	err = l.svcCtx.DBList.Mysql.Create(newUser).Error
-	if err != nil {
+	if err := tx.Create(newUser).Error; err != nil {
+		tx.Rollback()
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
+
+	if err := tx.Commit().Error; err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
 	"h68u-tiktok-app-microservice/service/rpc/video/internal/svc"
@@ -30,7 +31,10 @@ func (l *FavoriteVideoLogic) FavoriteVideo(in *video.FavoriteVideoRequest) (*vid
 	err := l.svcCtx.DBList.Mysql.Transaction(func(tx *gorm.DB) error {
 		// 先查询用户是否点赞过该视频
 		f := model.Favorite{}
-		err := tx.Where("user_id = ? And video_id = ?", in.UserId, in.VideoId).First(&f).Error
+		err := tx.
+			Clauses(clause.Locking{Strength: "UPDATE"}).
+			Where("user_id = ? And video_id = ?", in.UserId, in.VideoId).
+			First(&f).Error
 
 		// 点赞记录已存在
 		if err == nil {
@@ -52,7 +56,7 @@ func (l *FavoriteVideoLogic) FavoriteVideo(in *video.FavoriteVideoRequest) (*vid
 		// 视频点赞量加一
 		if err := tx.Model(&model.Video{}).
 			Where("id = ?", in.VideoId).
-			//Update("favorite_count", "favorite_count + 1").
+			Clauses(clause.Locking{Strength: "UPDATE"}).
 			UpdateColumn("favorite_count", gorm.Expr("favorite_count + ?", 1)).
 			Error; err != nil {
 			return status.Error(rpcErr.DataBaseError.Code, err.Error())
