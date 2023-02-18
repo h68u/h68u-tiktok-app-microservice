@@ -41,3 +41,11 @@ scrape_configs:
           job: rpc-contact
           app: rpc-contact
           env: dev
+
+  - job_name: 'mq'
+    static_configs:
+      - targets: [ 'h68u-tiktok:4004' ]
+        labels:
+          job: mq
+          app: mq
+          env: dev

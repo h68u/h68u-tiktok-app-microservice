@@ -1,0 +1,37 @@
+Name: mq
+Host: 0.0.0.0
+Port: 7001
+
+#监控
+Prometheus:
+  Host: 0.0.0.0
+  Port: 4004
+  Path: /metrics
+
+#链路追踪
+Telemetry:
+  Name: mq
+  Endpoint: http://jaeger:14268/api/traces
+  Sampler: 1.0
+  Batcher: jaeger
+
+# RPC 配置
+ContactRpc:
+  Endpoints:
+    - 127.0.0.1:9003
+  NonBlock: true
+
+VideoRpc:
+  Endpoints:
+    - 127.0.0.1:9002
+  NonBlock: true
+
+UserRpc:
+  Endpoints:
+    - 127.0.0.1:9001
+  NonBlock: true
+
+Redis:
+  Address: redis:6379
+  Password: G62m50oigInC30sf
+

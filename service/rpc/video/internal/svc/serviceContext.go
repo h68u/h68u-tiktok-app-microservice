@@ -68,8 +68,8 @@ func initMysql(c config.Config) *gorm.DB {
 func initRedis(c config.Config) *redis.Client {
 	fmt.Println("connect Redis ...")
 	db := redis.NewClient(&redis.Options{
-		Addr: c.DBList.Redis.Address,
-		// Password: c.DBList.Redis.Password,
+		Addr:     c.DBList.Redis.Address,
+		Password: c.DBList.Redis.Password,
 		//DB:       c.DBList.Redis.DB,
 		//超时
 		ReadTimeout:  2 * time.Second,

@@ -3,10 +3,10 @@ package user
 import (
 	"context"
 	"h68u-tiktok-app-microservice/common/error/apiErr"
+	"h68u-tiktok-app-microservice/common/mq"
 	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
-	"h68u-tiktok-app-microservice/service/rpc/contact/types/contact"
 	"h68u-tiktok-app-microservice/service/rpc/user/types/user"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -62,24 +62,36 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
-		//todo: 异步处理
-		// 检查是否互相关注
-		isFollowReply, _ = l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
-			UserId:       int32(req.ToUserId),
-			FollowUserId: int32(Id),
-		})
-
-		// 如果相互关注了就加好友
-		if isFollowReply.IsFollow {
-			_, err := l.svcCtx.ContactRpc.MakeFriends(l.ctx, &contact.MakeFriendsRequest{
-				UserAId: int32(Id),
-				UserBId: int32(req.ToUserId),
-			})
-			if err != nil {
-				logx.WithContext(l.ctx).Errorf("加好友失败: %v", err)
-				return nil, apiErr.InternalError(l.ctx, err.Error())
-			}
+		// 发送异步任务：尝试加好友
+		task, err := mq.NewTryMakeFriendsTask(int32(Id), int32(req.ToUserId))
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("创建任务失败: %v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
+
+		if _, err := l.svcCtx.AsynqClient.Enqueue(task); err != nil {
+			logx.WithContext(l.ctx).Errorf("发送任务失败: %v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
+		}
+
+		//
+		//// 检查是否互相关注
+		//isFollowReply, _ = l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
+		//	UserId:       int32(req.ToUserId),
+		//	FollowUserId: int32(Id),
+		//})
+		//
+		//// 如果相互关注了就加好友
+		//if isFollowReply.IsFollow {
+		//	_, err := l.svcCtx.ContactRpc.MakeFriends(l.ctx, &contact.MakeFriendsRequest{
+		//		UserAId: int32(Id),
+		//		UserBId: int32(req.ToUserId),
+		//	})
+		//	if err != nil {
+		//		logx.WithContext(l.ctx).Errorf("加好友失败: %v", err)
+		//		return nil, apiErr.InternalError(l.ctx, err.Error())
+		//	}
+		//}
 
 	} else {
 		//判断是否已经关注
@@ -102,16 +114,27 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 
-		//todo: 异步处理
-		// 解除好友关系
-		_, err = l.svcCtx.ContactRpc.LoseFriends(l.ctx, &contact.LoseFriendsRequest{
-			UserAId: int32(Id),
-			UserBId: int32(req.ToUserId),
-		})
+		// 发送异步任务：解除好友关系
+		task, err := mq.NewLoseFriendsTask(int32(Id), int32(req.ToUserId))
 		if err != nil {
-			logx.WithContext(l.ctx).Errorf("解除好友关系失败: %v", err)
+			logx.WithContext(l.ctx).Errorf("创建任务失败: %v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
+
+		if _, err := l.svcCtx.AsynqClient.Enqueue(task); err != nil {
+			logx.WithContext(l.ctx).Errorf("发送任务失败: %v", err)
+			return nil, apiErr.InternalError(l.ctx, err.Error())
+		}
+
+		//// 解除好友关系
+		//_, err = l.svcCtx.ContactRpc.LoseFriends(l.ctx, &contact.LoseFriendsRequest{
+		//	UserAId: int32(Id),
+		//	UserBId: int32(req.ToUserId),
+		//})
+		//if err != nil {
+		//	logx.WithContext(l.ctx).Errorf("解除好友关系失败: %v", err)
+		//	return nil, apiErr.InternalError(l.ctx, err.Error())
+		//}
 	}
 	return &types.FollowReply{
 		BasicReply: types.BasicReply(apiErr.Success),

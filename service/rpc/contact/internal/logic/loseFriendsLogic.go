@@ -25,24 +25,24 @@ func NewLoseFriendsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoseF
 }
 
 func (l *LoseFriendsLogic) LoseFriends(in *contact.LoseFriendsRequest) (*contact.Empty, error) {
-	friendsA := model.Friend{
-		UserId:   int64(in.UserAId),
-		FriendId: int64(in.UserBId),
-	}
-
-	friendsB := model.Friend{
-		UserId:   int64(in.UserBId),
-		FriendId: int64(in.UserAId),
-	}
+	//friendsA := model.Friend{
+	//	UserId:   int64(in.UserAId),
+	//	FriendId: int64(in.UserBId),
+	//}
+	//
+	//friendsB := model.Friend{
+	//	UserId:   int64(in.UserBId),
+	//	FriendId: int64(in.UserAId),
+	//}
 
 	tx := l.svcCtx.DBList.Mysql.Begin()
 
-	if err := tx.Delete(&friendsA).Error; err != nil {
+	if err := tx.Where("user_id = ? AND friend_id = ?", in.UserAId, in.UserBId).Delete(&model.Friend{}).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}
 
-	if err := tx.Delete(&friendsB).Error; err != nil {
+	if err := tx.Where("user_id = ? AND friend_id = ?", in.UserBId, in.UserAId).Delete(&model.Friend{}).Error; err != nil {
 		tx.Rollback()
 		return nil, err
 	}

@@ -12,7 +12,7 @@ DBList:
     TablePrefix: ""
   Redis:
     Address: redis:6379
-    Password:
+    Password: G62m50oigInC30sf
 
 #监控
 Prometheus:
