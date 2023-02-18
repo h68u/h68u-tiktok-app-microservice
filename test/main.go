@@ -7,7 +7,9 @@ func main() {
 
 	// test closure in for loop
 	for i, v := range arr {
-		println(i, v)
+		go func() {
+			fmt.Println(i, v)
+		}()
 	}
 
 }
