@@ -33,7 +33,7 @@ func (l *FansListLogic) FansList(req *types.FansListRequest) (resp *types.FansLi
 		UserId: int32(req.UserId),
 	})
 	if err != nil {
-		logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetFansList err: %v", err)
+		logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetFansList err: %+v", err)
 		return nil, apiErr.InternalError(l.ctx, err.Error())
 	}
 	var fansList []types.User

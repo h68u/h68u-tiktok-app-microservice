@@ -51,6 +51,10 @@ func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *
 			}
 		}(),
 	})
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("GetVideoList err: %+v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
+	}
 
 	// 封装返回体
 	resp = &types.GetVideoListReply{}
