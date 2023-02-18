@@ -1,0 +1,28 @@
+name: reviewdog
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  golangci-lint:
+    name: runner / golangci-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+        # push lint
+        # you can push it successfully even if there are lint errors
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        if: github.event_name == 'push'
+        with:
+          version: latest
+        # pull request lint
+        # you should check lint errors before you merge it.
+      - name: golangci-lint
+        uses: reviewdog/action-golangci-lint@v2
+        if: github.event_name == 'pull_request'
+        with:
+          workdir: ./
