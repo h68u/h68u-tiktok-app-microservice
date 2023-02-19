@@ -46,6 +46,7 @@ func (l *AsynqServer) Start() {
 	mux := asynq.NewServeMux()
 	mux.HandleFunc(mq.TypeTryMakeFriends, l.tryMakeFriendsHandler)
 	mux.HandleFunc(mq.TypeLoseFriends, l.loseFriendsHandler)
+	mux.HandleFunc(mq.TypeDelCache, l.delCacheHandler)
 	// ...register other handlers...
 
 	if err := srv.Run(mux); err != nil {

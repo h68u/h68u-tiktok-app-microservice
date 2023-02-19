@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm/clause"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
+	"h68u-tiktok-app-microservice/common/mq"
+	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/rpc/video/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
 
@@ -63,5 +65,20 @@ func (l *UnFavoriteVideoLogic) UnFavoriteVideo(in *video.UnFavoriteVideoRequest)
 		return nil
 	})
 
-	return &video.Empty{}, err
+	if err != nil {
+		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
+
+	// 异步删除缓存
+	task, err := mq.NewDelCacheTask(utils.GenFavoriteVideoCacheKey(in.UserId, in.VideoId))
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("创建任务失败: %v", err)
+		return nil, status.Error(rpcErr.MQError.Code, err.Error())
+	}
+	if _, err := l.svcCtx.AsynqClient.Enqueue(task); err != nil {
+		logx.WithContext(l.ctx).Errorf("发送任务失败: %v", err)
+		return nil, status.Error(rpcErr.MQError.Code, err.Error())
+	}
+
+	return &video.Empty{}, nil
 }
