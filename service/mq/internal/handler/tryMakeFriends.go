@@ -37,7 +37,7 @@ func (l *AsynqServer) tryMakeFriendsHandler(ctx context.Context, t *asynq.Task) 
 	}
 
 	// 如果相互关注了就加好友
-	if isAFollowBReply.IsFollow == true && isBFollowAReply.IsFollow == true {
+	if isAFollowBReply.IsFollow && isBFollowAReply.IsFollow {
 		_, err := l.svcCtx.ContactRpc.MakeFriends(ctx, &contact.MakeFriendsRequest{
 			UserAId: p.UserBId,
 			UserBId: p.UserAId,
