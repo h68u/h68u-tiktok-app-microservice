@@ -36,6 +36,12 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 	friendsId, err := l.svcCtx.ContactRpc.GetFriendsList(l.ctx, &contact.GetFriendsListRequest{
 		UserId: int32(req.UserId),
 	})
+
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("获取历史消息列表失败: %v", err)
+		return nil, apiErr.InternalError(l.ctx, err.Error())
+	}
+
 	l.Logger.Infof("friendsId: %v", friendsId)
 
 	// 调用user服务的GetUserById接口

@@ -20,6 +20,7 @@ func main() {
 	var c config.Config
 
 	conf.MustLoad(*configFile, &c)
+	// nolint:staticcheck
 	prometheus.StartAgent(c.Prometheus)
 	trace.StartAgent(c.Telemetry)
 
