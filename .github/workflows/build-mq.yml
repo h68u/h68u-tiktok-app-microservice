@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
     paths:
-      - '.github/workflows/mq.yml'
+      - '.github/workflows/build-mq.yml'
       - 'service/mq/**'
       - 'common/**'
 #  pull_request:
