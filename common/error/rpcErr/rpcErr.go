@@ -7,7 +7,9 @@ import (
 
 const (
 	DataBaseErrorCode codes.Code = iota + 1000
+	CacheErrorCode
 	PasswordEncryptFailedCode
+	MQErrorCode
 )
 
 const (
@@ -21,7 +23,9 @@ const (
 
 var errCodeMap = map[codes.Code]string{
 	DataBaseErrorCode:         "数据库错误",
+	CacheErrorCode:            "缓存错误",
 	PasswordEncryptFailedCode: "密码加密失败",
+	MQErrorCode:               "消息队列错误",
 
 	UserAlreadyExistCode: "用户已存在",
 	UserNotExistCode:     "用户不存在",
@@ -32,6 +36,8 @@ var errCodeMap = map[codes.Code]string{
 var (
 	UserAlreadyExist      = NewRpcError(UserAlreadyExistCode)
 	DataBaseError         = NewRpcError(DataBaseErrorCode)
+	CacheError            = NewRpcError(CacheErrorCode)
+	MQError               = NewRpcError(MQErrorCode)
 	PassWordEncryptFailed = NewRpcError(PasswordEncryptFailedCode)
 	UserNotExist          = NewRpcError(UserNotExistCode)
 	CommentNotExist       = NewRpcError(CommentNotExistCode)

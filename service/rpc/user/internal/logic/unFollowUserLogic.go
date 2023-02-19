@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
+	"h68u-tiktok-app-microservice/common/mq"
+	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/rpc/user/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/user/types/user"
 
@@ -54,6 +56,17 @@ func (l *UnFollowUserLogic) UnFollowUser(in *user.UnFollowUserRequest) (*user.Em
 
 	if err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	}
+
+	// 异步删除缓存
+	task, err := mq.NewDelCacheTask(utils.GenFollowUserCacheKey(in.UserId, in.UnFollowUserId))
+	if err != nil {
+		logx.WithContext(l.ctx).Errorf("创建任务失败: %v", err)
+		return nil, status.Error(rpcErr.MQError.Code, err.Error())
+	}
+	if _, err := l.svcCtx.AsynqClient.Enqueue(task); err != nil {
+		logx.WithContext(l.ctx).Errorf("发送任务失败: %v", err)
+		return nil, status.Error(rpcErr.MQError.Code, err.Error())
 	}
 
 	return &user.Empty{}, nil

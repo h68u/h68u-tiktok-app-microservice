@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/go-redis/redis/v8"
+	"github.com/hibiken/asynq"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -13,8 +14,9 @@ import (
 )
 
 type ServiceContext struct {
-	Config config.Config
-	DBList *DBList
+	Config      config.Config
+	DBList      *DBList
+	AsynqClient *asynq.Client
 }
 
 type DBList struct {
@@ -24,8 +26,9 @@ type DBList struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	return &ServiceContext{
-		Config: c,
-		DBList: initDB(c),
+		Config:      c,
+		DBList:      initDB(c),
+		AsynqClient: asynq.NewClient(asynq.RedisClientOpt{Addr: c.DBList.Redis.Address, Password: c.DBList.Redis.Password}),
 	}
 }
 
