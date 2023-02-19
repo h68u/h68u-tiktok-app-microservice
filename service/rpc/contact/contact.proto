@@ -9,11 +9,11 @@ message Empty {}
 
 // 消息结构体
 message Message {
-  int32 Id = 1;
+  int64 Id = 1;
   string Content = 2;
-  int32 CreateTime = 3;
-  int32 FromId = 4;
-  int32 ToId = 5;
+  int64 CreateTime = 3;
+  int64 FromId = 4;
+  int64 ToId = 5;
 }
 
 service Contact {
@@ -26,8 +26,8 @@ service Contact {
 }
 
 message GetLatestMessageRequest {
-  int32 UserAId = 1;
-  int32 UserBId = 2;
+  int64 UserAId = 1;
+  int64 UserBId = 2;
 }
 
 message GetLatestMessageResponse {
@@ -35,14 +35,14 @@ message GetLatestMessageResponse {
 }
 
 message CreateMessageRequest {
-  int32 FromId = 1;
-  int32 ToId = 2;
+  int64 FromId = 1;
+  int64 ToId = 2;
   string content = 3;
 }
 
 message GetMessageListRequest {
-  int32 FromId = 1;
-  int32 ToId = 2;
+  int64 FromId = 1;
+  int64 ToId = 2;
 }
 
 message GetMessageListResponse {
@@ -50,19 +50,19 @@ message GetMessageListResponse {
 }
 
 message MakeFriendsRequest {
-  int32 UserAId = 1;
-  int32 UserBId = 2;
+  int64 UserAId = 1;
+  int64 UserBId = 2;
 }
 
 message LoseFriendsRequest {
-  int32 UserAId = 1;
-  int32 UserBId = 2;
+  int64 UserAId = 1;
+  int64 UserBId = 2;
 }
 
 message GetFriendsListRequest {
-  int32 UserId = 1;
+  int64 UserId = 1;
 }
 
 message GetFriendsListResponse {
-  repeated int32 FriendsId = 1;
+  repeated int64 FriendsId = 1;
 }

@@ -8,7 +8,7 @@ type RegisterRequest struct {
 
 type RegisterReply struct {
 	BasicReply
-	UserId int    `json:"user_id"`
+	UserId int64  `json:"user_id"`
 	Token  string `json:"token"`
 }
 
@@ -19,12 +19,12 @@ type LoginRequest struct {
 
 type LoginReply struct {
 	BasicReply
-	UserId int    `json:"user_id"`
+	UserId int64  `json:"user_id"`
 	Token  string `json:"token"`
 }
 
 type GetUserInfoRequest struct {
-	UserId int    `form:"user_id"`
+	UserId int64  `form:"user_id"`
 	Token  string `form:"token"`
 }
 
@@ -35,8 +35,8 @@ type GetUserInfoReply struct {
 
 type FollowRequest struct {
 	Token      string `form:"token"`
-	ToUserId   int    `form:"to_user_id"`
-	ActionType int    `form:"action_type"`
+	ToUserId   int64  `form:"to_user_id"`
+	ActionType int64  `form:"action_type"`
 }
 
 type FollowReply struct {
@@ -44,7 +44,7 @@ type FollowReply struct {
 }
 
 type FollowListRequest struct {
-	UserId int    `form:"user_id"`
+	UserId int64  `form:"user_id"`
 	Token  string `form:"token"`
 }
 
@@ -54,7 +54,7 @@ type FollowListReply struct {
 }
 
 type FansListRequest struct {
-	UserId int    `form:"user_id"`
+	UserId int64  `form:"user_id"`
 	Token  string `form:"token"`
 }
 
@@ -64,42 +64,42 @@ type FansListReply struct {
 }
 
 type BasicReply struct {
-	Code int    `json:"status_code"`
+	Code int64  `json:"status_code"`
 	Msg  string `json:"status_msg"`
 }
 
 type User struct {
-	Id            int    `json:"id"`
+	Id            int64  `json:"id"`
 	Name          string `json:"name"`
-	FollowCount   int    `json:"follow_count"`
-	FollowerCount int    `json:"follower_count"`
+	FollowCount   int64  `json:"follow_count"`
+	FollowerCount int64  `json:"follower_count"`
 	IsFollow      bool   `json:"is_follow"`
 }
 
 type Video struct {
-	Id            int    `json:"id"`
+	Id            int64  `json:"id"`
 	Title         string `json:"title"`
 	Author        User   `json:"author"`
 	PlayUrl       string `json:"play_url"`
 	CoverUrl      string `json:"cover_url"`
-	FavoriteCount int    `json:"favorite_count"`
-	CommentCount  int    `json:"comment_count"`
+	FavoriteCount int64  `json:"favorite_count"`
+	CommentCount  int64  `json:"comment_count"`
 	IsFavorite    bool   `json:"is_favorite"`
 }
 
 type Comment struct {
-	Id         int    `json:"id"`
+	Id         int64  `json:"id"`
 	Content    string `json:"content"`
 	User       User   `json:"user"`
-	CreateTime int    `json:"create_time"`
+	CreateTime int64  `json:"create_time"`
 }
 
 type Message struct {
-	Id         int    `json:"id"`
+	Id         int64  `json:"id"`
 	Content    string `json:"content"`
 	CreateTime int64  `json:"create_time"`
-	FromUserId int    `json:"from_user_id"`
-	ToUserId   int    `json:"to_user_id"`
+	FromUserId int64  `json:"from_user_id"`
+	ToUserId   int64  `json:"to_user_id"`
 }
 
 type GetVideoListRequest struct {
@@ -124,7 +124,7 @@ type PublishVideoReply struct {
 
 type PublishedListRequest struct {
 	Token  string `form:"token"`
-	UserId int    `form:"user_id"`
+	UserId int64  `form:"user_id"`
 }
 
 type PublishedListReply struct {
@@ -133,9 +133,9 @@ type PublishedListReply struct {
 }
 
 type FavoriteVideoRequest struct {
-	VideoId    int    `form:"video_id"`
+	VideoId    int64  `form:"video_id"`
 	Token      string `form:"token"`
-	ActionType int    `form:"action_type"`
+	ActionType int64  `form:"action_type"`
 }
 
 type FavoriteVideoReply struct {
@@ -144,7 +144,7 @@ type FavoriteVideoReply struct {
 
 type FavoriteListRequest struct {
 	Token  string `form:"token"`
-	UserId int    `form:"user_id"`
+	UserId int64  `form:"user_id"`
 }
 
 type FavoriteListReply struct {
@@ -153,11 +153,11 @@ type FavoriteListReply struct {
 }
 
 type CommentVideoRequest struct {
-	VideoId    int    `form:"video_id"`
+	VideoId    int64  `form:"video_id"`
 	Token      string `form:"token"`
-	ActionType int    `form:"action_type"`
+	ActionType int64  `form:"action_type"`
 	Content    string `form:"comment_text"`
-	CommentId  int    `form:"comment_id,optional"`
+	CommentId  int64  `form:"comment_id,optional"`
 }
 
 type CommentVideoReply struct {
@@ -167,7 +167,7 @@ type CommentVideoReply struct {
 
 type CommentListRequest struct {
 	Token   string `form:"token"`
-	VideoId int    `form:"video_id"`
+	VideoId int64  `form:"video_id"`
 }
 
 type CommentListReply struct {
@@ -176,7 +176,7 @@ type CommentListReply struct {
 }
 
 type GetFriendListRequest struct {
-	UserId int    `form:"user_id"`
+	UserId int64  `form:"user_id"`
 	Token  string `form:"token"`
 }
 
@@ -186,20 +186,20 @@ type GetFriendListReply struct {
 }
 
 type Friend struct {
-	Id            int    `json:"id"`
+	Id            int64  `json:"id"`
 	Name          string `json:"name"`
-	FollowCount   int    `json:"follow_count"`
-	FollowerCount int    `json:"follower_count"`
+	FollowCount   int64  `json:"follow_count"`
+	FollowerCount int64  `json:"follower_count"`
 	IsFollow      bool   `json:"is_follow"`
 	Message       string `json:"message"`
-	MsgType       int    `json:"msgType"`
+	MsgType       int64  `json:"msgType"`
 }
 
 type SendMessageRequest struct {
 	Token      string `from:"token"`
-	ToUserId   int    `from:"to_user_id"`
+	ToUserId   int64  `from:"to_user_id"`
 	Content    string `from:"content"`
-	ActionType int    `from:"action_type"`
+	ActionType int64  `from:"action_type"`
 }
 
 type SendMessageReply struct {
@@ -208,7 +208,7 @@ type SendMessageReply struct {
 
 type GetHistoryMessageRequest struct {
 	Token    string `form:"token"`
-	ToUserId int    `form:"to_user_id"`
+	ToUserId int64  `form:"to_user_id"`
 }
 
 type GetHistoryMessageReply struct {

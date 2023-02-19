@@ -43,8 +43,8 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 	switch req.ActionType {
 	case FavoriteVideoAction:
 		if _, err = l.svcCtx.VideoRpc.FavoriteVideo(l.ctx, &videoclient.FavoriteVideoRequest{
-			UserId:  int32(UserId),
-			VideoId: int32(req.VideoId),
+			UserId:  UserId,
+			VideoId: req.VideoId,
 		}); err != nil {
 			logx.WithContext(l.ctx).Errorf("收藏视频失败: %v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
@@ -52,8 +52,8 @@ func (l *FavoriteVideoLogic) FavoriteVideo(req *types.FavoriteVideoRequest) (res
 
 	case UnFavoriteVideoAction:
 		if _, err = l.svcCtx.VideoRpc.UnFavoriteVideo(l.ctx, &videoclient.UnFavoriteVideoRequest{
-			UserId:  int32(UserId),
-			VideoId: int32(req.VideoId),
+			UserId:  UserId,
+			VideoId: req.VideoId,
 		}); err != nil {
 			logx.WithContext(l.ctx).Errorf("取消收藏视频失败: %v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())

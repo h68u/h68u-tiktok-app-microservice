@@ -78,7 +78,7 @@ func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *
 		isFollowed := false
 		if UserId != 0 {
 			IsFollowedReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
-				UserId:       int32(UserId),
+				UserId:       UserId,
 				FollowUserId: v.AuthorId,
 			})
 			if err != nil {
@@ -92,7 +92,7 @@ func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *
 		isFavorite := false
 		if UserId != 0 {
 			IsFavoriteVideoReply, err := l.svcCtx.VideoRpc.IsFavoriteVideo(l.ctx, &videoclient.IsFavoriteVideoRequest{
-				UserId:  int32(UserId),
+				UserId:  UserId,
 				VideoId: v.Id,
 			})
 			if err != nil {
@@ -104,19 +104,19 @@ func (l *GetVideoListLogic) GetVideoList(req *types.GetVideoListRequest) (resp *
 
 		// 封装返回体
 		resp.VideoList = append(resp.VideoList, types.Video{
-			Id:    int(v.Id),
+			Id:    v.Id,
 			Title: v.Title,
 			Author: types.User{
-				Id:            int(v.AuthorId),
+				Id:            v.AuthorId,
 				Name:          GetUserInfoReply.Name,
-				FollowCount:   int(GetUserInfoReply.FollowCount),
-				FollowerCount: int(GetUserInfoReply.FanCount),
+				FollowCount:   GetUserInfoReply.FollowCount,
+				FollowerCount: GetUserInfoReply.FanCount,
 				IsFollow:      isFollowed,
 			},
 			PlayUrl:       v.PlayUrl,
 			CoverUrl:      v.CoverUrl,
-			FavoriteCount: int(v.FavoriteCount),
-			CommentCount:  int(v.CommentCount),
+			FavoriteCount: v.FavoriteCount,
+			CommentCount:  v.CommentCount,
 			IsFavorite:    isFavorite,
 		})
 

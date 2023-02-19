@@ -38,7 +38,7 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *typ
 
 	//获取用户信息(名字与id)
 	getUserByIdReply, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &user.GetUserByIdRequest{
-		Id: int32(req.UserId),
+		Id: req.UserId,
 	})
 	if rpcErr.Is(err, rpcErr.UserNotExist) {
 		return nil, apiErr.UserNotFound
@@ -49,7 +49,7 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *typ
 
 	//判断是否关注了该用户
 	isFollowReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
-		UserId:       int32(id),
+		UserId:       id,
 		FollowUserId: getUserByIdReply.Id,
 	})
 	if err != nil {
@@ -60,10 +60,10 @@ func (l *GetUserInfoLogic) GetUserInfo(req *types.GetUserInfoRequest) (resp *typ
 	return &types.GetUserInfoReply{
 		BasicReply: types.BasicReply(apiErr.Success),
 		User: types.User{
-			Id:            int(getUserByIdReply.Id),
+			Id:            getUserByIdReply.Id,
 			Name:          getUserByIdReply.Name,
-			FollowCount:   int(getUserByIdReply.FollowCount),
-			FollowerCount: int(getUserByIdReply.FanCount),
+			FollowCount:   getUserByIdReply.FollowCount,
+			FollowerCount: getUserByIdReply.FanCount,
 			IsFollow:      isFollowReply.IsFollow,
 		},
 	}, nil

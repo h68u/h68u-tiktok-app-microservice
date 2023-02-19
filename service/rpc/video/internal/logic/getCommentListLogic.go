@@ -39,9 +39,9 @@ func (l *GetCommentListLogic) GetCommentList(in *video.GetCommentListRequest) (*
 	commentList := make([]*video.Comment, 0, len(comments))
 	for _, v := range comments {
 		commentList = append(commentList, &video.Comment{
-			Id:         int32(v.ID),
-			AuthorId:   int32(v.UserId),
-			CreateTime: int32(v.CreatedAt.Unix()),
+			Id:         int64(v.ID),
+			AuthorId:   v.UserId,
+			CreateTime: v.CreatedAt.Unix(),
 			Content:    v.Content,
 		})
 	}

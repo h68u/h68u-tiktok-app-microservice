@@ -27,13 +27,13 @@ func NewMakeFriendsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MakeF
 func (l *MakeFriendsLogic) MakeFriends(in *contact.MakeFriendsRequest) (*contact.Empty, error) {
 
 	newFriendsA := model.Friend{
-		UserId:   int64(in.UserAId),
-		FriendId: int64(in.UserBId),
+		UserId:   in.UserAId,
+		FriendId: in.UserBId,
 	}
 
 	newFriendsB := model.Friend{
-		UserId:   int64(in.UserBId),
-		FriendId: int64(in.UserAId),
+		UserId:   in.UserBId,
+		FriendId: in.UserAId,
 	}
 
 	tx := l.svcCtx.DBList.Mysql.Begin()

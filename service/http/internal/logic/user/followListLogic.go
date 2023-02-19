@@ -30,7 +30,7 @@ func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.
 
 	//拿到关注列表的数据
 	GetFollowListReply, err := l.svcCtx.UserRpc.GetFollowList(l.ctx, &user.GetFollowListRequest{
-		UserId: int32(req.UserId),
+		UserId: req.UserId,
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("GetFollowList failed, err:%v", err)
@@ -42,17 +42,17 @@ func (l *FollowListLogic) FollowList(req *types.FollowListRequest) (resp *types.
 		////判断关注者是否关注了你
 		//isFollowReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
 		//	UserId:       follow.Id,
-		//	FollowUserId: int32(req.UserId),
+		//	FollowUserId: int64(req.UserId),
 		//})
 		if err != nil {
 			logx.WithContext(l.ctx).Errorf("IsFollow failed, err:%v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 		followList = append(followList, types.User{
-			Id:            int(follow.Id),
+			Id:            follow.Id,
 			Name:          follow.Name,
-			FollowCount:   int(follow.FollowCount),
-			FollowerCount: int(follow.FansCount),
+			FollowCount:   follow.FollowCount,
+			FollowerCount: follow.FansCount,
 			//IsFollow:      isFollowReply.IsFollow,
 			IsFollow: true, // 这个字段的含义就是这么奇怪（
 		})

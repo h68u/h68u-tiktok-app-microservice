@@ -29,8 +29,8 @@ func (l *CreateMessageLogic) CreateMessage(in *contact.CreateMessageRequest) (*c
 	err := l.svcCtx.DBList.Mysql.Transaction(func(tx *gorm.DB) error {
 		//创建并增加消息记录
 		message := model.Message{
-			FromId:   int64(in.FromId),
-			ToUserId: int64(in.ToId),
+			FromId:   in.FromId,
+			ToUserId: in.ToId,
 			Content:  in.Content,
 		}
 

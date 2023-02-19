@@ -1,44 +1,44 @@
 syntax = "v1"
 
 type BasicReply  {
-    Code int    `json:"status_code"`
+    Code int64    `json:"status_code"`
     Msg  string `json:"status_msg"`
 }
 
 // 用户信息
 type User {
-    Id            int    `json:"id"`
+    Id            int64    `json:"id"`
     Name          string `json:"name"`
-    FollowCount   int    `json:"follow_count"`
-    FollowerCount int    `json:"follower_count"`
+    FollowCount   int64    `json:"follow_count"`
+    FollowerCount int64    `json:"follower_count"`
     IsFollow      bool   `json:"is_follow"`
 }
 
 // 视频信息
 type Video {
-    Id            int    `json:"id"`
+    Id            int64    `json:"id"`
     Title         string `json:"title"`
     Author        User   `json:"author"`
     PlayUrl       string `json:"play_url"`
     CoverUrl      string `json:"cover_url"`
-    FavoriteCount int    `json:"favorite_count"`
-    CommentCount  int    `json:"comment_count"`
+    FavoriteCount int64    `json:"favorite_count"`
+    CommentCount  int64    `json:"comment_count"`
     IsFavorite    bool   `json:"is_favorite"`
 }
 
 // 评论信息
 type Comment {
-    Id         int    `json:"id"`
+    Id         int64    `json:"id"`
     Content    string `json:"content"`
     User       User   `json:"user"`
-    CreateTime int    `json:"create_time"`
+    CreateTime int64    `json:"create_time"`
 }
 
 // 聊天消息
 type Message {
-    Id         int    `json:"id"`
+    Id         int64    `json:"id"`
     Content    string `json:"content"`
     CreateTime int64 `json:"create_time"`
-    FromUserId int    `json:"from_user_id"`
-    ToUserId   int    `json:"to_user_id"`
+    FromUserId int64    `json:"from_user_id"`
+    ToUserId   int64    `json:"to_user_id"`
 }

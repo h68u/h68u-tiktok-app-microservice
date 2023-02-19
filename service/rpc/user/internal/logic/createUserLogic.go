@@ -64,6 +64,6 @@ func (l *CreateUserLogic) CreateUser(in *user.CreateUserRequest) (*user.CreatUse
 	}
 
 	return &user.CreatUserReply{
-		Id: int32(newUser.ID),
+		Id: int64(newUser.ID),
 	}, nil
 }

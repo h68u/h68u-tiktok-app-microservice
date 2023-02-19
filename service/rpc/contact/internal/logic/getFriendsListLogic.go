@@ -33,10 +33,10 @@ func (l *GetFriendsListLogic) GetFriendsList(in *contact.GetFriendsListRequest) 
 	}
 
 	return &contact.GetFriendsListResponse{
-		FriendsId: func() []int32 {
-			var friendsId []int32
+		FriendsId: func() []int64 {
+			var friendsId []int64
 			for _, v := range result {
-				friendsId = append(friendsId, int32(v.FriendId))
+				friendsId = append(friendsId, v.FriendId)
 			}
 			return friendsId
 		}(),

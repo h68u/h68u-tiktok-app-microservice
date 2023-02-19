@@ -47,8 +47,8 @@ func (l *FavoriteVideoLogic) FavoriteVideo(in *video.FavoriteVideoRequest) (*vid
 		}
 
 		// 未点赞，创建记录
-		f.VideoId = int64(in.VideoId)
-		f.UserId = int64(in.UserId)
+		f.VideoId = in.VideoId
+		f.UserId = in.UserId
 		if err := tx.Create(&f).Error; err != nil {
 			return status.Error(rpcErr.DataBaseError.Code, err.Error())
 		}

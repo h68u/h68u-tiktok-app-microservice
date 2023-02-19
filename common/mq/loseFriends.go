@@ -9,11 +9,11 @@ import (
 const TypeLoseFriends = "friend:lose"
 
 type LoseFriendsPayload struct {
-	UserAId int32
-	UserBId int32
+	UserAId int64
+	UserBId int64
 }
 
-func NewLoseFriendsTask(userAId int32, userBId int32) (*asynq.Task, error) {
+func NewLoseFriendsTask(userAId int64, userBId int64) (*asynq.Task, error) {
 	payload, err := json.Marshal(LoseFriendsPayload{UserAId: userAId, UserBId: userBId})
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to marshal payload for task %q", TypeLoseFriends)

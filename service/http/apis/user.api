@@ -22,7 +22,7 @@ type (
 	}
 	RegisterReply {
 		BasicReply
-		UserId int    `json:"user_id"`
+		UserId int64    `json:"user_id"`
 		Token  string `json:"token"`
 	}
 )
@@ -35,7 +35,7 @@ type (
 	}
 	LoginReply {
 		BasicReply
-		UserId int    `json:"user_id"`
+		UserId int64    `json:"user_id"`
 		Token  string `json:"token"`
 	}
 )
@@ -62,7 +62,7 @@ service app {
 // 获取用户信息
 type (
 	GetUserInfoRequest {
-		UserId int    `form:"user_id"`
+		UserId int64    `form:"user_id"`
 		Token  string `form:"token"`
 	}
 	GetUserInfoReply {
@@ -74,10 +74,10 @@ type (
 // 关注用户
 type (
 	FollowRequest {
-//		UserId     int    `form:"user_id"`
+//		UserId     int64    `form:"user_id"`
 		Token      string `form:"token"`
-		ToUserId   int    `form:"to_user_id"`
-		ActionType int    `form:"action_type"`
+		ToUserId   int64    `form:"to_user_id"`
+		ActionType int64    `form:"action_type"`
 	}
 	FollowReply {
 		BasicReply
@@ -87,7 +87,7 @@ type (
 // 获取关注列表
 type (
 	FollowListRequest {
-		UserId int    `form:"user_id"`
+		UserId int64    `form:"user_id"`
 		Token  string `form:"token"`
 	}
 	FollowListReply {
@@ -99,7 +99,7 @@ type (
 // 获取粉丝列表
 type (
 	FansListRequest {
-		UserId int    `form:"user_id"`
+		UserId int64    `form:"user_id"`
 		Token  string `form:"token"`
 	}
 	FansListReply {

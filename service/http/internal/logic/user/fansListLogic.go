@@ -30,7 +30,7 @@ func (l *FansListLogic) FansList(req *types.FansListRequest) (resp *types.FansLi
 
 	//拿到粉丝列表的信息
 	GetFansListReply, err := l.svcCtx.UserRpc.GetFansList(l.ctx, &user.GetFansListRequest{
-		UserId: int32(req.UserId),
+		UserId: req.UserId,
 	})
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetFansList err: %+v", err)
@@ -40,7 +40,7 @@ func (l *FansListLogic) FansList(req *types.FansListRequest) (resp *types.FansLi
 	for _, fans := range GetFansListReply.FansList {
 		//先判断你是否关注你的粉丝
 		isFollowReply, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
-			UserId:       int32(req.UserId),
+			UserId:       req.UserId,
 			FollowUserId: fans.Id,
 		})
 		if err != nil {
@@ -48,10 +48,10 @@ func (l *FansListLogic) FansList(req *types.FansListRequest) (resp *types.FansLi
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 		fansList = append(fansList, types.User{
-			Id:            int(fans.Id),
+			Id:            fans.Id,
 			Name:          fans.Name,
-			FollowCount:   int(fans.FollowCount),
-			FollowerCount: int(fans.FansCount),
+			FollowCount:   fans.FollowCount,
+			FollowerCount: fans.FansCount,
 			IsFollow:      isFollowReply.IsFollow,
 		})
 	}

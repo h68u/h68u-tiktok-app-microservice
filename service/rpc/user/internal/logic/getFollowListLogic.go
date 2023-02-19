@@ -34,10 +34,10 @@ func (l *GetFollowListLogic) GetFollowList(in *user.GetFollowListRequest) (*user
 	var followList []*user.UserInfo
 	for _, follow := range follows.Follows {
 		followList = append(followList, &user.UserInfo{
-			Id:          int32(follow.ID),
+			Id:          int64(follow.ID),
 			Name:        follow.Username,
-			FollowCount: int32(follow.FollowCount),
-			FansCount:   int32(follow.FanCount),
+			FollowCount: follow.FollowCount,
+			FansCount:   follow.FanCount,
 		})
 	}
 

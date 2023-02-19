@@ -40,7 +40,7 @@ func (l *GetUserByNameLogic) GetUserByName(in *user.GetUserByNameRequest) (*user
 	}
 
 	return &user.GetUserReply{
-		Id:          int32(result.ID),
+		Id:          int64(result.ID),
 		Name:        result.Username,
 		Password:    result.Password,
 		FollowCount: result.FollowCount,

@@ -35,10 +35,10 @@ func (l *GetFansListLogic) GetFansList(in *user.GetFansListRequest) (*user.GetFa
 	var fanList []*user.UserInfo
 	for _, fan := range fans.Fans {
 		fanList = append(fanList, &user.UserInfo{
-			Id:          int32(fan.ID),
+			Id:          int64(fan.ID),
 			Name:        fan.Username,
-			FollowCount: int32(fan.FollowCount),
-			FansCount:   int32(fan.FanCount),
+			FollowCount: fan.FollowCount,
+			FansCount:   fan.FanCount,
 		})
 	}
 	return &user.GetFansListReply{

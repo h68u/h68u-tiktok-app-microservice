@@ -37,11 +37,11 @@ func (l *GetLatestMessageLogic) GetLatestMessage(in *contact.GetLatestMessageReq
 
 	return &contact.GetLatestMessageResponse{
 		Message: &contact.Message{
-			Id:         int32(result.ID),
+			Id:         int64(result.ID),
 			Content:    result.Content,
-			CreateTime: int32(result.CreatedAt.Unix()),
-			FromId:     int32(result.FromId),
-			ToId:       int32(result.ToUserId),
+			CreateTime: result.CreatedAt.Unix(),
+			FromId:     result.FromId,
+			ToId:       result.ToUserId,
 		},
 	}, nil
 }

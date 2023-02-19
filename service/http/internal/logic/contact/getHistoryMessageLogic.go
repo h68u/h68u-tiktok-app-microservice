@@ -35,8 +35,8 @@ func (l *GetHistoryMessageLogic) GetHistoryMessage(req *types.GetHistoryMessageR
 
 	// 获取我的发送的消息
 	MessageSent, err := l.svcCtx.ContactRpc.GetMessageList(l.ctx, &contactclient.GetMessageListRequest{
-		FromId: int32(UserId),
-		ToId:   int32(req.ToUserId),
+		FromId: UserId,
+		ToId:   req.ToUserId,
 	})
 
 	if err != nil {
@@ -46,8 +46,8 @@ func (l *GetHistoryMessageLogic) GetHistoryMessage(req *types.GetHistoryMessageR
 
 	// 获取我的接收的消息
 	MessageReceived, err := l.svcCtx.ContactRpc.GetMessageList(l.ctx, &contactclient.GetMessageListRequest{
-		FromId: int32(req.ToUserId),
-		ToId:   int32(UserId),
+		FromId: req.ToUserId,
+		ToId:   UserId,
 	})
 
 	if err != nil {
@@ -59,21 +59,21 @@ func (l *GetHistoryMessageLogic) GetHistoryMessage(req *types.GetHistoryMessageR
 
 	for _, message := range MessageSent.Messages {
 		messageList = append(messageList, types.Message{
-			Id:         int(message.Id),
+			Id:         message.Id,
 			Content:    message.Content,
-			CreateTime: int64(message.CreateTime),
-			FromUserId: int(message.FromId),
-			ToUserId:   int(message.ToId),
+			CreateTime: message.CreateTime,
+			FromUserId: message.FromId,
+			ToUserId:   message.ToId,
 		})
 	}
 
 	for _, message := range MessageReceived.Messages {
 		messageList = append(messageList, types.Message{
-			Id:         int(message.Id),
+			Id:         message.Id,
 			Content:    message.Content,
-			CreateTime: int64(message.CreateTime),
-			FromUserId: int(message.FromId),
-			ToUserId:   int(message.ToId),
+			CreateTime: message.CreateTime,
+			FromUserId: message.FromId,
+			ToUserId:   message.ToId,
 		})
 	}
 

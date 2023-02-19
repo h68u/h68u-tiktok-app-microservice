@@ -9,7 +9,7 @@ import (
 )
 
 type ApiErr struct {
-	Code int
+	Code int64
 	Msg  string
 }
 
@@ -20,11 +20,11 @@ type ErrInternal struct {
 }
 
 type ErrResponse struct {
-	Code int    `json:"status_code"`
+	Code int64  `json:"status_code"`
 	Msg  string `json:"status_msg"`
 }
 
-func newError(code int, msg string) ApiErr {
+func newError(code int64, msg string) ApiErr {
 	return ApiErr{
 		Code: code,
 		Msg:  msg,

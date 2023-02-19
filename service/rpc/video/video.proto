@@ -9,21 +9,21 @@ message Empty {}
 
 // 视频信息结构体
 message VideoInfo {
-  int32 Id = 1;
-  int32 AuthorId = 2;
+  int64 Id = 1;
+  int64 AuthorId = 2;
   string Title = 3;
   string PlayUrl = 4;
   string CoverUrl = 5;
-  int32 FavoriteCount = 6;
-  int32 CommentCount = 7;
+  int64 FavoriteCount = 6;
+  int64 CommentCount = 7;
   int64 CreateTime = 8;
 }
 
 // 评论信息结构体
 message Comment {
-  int32 Id = 1;
-  int32 AuthorId = 3;
-  int32 CreateTime =4;
+  int64 Id = 1;
+  int64 AuthorId = 3;
+  int64 CreateTime =4;
   string Content = 5;
 }
 
@@ -44,7 +44,7 @@ service Video {
 }
 
 message GetVideoListRequest {
-  int32 Num = 1;
+  int64 Num = 1;
   int64 LatestTime = 2;
 }
 
@@ -57,7 +57,7 @@ message PublishVideoRequest {
 }
 
 message GetVideoListByAuthorRequest {
-  int32 AuthorId = 1;
+  int64 AuthorId = 1;
 }
 
 message GetVideoListByAuthorResponse {
@@ -65,17 +65,17 @@ message GetVideoListByAuthorResponse {
 }
 
 message FavoriteVideoRequest {
-  int32 UserId = 1;
-  int32 VideoId = 2;
+  int64 UserId = 1;
+  int64 VideoId = 2;
 }
 
 message UnFavoriteVideoRequest {
-  int32 UserId = 1;
-  int32 VideoId = 2;
+  int64 UserId = 1;
+  int64 VideoId = 2;
 }
 
 message GetFavoriteVideoListRequest {
-  int32 UserId = 1;
+  int64 UserId = 1;
 }
 
 message GetFavoriteVideoListResponse {
@@ -83,8 +83,8 @@ message GetFavoriteVideoListResponse {
 }
 
 message IsFavoriteVideoRequest {
-  int32 UserId = 1;
-  int32 VideoId = 2;
+  int64 UserId = 1;
+  int64 VideoId = 2;
 }
 
 message IsFavoriteVideoResponse {
@@ -92,8 +92,8 @@ message IsFavoriteVideoResponse {
 }
 
 message CommentVideoRequest {
-  int32 UserId = 1;
-  int32 VideoId = 2;
+  int64 UserId = 1;
+  int64 VideoId = 2;
   string Content = 3;
 }
 
@@ -101,11 +101,11 @@ message CommentVideoResponse {
   int64 Id = 1;
   int64 UserId = 2;
   string Content = 3;
-  int32 CreatedTime = 4;
+  int64 CreatedTime = 4;
 }
 
 message GetCommentListRequest {
-  int32 VideoId = 1;
+  int64 VideoId = 1;
 }
 
 message GetCommentListResponse {
@@ -124,5 +124,5 @@ message GetCommentInfoResponse {
   int64 Id = 1;
   int64 UserId = 2;
   string Content = 3;
-  int32 CreatedTime = 4;
+  int64 CreatedTime = 4;
 }

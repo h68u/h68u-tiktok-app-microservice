@@ -50,8 +50,8 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 
 		// 创建评论并获取评论数据
 		res, err := l.svcCtx.VideoRpc.CommentVideo(l.ctx, &videoclient.CommentVideoRequest{
-			UserId:  int32(UserId),
-			VideoId: int32(req.VideoId),
+			UserId:  UserId,
+			VideoId: req.VideoId,
 			Content: req.Content,
 		})
 
@@ -62,7 +62,7 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 
 		// 获取评论用户信息
 		userInfo, err := l.svcCtx.UserRpc.GetUserById(l.ctx, &userclient.GetUserByIdRequest{
-			Id: int32(res.UserId),
+			Id: res.UserId,
 		})
 
 		if err != nil {
@@ -72,7 +72,7 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 
 		// 用户是否关注改评论的作者
 		isFollowRes, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
-			UserId:       int32(UserId),
+			UserId:       UserId,
 			FollowUserId: userInfo.Id,
 		})
 
@@ -85,14 +85,14 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		return &types.CommentVideoReply{
 			BasicReply: types.BasicReply(apiErr.Success),
 			Comment: types.Comment{
-				Id:         int(res.Id),
+				Id:         res.Id,
 				Content:    res.Content,
-				CreateTime: int(res.CreatedTime),
+				CreateTime: res.CreatedTime,
 				User: types.User{
-					Id:            int(userInfo.Id),
+					Id:            userInfo.Id,
 					Name:          userInfo.Name,
-					FollowCount:   int(userInfo.FollowCount),
-					FollowerCount: int(userInfo.FanCount),
+					FollowCount:   userInfo.FollowCount,
+					FollowerCount: userInfo.FanCount,
 					IsFollow:      isFollowRes.IsFollow,
 				},
 			},
@@ -102,7 +102,7 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		// 权限校验，判断用户是否有权限删除此评论，目前仅支持评论作者删除此评论
 		// 获取评论信息
 		commentInfo, err := l.svcCtx.VideoRpc.GetCommentInfo(l.ctx, &videoclient.GetCommentInfoRequest{
-			CommentId: int64(req.CommentId),
+			CommentId: req.CommentId,
 		})
 
 		if err != nil {
@@ -117,7 +117,7 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 
 		// 删除评论
 		if _, err = l.svcCtx.VideoRpc.DeleteVideoComment(l.ctx, &videoclient.DeleteVideoCommentRequest{
-			CommentId: int64(req.CommentId),
+			CommentId: req.CommentId,
 		}); err != nil {
 			logx.WithContext(l.ctx).Errorf("rpc调用失败: %s", err.Error())
 			return nil, apiErr.InternalError(l.ctx, err.Error())

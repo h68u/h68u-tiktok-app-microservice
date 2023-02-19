@@ -48,13 +48,13 @@ func (l *GetFavoriteVideoListLogic) GetFavoriteVideoList(in *video2.GetFavoriteV
 		}
 
 		videoInfo := &video.VideoInfo{
-			Id:            int32(v.Video.ID),
-			AuthorId:      int32(v.Video.AuthorId),
+			Id:            int64(v.Video.ID),
+			AuthorId:      v.Video.AuthorId,
 			Title:         v.Video.Title,
 			PlayUrl:       v.Video.PlayUrl,
 			CoverUrl:      v.Video.CoverUrl,
-			FavoriteCount: int32(v.Video.FavoriteCount),
-			CommentCount:  int32(v.Video.CommentCount),
+			FavoriteCount: v.Video.FavoriteCount,
+			CommentCount:  v.Video.CommentCount,
 		}
 
 		videoList = append(videoList, videoInfo)

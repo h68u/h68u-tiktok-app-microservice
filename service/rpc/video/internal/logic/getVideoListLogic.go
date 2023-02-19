@@ -41,13 +41,13 @@ func (l *GetVideoListLogic) GetVideoList(in *video.GetVideoListRequest) (*video.
 	var videoList []*video.VideoInfo
 	for _, v := range videos {
 		videoList = append(videoList, &video.VideoInfo{
-			Id:            int32(v.ID),
-			AuthorId:      int32(v.AuthorId),
+			Id:            int64(v.ID),
+			AuthorId:      v.AuthorId,
 			Title:         v.Title,
 			PlayUrl:       v.PlayUrl,
 			CoverUrl:      v.CoverUrl,
-			FavoriteCount: int32(v.FavoriteCount),
-			CommentCount:  int32(v.CommentCount),
+			FavoriteCount: v.FavoriteCount,
+			CommentCount:  v.CommentCount,
 			CreateTime:    v.CreatedAt.Unix(),
 		})
 	}

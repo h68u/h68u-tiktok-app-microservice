@@ -32,14 +32,14 @@ func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *typ
 	if err != nil {
 		return nil, apiErr.InvalidToken
 	}
-	if UserId == int64(req.ToUserId) {
+	if UserId == req.ToUserId {
 		return nil, apiErr.InvalidParams.WithDetails("不能发消息给自己")
 	}
 	//发送
 	if req.ActionType == 1 {
 		_, err = l.svcCtx.ContactRpc.CreateMessage(l.ctx, &contact.CreateMessageRequest{
-			FromId:  int32(UserId),
-			ToId:    int32(req.ToUserId),
+			FromId:  UserId,
+			ToId:    req.ToUserId,
 			Content: req.Content,
 		})
 		if rpcErr.Is(err, rpcErr.UserNotExist) {
@@ -48,7 +48,7 @@ func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *typ
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 	} else {
-		return nil, apiErr.MessageActionUnknown.WithDetails(strconv.Itoa(req.ActionType))
+		return nil, apiErr.MessageActionUnknown.WithDetails(strconv.Itoa(int(req.ActionType)))
 	}
 	return &types.SendMessageReply{
 		BasicReply: types.BasicReply(apiErr.Success),

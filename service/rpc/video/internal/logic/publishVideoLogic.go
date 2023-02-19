@@ -27,7 +27,7 @@ func NewPublishVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Publ
 
 func (l *PublishVideoLogic) PublishVideo(in *video.PublishVideoRequest) (*video.Empty, error) {
 	newVideo := &model.Video{
-		AuthorId: int64(in.Video.AuthorId),
+		AuthorId: in.Video.AuthorId,
 		Title:    in.Video.Title,
 		PlayUrl:  in.Video.PlayUrl,
 		CoverUrl: in.Video.CoverUrl,

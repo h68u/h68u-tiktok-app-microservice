@@ -34,7 +34,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 
 	// 拿到好友id
 	friendsId, err := l.svcCtx.ContactRpc.GetFriendsList(l.ctx, &contact.GetFriendsListRequest{
-		UserId: int32(req.UserId),
+		UserId: req.UserId,
 	})
 
 	if err != nil {
@@ -62,7 +62,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 	var friendsMsg []*contact.GetLatestMessageResponse
 	for _, v := range friendsId.FriendsId {
 		msg, err := l.svcCtx.ContactRpc.GetLatestMessage(l.ctx, &contact.GetLatestMessageRequest{
-			UserAId: int32(req.UserId),
+			UserAId: req.UserId,
 			UserBId: v,
 		})
 		if err != nil {
@@ -77,14 +77,14 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 	friendList := make([]types.Friend, len(friendsId.FriendsId))
 	for i := range friendList {
 		friendList[i] = types.Friend{
-			Id:            int(friendsInfo[i].Id),
+			Id:            friendsInfo[i].Id,
 			Name:          friendsInfo[i].Name,
-			FollowCount:   int(friendsInfo[i].FollowCount),
-			FollowerCount: int(friendsInfo[i].FanCount),
+			FollowCount:   friendsInfo[i].FollowCount,
+			FollowerCount: friendsInfo[i].FanCount,
 			IsFollow:      true,
 			Message:       friendsMsg[i].Message.Content,
-			MsgType: func() int {
-				if friendsMsg[i].Message.FromId == int32(req.UserId) {
+			MsgType: func() int64 {
+				if friendsMsg[i].Message.FromId == req.UserId {
 					return MsgTypeSent
 				} else {
 					return MsgTypeReceived
@@ -115,11 +115,11 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //	}, set.WithGoroutineSafe())
 //
 //	// 记录有没有关注某个用户
-//	followedMap := make(map[int32]bool)
+//	followedMap := make(map[int64]bool)
 //
 //	//拿到关注列表的数据
 //	GetFollowListReply, err := l.svcCtx.UserRpc.GetFollowList(l.ctx, &user.GetFollowListRequest{
-//		UserId: int32(req.UserId),
+//		UserId: int64(req.UserId),
 //	})
 //	if err != nil {
 //		logx.WithContext(l.ctx).Errorf("GetFollowList failed, err:%v", err)
@@ -132,7 +132,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //
 //	//拿到粉丝列表的信息
 //	GetFansListReply, err := l.svcCtx.UserRpc.GetFansList(l.ctx, &user.GetFansListRequest{
-//		UserId: int32(req.UserId),
+//		UserId: int64(req.UserId),
 //	})
 //	if err != nil {
 //		logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetFansList err: %v", err)
@@ -143,7 +143,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //	}
 //
 //	//遍历set，确认哪些用户的关注信息不在map中，需要查询
-//	var needQueryUserIds []int32
+//	var needQueryUserIds []int64
 //	for iter := friendSet.Begin(); iter.IsValid(); iter.Next() {
 //		if _, ok := followedMap[iter.Value().Id]; !ok {
 //			needQueryUserIds = append(needQueryUserIds, iter.Value().Id)
@@ -156,7 +156,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //			var followList []*user.IsFollowRequest
 //			for _, v := range needQueryUserIds {
 //				followList = append(followList, &user.IsFollowRequest{
-//					UserId:       int32(req.UserId),
+//					UserId:       int64(req.UserId),
 //					FollowUserId: v,
 //				})
 //			}
@@ -179,7 +179,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //
 //		// 查询最近消息
 //		GetGetLatestMessageReply, err := l.svcCtx.ContactRpc.GetLatestMessage(l.ctx, &contact.GetLatestMessageRequest{
-//			UserAId: int32(req.UserId),
+//			UserAId: int64(req.UserId),
 //			UserBId: iter.Value().Id,
 //		})
 //		if err != nil {
@@ -188,14 +188,14 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //		}
 //
 //		friends = append(friends, types.Friend{
-//			Id:            int(iter.Value().Id),
+//			Id:            int64(iter.Value().Id),
 //			Name:          iter.Value().Name,
-//			FollowCount:   int(iter.Value().FollowCount),
-//			FollowerCount: int(iter.Value().FansCount),
+//			FollowCount:   int64(iter.Value().FollowCount),
+//			FollowerCount: int64(iter.Value().FansCount),
 //			IsFollow:      followedMap[iter.Value().Id],
 //			Message:       GetGetLatestMessageReply.Message.Content,
 //			MsgType: func() int {
-//				if GetGetLatestMessageReply.Message.FromId == int32(req.UserId) {
+//				if GetGetLatestMessageReply.Message.FromId == int64(req.UserId) {
 //					return MsgTypeSent
 //				} else {
 //					return MsgTypeReceived

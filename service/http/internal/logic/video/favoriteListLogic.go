@@ -41,7 +41,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 
 	// 获取用户喜欢视频列表
 	likeVideoList, err := l.svcCtx.VideoRpc.GetFavoriteVideoList(l.ctx, &videoclient.GetFavoriteVideoListRequest{
-		UserId: int32(req.UserId),
+		UserId: req.UserId,
 	})
 
 	if err != nil {
@@ -78,7 +78,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 
 		// 获取用户是否关注该作者
 		isFollowRes, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
-			UserId:       int32(UserId),
+			UserId:       UserId,
 			FollowUserId: authorInfo.Id,
 		})
 
@@ -89,21 +89,21 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 		}
 
 		author := types.User{
-			Id:            int(authorInfo.Id),
+			Id:            authorInfo.Id,
 			Name:          authorInfo.Name,
-			FollowCount:   int(authorInfo.FollowCount),
-			FollowerCount: int(authorInfo.FanCount),
+			FollowCount:   authorInfo.FollowCount,
+			FollowerCount: authorInfo.FanCount,
 			IsFollow:      isFollowRes.IsFollow,
 		}
 
 		writer.Write(types.Video{
-			Id:            int(videoInfo.Id),
+			Id:            videoInfo.Id,
 			Title:         videoInfo.Title,
 			Author:        author,
 			PlayUrl:       videoInfo.PlayUrl,
 			CoverUrl:      videoInfo.CoverUrl,
-			FavoriteCount: int(videoInfo.FavoriteCount),
-			CommentCount:  int(videoInfo.CommentCount),
+			FavoriteCount: videoInfo.FavoriteCount,
+			CommentCount:  videoInfo.CommentCount,
 			// 这里查询的是用户喜欢的视频列表,无需获取用户是否喜欢
 			IsFavorite: true,
 		})
@@ -112,7 +112,7 @@ func (l *FavoriteListLogic) FavoriteList(req *types.FavoriteListRequest) (resp *
 		list := make([]types.Video, len(likeVideoList.VideoList))
 		for item := range pipe {
 			videoInfo := item.(types.Video)
-			i, ok := orderMp[videoInfo.Id]
+			i, ok := orderMp[int(videoInfo.Id)]
 			if !ok {
 				cancel(apiErr.InternalError(l.ctx, "获取视频在列表中的原始位置失败"))
 				return

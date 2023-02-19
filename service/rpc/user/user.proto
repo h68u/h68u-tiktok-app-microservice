@@ -9,10 +9,10 @@ message Empty {}
 
 // 用户信息结构体
 message UserInfo {
-  int32 Id = 1;
+  int64 Id = 1;
   string Name = 2;
-  int32 FollowCount = 3;
-  int32 FansCount = 4;
+  int64 FollowCount = 3;
+  int64 FansCount = 4;
 }
 
 service User {
@@ -34,11 +34,11 @@ message GetUserByNameRequest {
 }
 
 message GetUserByIdRequest {
-  int32 Id = 1;
+  int64 Id = 1;
 }
 
 message GetUserReply {
-  int32   Id = 1;
+  int64   Id = 1;
   string  Name = 2;
   string  Password = 3;
   int64   FollowCount = 4;
@@ -51,21 +51,21 @@ message CreateUserRequest {
 }
 
 message CreatUserReply {
-  int32 Id = 1;
+  int64 Id = 1;
 }
 
 message FollowUserRequest {
-  int32 UserId = 1;
-  int32 FollowUserId = 2;
+  int64 UserId = 1;
+  int64 FollowUserId = 2;
 }
 
 message UnFollowUserRequest {
-  int32 UserId = 1;
-  int32 UnFollowUserId = 2;
+  int64 UserId = 1;
+  int64 UnFollowUserId = 2;
 }
 
 message GetFollowListRequest {
-  int32 UserId = 1;
+  int64 UserId = 1;
 }
 
 message GetFollowListReply {
@@ -73,7 +73,7 @@ message GetFollowListReply {
 }
 
 message GetFansListRequest {
-  int32 UserId = 1;
+  int64 UserId = 1;
 }
 
 message GetFansListReply {
@@ -81,8 +81,8 @@ message GetFansListReply {
 }
 
 message IsFollowRequest {
-  int32 UserId = 1;
-  int32 FollowUserId = 2;
+  int64 UserId = 1;
+  int64 FollowUserId = 2;
 }
 
 message IsFollowReply {

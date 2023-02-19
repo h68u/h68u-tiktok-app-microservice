@@ -37,15 +37,15 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 		return nil, apiErr.InvalidToken
 	}
 
-	if Id == int64(req.ToUserId) {
+	if Id == req.ToUserId {
 		return nil, apiErr.IllegalOperation.WithDetails("不能关注自己")
 	}
 	if req.ActionType == 1 {
 
 		//判断是否已经关注
 		isFollowReply, _ := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
-			UserId:       int32(Id),
-			FollowUserId: int32(req.ToUserId),
+			UserId:       Id,
+			FollowUserId: req.ToUserId,
 		})
 		if isFollowReply.IsFollow {
 			logx.WithContext(l.ctx).Errorf("已经关注过了")
@@ -54,8 +54,8 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 
 		//关注
 		_, err := l.svcCtx.UserRpc.FollowUser(l.ctx, &user.FollowUserRequest{
-			UserId:       int32(Id),
-			FollowUserId: int32(req.ToUserId),
+			UserId:       Id,
+			FollowUserId: req.ToUserId,
 		})
 		if err != nil {
 			logx.WithContext(l.ctx).Errorf("关注失败: %v", err)
@@ -63,7 +63,7 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 		}
 
 		// 发送异步任务：尝试加好友
-		task, err := mq.NewTryMakeFriendsTask(int32(Id), int32(req.ToUserId))
+		task, err := mq.NewTryMakeFriendsTask(Id, req.ToUserId)
 		if err != nil {
 			logx.WithContext(l.ctx).Errorf("创建任务失败: %v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
@@ -77,15 +77,15 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 		//
 		//// 检查是否互相关注
 		//isFollowReply, _ = l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
-		//	UserId:       int32(req.ToUserId),
-		//	FollowUserId: int32(Id),
+		//	UserId:       int64(req.ToUserId),
+		//	FollowUserId: int64(Id),
 		//})
 		//
 		//// 如果相互关注了就加好友
 		//if isFollowReply.IsFollow {
 		//	_, err := l.svcCtx.ContactRpc.MakeFriends(l.ctx, &contact.MakeFriendsRequest{
-		//		UserAId: int32(Id),
-		//		UserBId: int32(req.ToUserId),
+		//		UserAId: int64(Id),
+		//		UserBId: int64(req.ToUserId),
 		//	})
 		//	if err != nil {
 		//		logx.WithContext(l.ctx).Errorf("加好友失败: %v", err)
@@ -96,8 +96,8 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 	} else {
 		//判断是否已经关注
 		isFollowReply, _ := l.svcCtx.UserRpc.IsFollow(l.ctx, &user.IsFollowRequest{
-			UserId:       int32(Id),
-			FollowUserId: int32(req.ToUserId),
+			UserId:       Id,
+			FollowUserId: req.ToUserId,
 		})
 		if !isFollowReply.IsFollow {
 			logx.WithContext(l.ctx).Errorf("还没有关注过")
@@ -106,8 +106,8 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 
 		//取消关注
 		_, err := l.svcCtx.UserRpc.UnFollowUser(l.ctx, &user.UnFollowUserRequest{
-			UserId:         int32(Id),
-			UnFollowUserId: int32(req.ToUserId),
+			UserId:         Id,
+			UnFollowUserId: req.ToUserId,
 		})
 		if err != nil {
 			logx.WithContext(l.ctx).Errorf("取消关注失败: %v", err)
@@ -115,7 +115,7 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 		}
 
 		// 发送异步任务：解除好友关系
-		task, err := mq.NewLoseFriendsTask(int32(Id), int32(req.ToUserId))
+		task, err := mq.NewLoseFriendsTask(Id, req.ToUserId)
 		if err != nil {
 			logx.WithContext(l.ctx).Errorf("创建任务失败: %v", err)
 			return nil, apiErr.InternalError(l.ctx, err.Error())
@@ -128,8 +128,8 @@ func (l *FollowLogic) Follow(req *types.FollowRequest) (resp *types.FollowReply,
 
 		//// 解除好友关系
 		//_, err = l.svcCtx.ContactRpc.LoseFriends(l.ctx, &contact.LoseFriendsRequest{
-		//	UserAId: int32(Id),
-		//	UserBId: int32(req.ToUserId),
+		//	UserAId: int64(Id),
+		//	UserBId: int64(req.ToUserId),
 		//})
 		//if err != nil {
 		//	logx.WithContext(l.ctx).Errorf("解除好友关系失败: %v", err)

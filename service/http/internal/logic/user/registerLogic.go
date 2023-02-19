@@ -52,7 +52,7 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 
 	// 生成 token
 	jwtToken, err := utils.CreateToken(
-		int64(CreateUserReply.Id),
+		CreateUserReply.Id,
 		l.svcCtx.Config.Auth.AccessSecret,
 		l.svcCtx.Config.Auth.AccessExpire,
 	)
@@ -63,7 +63,7 @@ func (l *RegisterLogic) Register(req *types.RegisterRequest) (resp *types.Regist
 
 	return &types.RegisterReply{
 		BasicReply: types.BasicReply(apiErr.Success),
-		UserId:     int(CreateUserReply.Id),
+		UserId:     CreateUserReply.Id,
 		Token:      jwtToken,
 	}, nil
 }

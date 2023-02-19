@@ -31,8 +31,8 @@ func NewCommentVideoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Comm
 func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.CommentVideoResponse, error) {
 	// 创建评论记录
 	comment := model.Comment{
-		VideoId: int64(in.VideoId),
-		UserId:  int64(in.UserId),
+		VideoId: in.VideoId,
+		UserId:  in.UserId,
 		Content: in.Content,
 	}
 
@@ -58,6 +58,6 @@ func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.
 		Id:          int64(comment.ID),
 		UserId:      comment.UserId,
 		Content:     comment.Content,
-		CreatedTime: int32(comment.CreatedAt.Unix()),
+		CreatedTime: comment.CreatedAt.Unix(),
 	}, nil
 }

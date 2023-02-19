@@ -40,7 +40,7 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 
 	// 获取评论数据
 	commentListData, err := l.svcCtx.VideoRpc.GetCommentList(l.ctx, &videoclient.GetCommentListRequest{
-		VideoId: int32(req.VideoId),
+		VideoId: req.VideoId,
 	})
 
 	if err != nil {
@@ -76,7 +76,7 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 
 		// 获取用户是否关注该作者
 		isFollowRes, err := l.svcCtx.UserRpc.IsFollow(l.ctx, &userclient.IsFollowRequest{
-			UserId:       int32(UserId),
+			UserId:       UserId,
 			FollowUserId: comment.AuthorId,
 		})
 
@@ -88,14 +88,14 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 
 		// 将包装好的数据返回
 		writer.Write(types.Comment{
-			Id:         int(comment.Id),
+			Id:         comment.Id,
 			Content:    comment.Content,
-			CreateTime: int(comment.CreateTime),
+			CreateTime: comment.CreateTime,
 			User: types.User{
-				Id:            int(userInfo.Id),
+				Id:            userInfo.Id,
 				Name:          userInfo.Name,
-				FollowCount:   int(userInfo.FollowCount),
-				FollowerCount: int(userInfo.FanCount),
+				FollowCount:   userInfo.FollowCount,
+				FollowerCount: userInfo.FanCount,
 				IsFollow:      isFollowRes.IsFollow,
 			},
 		})
@@ -105,7 +105,7 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 		for item := range pipe {
 			comment := item.(types.Comment)
 			// 从 orderMp 中获取评论在列表中的原始位置，避免 mapreduce 处理后导致分页数据混乱
-			i, ok := orderMp[comment.Id]
+			i, ok := orderMp[int(comment.Id)]
 			if !ok {
 				cancel(apiErr.InternalError(l.ctx, "获取评论在列表中的原始位置失败"))
 				return

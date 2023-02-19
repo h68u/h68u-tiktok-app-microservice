@@ -64,7 +64,7 @@ type (
 type (
 	PublishedListRequest {
 		Token  string `form:"token"`
-		UserId int    `form:"user_id"`
+		UserId int64    `form:"user_id"`
 	}
 	PublishedListReply {
 		BasicReply
@@ -75,9 +75,9 @@ type (
 // 点赞视频
 type (
 	FavoriteVideoRequest {
-		VideoId    int    `form:"video_id"`
+		VideoId    int64    `form:"video_id"`
 		Token      string `form:"token"`
-		ActionType int    `form:"action_type"`
+		ActionType int64    `form:"action_type"`
 	}
 	FavoriteVideoReply {
 		BasicReply
@@ -88,7 +88,7 @@ type (
 type (
 	FavoriteListRequest {
 		Token  string `form:"token"`
-		UserId int    `form:"user_id"`
+		UserId int64    `form:"user_id"`
 	}
 	FavoriteListReply {
 		BasicReply
@@ -99,11 +99,11 @@ type (
 // 评论视频
 type (
 	CommentVideoRequest {
-		VideoId    int    `form:"video_id"`
+		VideoId    int64    `form:"video_id"`
 		Token      string `form:"token"`
-		ActionType int    `form:"action_type"`
+		ActionType int64    `form:"action_type"`
 		Content    string `form:"comment_text"`
-		CommentId  int    `form:"comment_id,optional"`
+		CommentId  int64    `form:"comment_id,optional"`
 	}
 	CommentVideoReply {
 		BasicReply
@@ -115,7 +115,7 @@ type (
 type (
 	CommentListRequest {
 		Token   string `form:"token"`
-		VideoId int    `form:"video_id"`
+		VideoId int64    `form:"video_id"`
 	}
 	CommentListReply {
 		BasicReply

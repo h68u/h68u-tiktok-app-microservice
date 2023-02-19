@@ -28,14 +28,14 @@ func SendMessageHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			httpx.OkJson(w, apiErr.InvalidParams)
 			return
 		}
-		req.ToUserId = int(ToUserId)
+		req.ToUserId = ToUserId
 
 		ActionType, err := strconv.ParseInt(r.URL.Query().Get("action_type"), 10, 64)
 		if err != nil {
 			httpx.OkJson(w, apiErr.InvalidParams)
 			return
 		}
-		req.ActionType = int(ActionType)
+		req.ActionType = ActionType
 
 		l := contact.NewSendMessageLogic(r.Context(), svcCtx)
 		resp, err := l.SendMessage(&req)

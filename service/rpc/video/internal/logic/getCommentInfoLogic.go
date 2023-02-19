@@ -42,6 +42,6 @@ func (l *GetCommentInfoLogic) GetCommentInfo(in *video.GetCommentInfoRequest) (*
 		Id:          int64(comment.ID),
 		UserId:      comment.UserId,
 		Content:     comment.Content,
-		CreatedTime: int32(comment.CreatedAt.Unix()),
+		CreatedTime: comment.CreatedAt.Unix(),
 	}, nil
 }

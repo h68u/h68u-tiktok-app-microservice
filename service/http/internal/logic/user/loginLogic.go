@@ -49,7 +49,7 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginReply, err
 
 	// 生成 token
 	jwtToken, err := utils.CreateToken(
-		int64(GetUserByNameReply.Id),
+		GetUserByNameReply.Id,
 		l.svcCtx.Config.Auth.AccessSecret,
 		l.svcCtx.Config.Auth.AccessExpire,
 	)
@@ -61,7 +61,7 @@ func (l *LoginLogic) Login(req *types.LoginRequest) (resp *types.LoginReply, err
 
 	return &types.LoginReply{
 		BasicReply: types.BasicReply(apiErr.Success),
-		UserId:     int(GetUserByNameReply.Id),
+		UserId:     GetUserByNameReply.Id,
 		Token:      jwtToken,
 	}, nil
 }

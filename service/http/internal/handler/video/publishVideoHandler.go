@@ -81,7 +81,7 @@ func PublishVideoHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		// 调用rpc服务
 		_, err = svcCtx.VideoRpc.PublishVideo(r.Context(), &video.PublishVideoRequest{
 			Video: &video.VideoInfo{
-				AuthorId: int32(userId),
+				AuthorId: userId,
 				Title:    req.Title,
 				PlayUrl:  videoUrl,
 				CoverUrl: imgUrl,
