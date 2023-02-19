@@ -59,7 +59,7 @@ jobs:
         uses: docker/build-push-action@v4.0.0
         with:
           context: .
-          file: service/rpc/video/Dockerfile
+          file: service/mq/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
