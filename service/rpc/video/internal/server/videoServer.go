@@ -32,6 +32,11 @@ func (s *VideoServer) PublishVideo(ctx context.Context, in *video.PublishVideoRe
 	return l.PublishVideo(in)
 }
 
+func (s *VideoServer) UpdateVideo(ctx context.Context, in *video.UpdateVideoRequest) (*video.Empty, error) {
+	l := logic.NewUpdateVideoLogic(ctx, s.svcCtx)
+	return l.UpdateVideo(in)
+}
+
 func (s *VideoServer) GetVideoListByAuthor(ctx context.Context, in *video.GetVideoListByAuthorRequest) (*video.GetVideoListByAuthorResponse, error) {
 	l := logic.NewGetVideoListByAuthorLogic(ctx, s.svcCtx)
 	return l.GetVideoListByAuthor(in)

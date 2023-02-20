@@ -33,11 +33,13 @@ type (
 	IsFavoriteVideoResponse      = video.IsFavoriteVideoResponse
 	PublishVideoRequest          = video.PublishVideoRequest
 	UnFavoriteVideoRequest       = video.UnFavoriteVideoRequest
+	UpdateVideoRequest           = video.UpdateVideoRequest
 	VideoInfo                    = video.VideoInfo
 
 	Video interface {
 		GetVideoList(ctx context.Context, in *GetVideoListRequest, opts ...grpc.CallOption) (*GetVideoListResponse, error)
 		PublishVideo(ctx context.Context, in *PublishVideoRequest, opts ...grpc.CallOption) (*Empty, error)
+		UpdateVideo(ctx context.Context, in *UpdateVideoRequest, opts ...grpc.CallOption) (*Empty, error)
 		GetVideoListByAuthor(ctx context.Context, in *GetVideoListByAuthorRequest, opts ...grpc.CallOption) (*GetVideoListByAuthorResponse, error)
 		FavoriteVideo(ctx context.Context, in *FavoriteVideoRequest, opts ...grpc.CallOption) (*Empty, error)
 		UnFavoriteVideo(ctx context.Context, in *UnFavoriteVideoRequest, opts ...grpc.CallOption) (*Empty, error)
@@ -68,6 +70,11 @@ func (m *defaultVideo) GetVideoList(ctx context.Context, in *GetVideoListRequest
 func (m *defaultVideo) PublishVideo(ctx context.Context, in *PublishVideoRequest, opts ...grpc.CallOption) (*Empty, error) {
 	client := video.NewVideoClient(m.cli.Conn())
 	return client.PublishVideo(ctx, in, opts...)
+}
+
+func (m *defaultVideo) UpdateVideo(ctx context.Context, in *UpdateVideoRequest, opts ...grpc.CallOption) (*Empty, error) {
+	client := video.NewVideoClient(m.cli.Conn())
+	return client.UpdateVideo(ctx, in, opts...)
 }
 
 func (m *defaultVideo) GetVideoListByAuthor(ctx context.Context, in *GetVideoListByAuthorRequest, opts ...grpc.CallOption) (*GetVideoListByAuthorResponse, error) {

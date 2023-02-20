@@ -10,6 +10,7 @@ import (
 	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/rpc/video/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
+	"time"
 )
 
 type IsFavoriteVideoLogic struct {
@@ -55,7 +56,7 @@ func (l *IsFavoriteVideoLogic) IsFavoriteVideo(in *video.IsFavoriteVideoRequest)
 
 	// 记录存在，设置缓存
 	err = l.svcCtx.DBList.Redis.
-		Set(l.ctx, utils.GenFavoriteVideoCacheKey(in.UserId, in.VideoId), 1, 0).Err()
+		Set(l.ctx, utils.GenFavoriteVideoCacheKey(in.UserId, in.VideoId), 1, time.Hour).Err()
 	if err != nil {
 		return nil, status.Error(rpcErr.CacheError.Code, err.Error())
 	}

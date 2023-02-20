@@ -30,6 +30,7 @@ func (l *GetCommentListLogic) GetCommentList(in *video.GetCommentListRequest) (*
 	var comments []model.Comment
 	if err := l.svcCtx.DBList.Mysql.
 		Where("video_id = ?", in.VideoId).
+		Limit(model.PopularVideoStandard).
 		Order("created_at").
 		Find(&comments).Error; err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())

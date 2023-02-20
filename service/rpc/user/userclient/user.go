@@ -27,12 +27,14 @@ type (
 	IsFollowReply        = user.IsFollowReply
 	IsFollowRequest      = user.IsFollowRequest
 	UnFollowUserRequest  = user.UnFollowUserRequest
+	UpdateUserRequest    = user.UpdateUserRequest
 	UserInfo             = user.UserInfo
 
 	User interface {
 		GetUserByName(ctx context.Context, in *GetUserByNameRequest, opts ...grpc.CallOption) (*GetUserReply, error)
 		GetUserById(ctx context.Context, in *GetUserByIdRequest, opts ...grpc.CallOption) (*GetUserReply, error)
 		CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreatUserReply, error)
+		UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*Empty, error)
 		FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*Empty, error)
 		UnFollowUser(ctx context.Context, in *UnFollowUserRequest, opts ...grpc.CallOption) (*Empty, error)
 		GetFollowList(ctx context.Context, in *GetFollowListRequest, opts ...grpc.CallOption) (*GetFollowListReply, error)
@@ -64,6 +66,11 @@ func (m *defaultUser) GetUserById(ctx context.Context, in *GetUserByIdRequest, o
 func (m *defaultUser) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreatUserReply, error) {
 	client := user.NewUserClient(m.cli.Conn())
 	return client.CreateUser(ctx, in, opts...)
+}
+
+func (m *defaultUser) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*Empty, error) {
+	client := user.NewUserClient(m.cli.Conn())
+	return client.UpdateUser(ctx, in, opts...)
 }
 
 func (m *defaultUser) FollowUser(ctx context.Context, in *FollowUserRequest, opts ...grpc.CallOption) (*Empty, error) {

@@ -49,3 +49,11 @@ scrape_configs:
           job: mq
           app: mq
           env: dev
+
+  - job_name: 'cron'
+    static_configs:
+      - targets: [ 'h68u-tiktok:4005' ]
+        labels:
+          job: cron
+          app: cron
+          env: dev

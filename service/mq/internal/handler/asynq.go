@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
+	"h68u-tiktok-app-microservice/common/cron"
 	"h68u-tiktok-app-microservice/common/mq"
 	"h68u-tiktok-app-microservice/service/mq/internal/svc"
 	"log"
@@ -47,6 +48,10 @@ func (l *AsynqServer) Start() {
 	mux.HandleFunc(mq.TypeTryMakeFriends, l.tryMakeFriendsHandler)
 	mux.HandleFunc(mq.TypeLoseFriends, l.loseFriendsHandler)
 	mux.HandleFunc(mq.TypeDelCache, l.delCacheHandler)
+	mux.HandleFunc(mq.TypeAddCacheValue, l.addCacheValueHandler)
+
+	mux.HandleFunc(cron.TypeSyncUserInfoCache, l.syncUserInfoCacheHandler)
+	mux.HandleFunc(cron.TypeSyncVideoInfoCache, l.syncVideoInfoCacheHandler)
 	// ...register other handlers...
 
 	if err := srv.Run(mux); err != nil {

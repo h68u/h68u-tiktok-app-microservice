@@ -9,7 +9,6 @@ import (
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
 	"h68u-tiktok-app-microservice/service/rpc/contact/types/contact"
-	"strconv"
 )
 
 type SendMessageLogic struct {
@@ -48,7 +47,7 @@ func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *typ
 			return nil, apiErr.InternalError(l.ctx, err.Error())
 		}
 	} else {
-		return nil, apiErr.MessageActionUnknown.WithDetails(strconv.Itoa(int(req.ActionType)))
+		return nil, apiErr.MessageActionUnknown.WithDetails(utils.Int642Str(req.ActionType))
 	}
 	return &types.SendMessageReply{
 		BasicReply: types.BasicReply(apiErr.Success),

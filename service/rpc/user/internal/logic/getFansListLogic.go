@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"google.golang.org/grpc/status"
+	"gorm.io/gorm"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
 	"h68u-tiktok-app-microservice/service/rpc/user/internal/svc"
@@ -28,7 +29,12 @@ func NewGetFansListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *GetFa
 func (l *GetFansListLogic) GetFansList(in *user.GetFansListRequest) (*user.GetFansListReply, error) {
 	var fans model.User
 	//获取粉丝列表
-	err := l.svcCtx.DBList.Mysql.Where("id = ?", in.UserId).Preload("Fans").Find(&fans).Error
+	err := l.svcCtx.DBList.Mysql.
+		Where("id = ?", in.UserId).
+		Preload("Fans", func(db *gorm.DB) *gorm.DB {
+			return db.Limit(model.PopularUserStandard)
+		}).
+		Find(&fans).Error
 	if err != nil {
 		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
 	}

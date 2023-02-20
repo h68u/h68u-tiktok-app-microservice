@@ -24,6 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type VideoClient interface {
 	GetVideoList(ctx context.Context, in *GetVideoListRequest, opts ...grpc.CallOption) (*GetVideoListResponse, error)
 	PublishVideo(ctx context.Context, in *PublishVideoRequest, opts ...grpc.CallOption) (*Empty, error)
+	UpdateVideo(ctx context.Context, in *UpdateVideoRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetVideoListByAuthor(ctx context.Context, in *GetVideoListByAuthorRequest, opts ...grpc.CallOption) (*GetVideoListByAuthorResponse, error)
 	FavoriteVideo(ctx context.Context, in *FavoriteVideoRequest, opts ...grpc.CallOption) (*Empty, error)
 	UnFavoriteVideo(ctx context.Context, in *UnFavoriteVideoRequest, opts ...grpc.CallOption) (*Empty, error)
@@ -55,6 +56,15 @@ func (c *videoClient) GetVideoList(ctx context.Context, in *GetVideoListRequest,
 func (c *videoClient) PublishVideo(ctx context.Context, in *PublishVideoRequest, opts ...grpc.CallOption) (*Empty, error) {
 	out := new(Empty)
 	err := c.cc.Invoke(ctx, "/video.Video/PublishVideo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *videoClient) UpdateVideo(ctx context.Context, in *UpdateVideoRequest, opts ...grpc.CallOption) (*Empty, error) {
+	out := new(Empty)
+	err := c.cc.Invoke(ctx, "/video.Video/UpdateVideo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -148,6 +158,7 @@ func (c *videoClient) GetCommentInfo(ctx context.Context, in *GetCommentInfoRequ
 type VideoServer interface {
 	GetVideoList(context.Context, *GetVideoListRequest) (*GetVideoListResponse, error)
 	PublishVideo(context.Context, *PublishVideoRequest) (*Empty, error)
+	UpdateVideo(context.Context, *UpdateVideoRequest) (*Empty, error)
 	GetVideoListByAuthor(context.Context, *GetVideoListByAuthorRequest) (*GetVideoListByAuthorResponse, error)
 	FavoriteVideo(context.Context, *FavoriteVideoRequest) (*Empty, error)
 	UnFavoriteVideo(context.Context, *UnFavoriteVideoRequest) (*Empty, error)
@@ -169,6 +180,9 @@ func (UnimplementedVideoServer) GetVideoList(context.Context, *GetVideoListReque
 }
 func (UnimplementedVideoServer) PublishVideo(context.Context, *PublishVideoRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PublishVideo not implemented")
+}
+func (UnimplementedVideoServer) UpdateVideo(context.Context, *UpdateVideoRequest) (*Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateVideo not implemented")
 }
 func (UnimplementedVideoServer) GetVideoListByAuthor(context.Context, *GetVideoListByAuthorRequest) (*GetVideoListByAuthorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetVideoListByAuthor not implemented")
@@ -242,6 +256,24 @@ func _Video_PublishVideo_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(VideoServer).PublishVideo(ctx, req.(*PublishVideoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Video_UpdateVideo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateVideoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(VideoServer).UpdateVideo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/video.Video/UpdateVideo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(VideoServer).UpdateVideo(ctx, req.(*UpdateVideoRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -422,6 +454,10 @@ var Video_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PublishVideo",
 			Handler:    _Video_PublishVideo_Handler,
+		},
+		{
+			MethodName: "UpdateVideo",
+			Handler:    _Video_UpdateVideo_Handler,
 		},
 		{
 			MethodName: "GetVideoListByAuthor",

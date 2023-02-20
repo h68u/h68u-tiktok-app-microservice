@@ -30,6 +30,7 @@ message Comment {
 service Video {
   rpc GetVideoList(GetVideoListRequest) returns (GetVideoListResponse);
   rpc PublishVideo(PublishVideoRequest) returns (Empty);
+  rpc UpdateVideo(UpdateVideoRequest) returns (Empty);
   rpc GetVideoListByAuthor(GetVideoListByAuthorRequest) returns (GetVideoListByAuthorResponse);
 
   rpc FavoriteVideo(FavoriteVideoRequest) returns (Empty);
@@ -53,6 +54,10 @@ message GetVideoListResponse {
 }
 
 message PublishVideoRequest {
+  VideoInfo Video = 1;
+}
+
+message UpdateVideoRequest {
   VideoInfo Video = 1;
 }
 

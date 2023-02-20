@@ -16,6 +16,14 @@ type Video struct {
 	Favorites []Favorite
 }
 
+const (
+	PopularVideoStandard = 1000 // 拥有超过 1000 个赞或 1000 个评论的视频成为热门视频，有特殊处理
+)
+
+func IsPopularVideo(favoriteCount, commentCount int64) bool {
+	return favoriteCount >= PopularVideoStandard || commentCount >= PopularVideoStandard
+}
+
 type Comment struct {
 	gorm.Model
 	UserId  int64
