@@ -7,6 +7,8 @@ import (
 	"gorm.io/gorm/clause"
 	"h68u-tiktok-app-microservice/common/error/rpcErr"
 	"h68u-tiktok-app-microservice/common/model"
+	"h68u-tiktok-app-microservice/common/mq"
+	"h68u-tiktok-app-microservice/common/utils"
 
 	"h68u-tiktok-app-microservice/service/rpc/video/internal/svc"
 	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
@@ -44,14 +46,32 @@ func (l *CommentVideoLogic) CommentVideo(in *video.CommentVideoRequest) (*video.
 	}
 
 	// 更新视频评论数
-	if err := tx.Model(&model.Video{}).
-		Where("id = ?", in.VideoId).
-		Clauses(clause.Locking{Strength: "UPDATE"}).
-		UpdateColumn("comment_count", gorm.Expr("comment_count + ?", 1)).
-		Error; err != nil {
-		return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+	// 如果是热门视频（在缓存中），就只更新缓存，交给定时任务更新数据库
+	result, err := l.svcCtx.DBList.Redis.Exists(l.ctx, utils.GenUserInfoCacheKey(in.UserId)).Result()
+	if result == 1 {
+		task, err := mq.NewAddCacheValueTask(utils.GenVideoInfoCacheKey(in.VideoId), "CommentCount", 1)
+		if err != nil {
+			logx.WithContext(l.ctx).Errorf("创建任务失败: %v", err)
+			tx.Rollback()
+			return nil, err
+		}
+		if _, err := l.svcCtx.AsynqClient.Enqueue(task); err != nil {
+			logx.WithContext(l.ctx).Errorf("发送任务失败: %v", err)
+			tx.Rollback()
+			return nil, err
+		}
+	} else {
+		if err != nil {
+			l.Logger.Error(rpcErr.CacheError.Code, err.Error())
+		}
+		if err := tx.Model(&model.Video{}).
+			Where("id = ?", in.VideoId).
+			Clauses(clause.Locking{Strength: "UPDATE"}).
+			UpdateColumn("comment_count", gorm.Expr("comment_count + ?", 1)).
+			Error; err != nil {
+			return nil, status.Error(rpcErr.DataBaseError.Code, err.Error())
+		}
 	}
-
 	tx.Commit()
 
 	return &video.CommentVideoResponse{

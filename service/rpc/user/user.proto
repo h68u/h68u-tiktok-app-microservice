@@ -19,6 +19,7 @@ service User {
   rpc GetUserByName(GetUserByNameRequest) returns (GetUserReply);
   rpc GetUserById(GetUserByIdRequest) returns (GetUserReply);
   rpc CreateUser(CreateUserRequest) returns (CreatUserReply);
+  rpc UpdateUser(UpdateUserRequest) returns (Empty);
 
   rpc FollowUser(FollowUserRequest) returns (Empty);
   rpc UnFollowUser(UnFollowUserRequest) returns (Empty);
@@ -52,6 +53,14 @@ message CreateUserRequest {
 
 message CreatUserReply {
   int64 Id = 1;
+}
+
+message UpdateUserRequest{
+  int64   Id = 1;
+  string  Name = 2;
+  string  Password = 3;
+  int64   FollowCount = 4;
+  int64   FanCount = 5;
 }
 
 message FollowUserRequest {

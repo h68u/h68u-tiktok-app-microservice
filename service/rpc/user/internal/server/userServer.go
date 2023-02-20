@@ -37,6 +37,11 @@ func (s *UserServer) CreateUser(ctx context.Context, in *user.CreateUserRequest)
 	return l.CreateUser(in)
 }
 
+func (s *UserServer) UpdateUser(ctx context.Context, in *user.UpdateUserRequest) (*user.Empty, error) {
+	l := logic.NewUpdateUserLogic(ctx, s.svcCtx)
+	return l.UpdateUser(in)
+}
+
 func (s *UserServer) FollowUser(ctx context.Context, in *user.FollowUserRequest) (*user.Empty, error) {
 	l := logic.NewFollowUserLogic(ctx, s.svcCtx)
 	return l.FollowUser(in)

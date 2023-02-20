@@ -145,8 +145,8 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //	//遍历set，确认哪些用户的关注信息不在map中，需要查询
 //	var needQueryUserIds []int64
 //	for iter := friendSet.Begin(); iter.IsValid(); iter.Next() {
-//		if _, ok := followedMap[iter.Value().Id]; !ok {
-//			needQueryUserIds = append(needQueryUserIds, iter.Value().Id)
+//		if _, ok := followedMap[iter.Add().Id]; !ok {
+//			needQueryUserIds = append(needQueryUserIds, iter.Add().Id)
 //		}
 //	}
 //
@@ -180,7 +180,7 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //		// 查询最近消息
 //		GetGetLatestMessageReply, err := l.svcCtx.ContactRpc.GetLatestMessage(l.ctx, &contact.GetLatestMessageRequest{
 //			UserAId: int64(req.UserId),
-//			UserBId: iter.Value().Id,
+//			UserBId: iter.Add().Id,
 //		})
 //		if err != nil {
 //			logx.WithContext(l.ctx).Errorf("FansListLogic.FansList GetLatestMessageV2 err: %v", err)
@@ -188,11 +188,11 @@ func (l *GetFriendListLogic) GetFriendList(req *types.GetFriendListRequest) (res
 //		}
 //
 //		friends = append(friends, types.Friend{
-//			Id:            int64(iter.Value().Id),
-//			Name:          iter.Value().Name,
-//			FollowCount:   int64(iter.Value().FollowCount),
-//			FollowerCount: int64(iter.Value().FansCount),
-//			IsFollow:      followedMap[iter.Value().Id],
+//			Id:            int64(iter.Add().Id),
+//			Name:          iter.Add().Name,
+//			FollowCount:   int64(iter.Add().FollowCount),
+//			FollowerCount: int64(iter.Add().FansCount),
+//			IsFollow:      followedMap[iter.Add().Id],
 //			Message:       GetGetLatestMessageReply.Message.Content,
 //			MsgType: func() int {
 //				if GetGetLatestMessageReply.Message.FromId == int64(req.UserId) {
