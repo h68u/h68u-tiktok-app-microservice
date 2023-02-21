@@ -1,8 +1,10 @@
-本节将讲述如何使用 docker-compose 启动整个项目
+本节将讲述如何使用 docker-compose 在本地启动整个项目
 
-本功能模仿 [go–zero-tooklook](https://github.com/Mikaelemmmm/go-zero-looklook) ，晚上状态不佳，有疏漏可参考那个项目的文档，真的非常详细
+本功能模仿 [go–zero-looklook](https://github.com/Mikaelemmmm/go-zero-looklook) ，晚上状态不佳，有疏漏可参考那个项目的文档，真的非常详细
 
 首先请根据你的指令集选择对应的 `docker-compose` 文件！
+
+（根目录的 `docker-compose` 仅用于本地部署测试，服务端部署是拉取 workflows 中自动编译打包上传的各服务的镜像）
 
 ![image-20230214002205723](https://pic-go-img.oss-cn-hangzhou.aliyuncs.com/202302140022813.png)
 
