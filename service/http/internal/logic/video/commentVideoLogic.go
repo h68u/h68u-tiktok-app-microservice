@@ -6,6 +6,7 @@ import (
 	"h68u-tiktok-app-microservice/common/utils"
 	"h68u-tiktok-app-microservice/service/rpc/user/userclient"
 	"h68u-tiktok-app-microservice/service/rpc/video/videoclient"
+	"time"
 
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
@@ -85,9 +86,8 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 		return &types.CommentVideoReply{
 			BasicReply: types.BasicReply(apiErr.Success),
 			Comment: types.Comment{
-				Id:         res.Id,
-				Content:    res.Content,
-				CreateTime: res.CreatedTime,
+				Id:      res.Id,
+				Content: res.Content,
 				User: types.User{
 					Id:            userInfo.Id,
 					Name:          userInfo.Name,
@@ -95,6 +95,8 @@ func (l *CommentVideoLogic) CommentVideo(req *types.CommentVideoRequest) (resp *
 					FollowerCount: userInfo.FanCount,
 					IsFollow:      isFollowRes.IsFollow,
 				},
+				// 从unix时间戳生成日期字符串，格式mm-dd
+				CreateDate: time.Unix(res.CreatedTime, 0).Format("01-02"),
 			},
 		}, nil
 
