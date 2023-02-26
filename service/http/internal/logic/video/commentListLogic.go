@@ -8,6 +8,7 @@ import (
 	"h68u-tiktok-app-microservice/service/rpc/user/userclient"
 	"h68u-tiktok-app-microservice/service/rpc/video/types/video"
 	"h68u-tiktok-app-microservice/service/rpc/video/videoclient"
+	"time"
 
 	"h68u-tiktok-app-microservice/service/http/internal/svc"
 	"h68u-tiktok-app-microservice/service/http/internal/types"
@@ -88,9 +89,10 @@ func (l *CommentListLogic) CommentList(req *types.CommentListRequest) (resp *typ
 
 		// 将包装好的数据返回
 		writer.Write(types.Comment{
-			Id:         comment.Id,
-			Content:    comment.Content,
-			CreateTime: comment.CreateTime,
+			Id:      comment.Id,
+			Content: comment.Content,
+			// 从unix时间戳生成日期字符串，格式mm-dd
+			CreateDate: time.Unix(comment.CreateTime, 0).Format("01-02"),
 			User: types.User{
 				Id:            userInfo.Id,
 				Name:          userInfo.Name,

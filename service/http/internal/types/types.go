@@ -91,7 +91,7 @@ type Comment struct {
 	Id         int64  `json:"id"`
 	Content    string `json:"content"`
 	User       User   `json:"user"`
-	CreateTime int64  `json:"create_time"`
+	CreateDate string `json:"create_date"`
 }
 
 type Message struct {
