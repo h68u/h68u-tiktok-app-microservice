@@ -4,8 +4,8 @@ import "gorm.io/gorm"
 
 type Video struct {
 	gorm.Model
-	AuthorId      int64
-	Title         string `gorm:"not null"`
+	AuthorId      int64  `gorm:"not null;index"`
+	Title         string `gorm:"not null;index"`
 	PlayUrl       string `gorm:"not null"`
 	CoverUrl      string `gorm:"not null"`
 	FavoriteCount int64  `gorm:"column:favorite_count;"`
